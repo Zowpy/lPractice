@@ -1,8 +1,8 @@
-package net.lyragames.practice.arena;
+package net.lyragames.practice.arena
 
-import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.Location;
+import lombok.Getter
+import lombok.Setter
+import org.bukkit.Location
 
 /**
  * This Project is property of Zowpy © 2021
@@ -12,21 +12,15 @@ import org.bukkit.Location;
  * Created: 12/19/2021
  * Project: Practice
  */
+@Getter
+@Setter
+class Arena(private val name: String) {
 
-@Getter @Setter
-public class Arena {
+    val l1: Location? = null
+    val l2: Location? = null
+    val min: Location? = null
+    val max: Location? = null
 
-    private final String name;
-    private Location l1, l2, min, max;
-
-    public Arena(String name) {
-        this.name = name;
-    }
-
-    public boolean isSetup() {
-        return l1 != null
-                && l2 != null
-                && min != null
-                && max != null;
-    }
+    val isSetup: Boolean
+        get() = l1 != null && l2 != null && min != null && max != null
 }

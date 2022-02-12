@@ -1,27 +1,25 @@
-package net.lyragames.practice;
+package net.lyragames.practice
 
-import lombok.Getter;
-import net.lyragames.llib.LyraPlugin;
-import net.lyragames.llib.utils.ConfigFile;
+import net.lyragames.llib.LyraPlugin
+import net.lyragames.llib.utils.ConfigFile
 
-@Getter
-public class PracticePlugin extends LyraPlugin {
+class PracticePlugin : LyraPlugin() {
 
-    @Getter private static PracticePlugin instance;
+    var kitsFile: ConfigFile? = null
+    var arenasFile: ConfigFile? = null
 
-    private ConfigFile kitsFile, arenasFile;
-
-    @Override
-    public void onEnable() {
-        instance = this;
-
-        kitsFile = new ConfigFile(this, "kits");
-        arenasFile = new ConfigFile(this, "arenas");
-
+    override fun onEnable() {
+        instance = this
+        kitsFile = ConfigFile(this, "kits")
+        arenasFile = ConfigFile(this, "arenas")
     }
 
-    @Override
-    public void onDisable() {
-        instance = null;
+    override fun onDisable() {
+        instance = null
+    }
+
+    companion object {
+        @JvmStatic
+        var instance: PracticePlugin? = null
     }
 }

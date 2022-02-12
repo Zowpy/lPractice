@@ -1,11 +1,10 @@
-package net.lyragames.practice.match.player;
+package net.lyragames.practice.match.player
 
-import lombok.Data;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import java.util.UUID;
+import lombok.Data
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.entity.Player
+import java.util.*
 
 /**
  * This Project is property of Zowpy © 2021
@@ -15,21 +14,10 @@ import java.util.UUID;
  * Created: 12/19/2021
  * Project: Practice
  */
-
 @Data
-public class MatchPlayer {
-
-    private UUID uuid;
-    private String name;
-    private boolean dead, offline;
-    private Location spawn;
-
-    public MatchPlayer(UUID uuid, String name, Location spawn) {
-        this.uuid = uuid;
-        this.name = name;
-    }
-
-    public Player getPlayer() {
-        return Bukkit.getPlayer(uuid);
-    }
+open class MatchPlayer(val uuid: UUID, val name: String, val spawn: Location) {
+    var dead = false
+    var offline = false
+    val player: Player
+        get() = Bukkit.getPlayer(uuid)
 }

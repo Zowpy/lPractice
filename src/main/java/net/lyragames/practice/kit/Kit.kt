@@ -1,8 +1,9 @@
-package net.lyragames.practice.kit;
+package net.lyragames.practice.kit
 
-import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.inventory.ItemStack;
+import lombok.Getter
+import lombok.Setter
+import net.lyragames.practice.kit.data.KitData
+import org.bukkit.inventory.ItemStack
 
 /**
  * This Project is property of Zowpy © 2021
@@ -12,15 +13,11 @@ import org.bukkit.inventory.ItemStack;
  * Created: 12/19/2021
  * Project: Practice
  */
-
-@Getter @Setter
-public class Kit {
-
-    private final String name;
-    private ItemStack displayItem;
-    private ItemStack[] content, armorContent;
-
-    public Kit(String name) {
-        this.name = name;
-    }
+@Getter
+@Setter
+class Kit(val name: String) {
+    val displayItem: ItemStack? = null
+    lateinit var content: Array<ItemStack>
+    lateinit var armorContent: Array<ItemStack>
+    val kitData = KitData()
 }

@@ -1,11 +1,7 @@
-package net.lyragames.practice.match.team;
+package net.lyragames.practice.match.team
 
-import lombok.Data;
-import net.lyragames.practice.match.player.TeamMatchPlayer;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import net.lyragames.practice.match.player.TeamMatchPlayer
+import java.util.*
 
 /**
  * This Project is property of Zowpy © 2021
@@ -16,9 +12,7 @@ import java.util.UUID;
  * Project: Practice
  */
 
-@Data
-public class Team {
-
-    private final UUID uuid = UUID.randomUUID();
-    private final List<TeamMatchPlayer> players = new ArrayList<>();
+class Team {
+    val uuid = UUID.randomUUID()
+    val players: List<TeamMatchPlayer> = ArrayList()
 }

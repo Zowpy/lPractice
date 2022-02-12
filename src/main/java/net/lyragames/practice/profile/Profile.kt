@@ -1,15 +1,9 @@
-package net.lyragames.practice.profile;
+package net.lyragames.practice.profile
 
-import lombok.Getter;
-import lombok.Setter;
-import net.lyragames.practice.kit.EditedKit;
-import net.lyragames.practice.kit.Kit;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import net.lyragames.practice.kit.EditedKit
+import net.lyragames.practice.kit.Kit
+import java.util.*
+import java.util.stream.Collectors
 
 /**
  * This Project is property of Zowpy © 2021
@@ -20,28 +14,24 @@ import java.util.stream.Collectors;
  * Project: Practice
  */
 
-@Getter @Setter
-public class Profile {
+class Profile(val uuid: UUID, val name: String) {
 
-    @Getter private static List<Profile> profiles = new LinkedList<>();
+    val editedKits: List<EditedKit> = ArrayList()
+    val match: UUID? = null
 
-    private final UUID uuid;
-    private final String name;
-
-    private List<EditedKit> editedKits = new ArrayList<>();
-
-    public Profile(UUID uuid, String name) {
-        this.uuid = uuid;
-        this.name = name;
+    fun getEditKitsByKit(kit: Kit): List<EditedKit> {
+        return editedKits.stream().filter { editedKit: EditedKit -> editedKit.originalKit == kit.name }
+            .collect(Collectors.toList())
     }
 
-    public List<EditedKit> getEditKitsByKit(Kit kit) {
-        return editedKits.stream().filter(editedKit -> editedKit.getOriginalKit().equals(kit.getName()))
-                .collect(Collectors.toList());
-    }
+    companion object {
+        @JvmStatic
+        private val profiles: List<Profile?> = LinkedList()
 
-    public static Profile getByUUID(UUID uuid) {
-        return profiles.stream().filter(profile -> profile.getUuid().equals(uuid))
-                .findFirst().orElse(null);
+        @JvmStatic
+        fun getByUUID(uuid: UUID): Profile? {
+            return profiles.stream().filter { profile: Profile? -> profile?.uuid == uuid }
+                .findFirst().orElse(null)
+        }
     }
 }

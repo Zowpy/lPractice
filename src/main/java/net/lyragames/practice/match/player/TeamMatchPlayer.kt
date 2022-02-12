@@ -1,9 +1,8 @@
-package net.lyragames.practice.match.player;
+package net.lyragames.practice.match.player
 
-import lombok.Getter;
-import org.bukkit.Location;
-
-import java.util.UUID;
+import lombok.Getter
+import org.bukkit.Location
+import java.util.*
 
 /**
  * This Project is property of Zowpy © 2021
@@ -13,14 +12,6 @@ import java.util.UUID;
  * Created: 12/19/2021
  * Project: Practice
  */
-
 @Getter
-public class TeamMatchPlayer extends MatchPlayer {
-
-    private final UUID teamUniqueId;
-
-    public TeamMatchPlayer(UUID uuid, String name, Location spawn, UUID teamUniqueId) {
-        super(uuid, name, spawn);
-        this.teamUniqueId = teamUniqueId;
-    }
-}
+class TeamMatchPlayer(uuid: UUID, name: String, spawn: Location, val teamUniqueId: UUID) :
+    MatchPlayer(uuid, name, spawn)
