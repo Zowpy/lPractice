@@ -22,7 +22,7 @@ import java.util.stream.Stream
 
 class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ranked) {
 
-    val teams: MutableList<Team> = mutableListOf()
+    private val teams: MutableList<Team> = mutableListOf()
 
     override fun canHit(player: Player, target: Player): Boolean {
         val teamMatchPlayer = getMatchPlayer(player.uniqueId) as TeamMatchPlayer

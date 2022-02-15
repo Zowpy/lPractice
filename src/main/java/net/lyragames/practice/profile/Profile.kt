@@ -17,7 +17,7 @@ import java.util.stream.Collectors
 class Profile(val uuid: UUID, val name: String) {
 
     val editedKits: List<EditedKit> = ArrayList()
-    val match: UUID? = null
+    var match: UUID? = null
 
     fun getEditKitsByKit(kit: Kit): List<EditedKit> {
         return editedKits.stream().filter { editedKit: EditedKit -> editedKit.originalKit == kit.name }

@@ -4,6 +4,7 @@ import lombok.Data
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import org.jetbrains.annotations.Nullable
 import java.util.*
 
 /**
@@ -20,4 +21,6 @@ open class MatchPlayer(val uuid: UUID, val name: String, val spawn: Location) {
     var offline = false
     val player: Player
         get() = Bukkit.getPlayer(uuid)
+
+    var lastDamager: UUID? = null
 }
