@@ -29,9 +29,9 @@ import java.util.function.Consumer
  * Project: Practice
  */
 
-abstract class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
+open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
-    val uuid = UUID.randomUUID()
+    val uuid: UUID = UUID.randomUUID()
     val party = false
     var matchState = MatchState.STARTING
     val started = System.currentTimeMillis()
@@ -181,7 +181,7 @@ abstract class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
     companion object {
         @JvmStatic
-        private val matches: List<Match?> = LinkedList()
+        val matches: MutableList<Match?> = mutableListOf()
 
         @JvmStatic
         fun getByUUID(uuid: UUID): Match? {

@@ -7,6 +7,7 @@ import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.profile.statistics.KitStatistic
 import net.lyragames.practice.profile.statistics.global.GlobalStatistics
+import net.lyragames.practice.queue.QueuePlayer
 import org.bson.Document
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -26,8 +27,12 @@ class Profile(val uuid: UUID, val name: String) {
     var editedKits: List<EditedKit> = ArrayList()
     var match: UUID? = null
 
+    var queuePlayer: QueuePlayer? = null
+
     var kitStatistics: MutableList<KitStatistic> = mutableListOf()
     var globalStatistic = GlobalStatistics()
+
+    var state = ProfileState.LOBBY
 
     fun getEditKitsByKit(kit: Kit): List<EditedKit> {
         return editedKits.stream().filter { editedKit: EditedKit -> editedKit.originalKit == kit.name }

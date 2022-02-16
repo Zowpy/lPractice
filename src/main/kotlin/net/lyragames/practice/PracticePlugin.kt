@@ -15,8 +15,10 @@ import net.lyragames.practice.command.admin.KitCommand
 import net.lyragames.practice.database.PracticeMongo
 import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.manager.KitManager
+import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
+import net.lyragames.practice.queue.task.QueueTask
 
 class PracticePlugin : LyraPlugin() {
 
@@ -24,8 +26,9 @@ class PracticePlugin : LyraPlugin() {
     lateinit var kitsFile: ConfigFile
     lateinit var arenasFile: ConfigFile
 
-    private lateinit var arenaManager: ArenaManager
+    lateinit var arenaManager: ArenaManager
     private lateinit var kitManager: KitManager
+    lateinit var queueManager: QueueManager
 
     lateinit var practiceMongo: PracticeMongo
 
@@ -46,6 +49,9 @@ class PracticePlugin : LyraPlugin() {
         kitManager = KitManager()
         kitManager.load()
 
+        queueManager = QueueManager()
+        queueManager.load()
+
         blade = Blade.of()
             .containerCreator(BukkitCommandContainer.CREATOR).binding(BukkitBindings()).binding(DefaultBindings())
             .bind(Arena::class.java, ArenaProvider())
@@ -54,6 +60,8 @@ class PracticePlugin : LyraPlugin() {
         blade
             .register(ArenaCommand())
             .register(KitCommand())
+
+        QueueTask()
 
         server.pluginManager.registerEvents(ProfileListener(), this)
         server.pluginManager.registerEvents(MatchListener(), this)

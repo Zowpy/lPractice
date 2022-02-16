@@ -122,4 +122,12 @@ class StandaloneArena(name: String) : Arena(name) {
 
         save()
     }
+
+    override fun isFree(): Boolean {
+        if (free) {
+            return free
+        }
+
+        return duplicates.stream().anyMatch { it.free && it.isSetup }
+    }
 }

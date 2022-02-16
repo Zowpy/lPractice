@@ -19,6 +19,7 @@ open class Arena(val name: String) {
     var l2: Location? = null
     var min: Location? = null
     var max: Location? = null
+    var free = true
 
     var duplicate = false
 
@@ -45,6 +46,10 @@ open class Arena(val name: String) {
         configFile.config.set("arenas.$name", null)
 
         configFile.save()
+    }
+
+    open fun isFree(): Boolean {
+        return free
     }
 
     open fun duplicate(world: org.bukkit.World, times: Int) {}

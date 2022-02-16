@@ -81,4 +81,10 @@ class ArenaManager {
             Arena.arenas.add(arena)
         }
     }
+
+    fun getFreeArena(): Arena? {
+        return Arena.arenas
+            .stream().filter { !it.duplicate && it.isSetup && it.isFree()}
+            .findAny().orElse(null)
+    }
 }
