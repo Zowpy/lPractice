@@ -125,9 +125,51 @@ abstract class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             profile?.match = null
 
             if (winner) {
-                // statistics
+                val globalStatistics = profile!!.globalStatistic
 
-                //profile?.
+                globalStatistics.wins++
+                globalStatistics.streak++
+
+                if (globalStatistics.streak >= globalStatistics.bestStreak) {
+                    globalStatistics.bestStreak = globalStatistics.streak
+                }
+
+                val kitStatistic = profile.getKitStatistic(kit.name)!!
+
+                kitStatistic.wins++
+
+                if (ranked) {
+                    kitStatistic.rankedWins++
+                    kitStatistic.elo =+ 13
+
+                    if (kitStatistic.elo >= kitStatistic.peakELO) {
+                        kitStatistic.peakELO = kitStatistic.elo
+                    }
+                }
+
+                kitStatistic.currentStreak++
+
+                if (kitStatistic.currentStreak >= kitStatistic.bestStreak) {
+                    kitStatistic.bestStreak = kitStatistic.currentStreak
+                }
+
+                profile.save()
+            }else {
+                val globalStatistics = profile!!.globalStatistic
+
+                globalStatistics.losses++
+                globalStatistics.streak = 0
+
+                val kitStatistic = profile.getKitStatistic(kit.name)!!
+
+                kitStatistic.currentStreak = 0
+
+                if (ranked) {
+                    kitStatistic.rankedWins++
+                    kitStatistic.elo =- 13
+                }
+
+                profile.save()
             }
         }
     }
@@ -140,6 +182,8 @@ abstract class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     companion object {
         @JvmStatic
         private val matches: List<Match?> = LinkedList()
+
+        @JvmStatic
         fun getByUUID(uuid: UUID): Match? {
             return matches.stream().filter { match: Match? -> match?.uuid == uuid }
                 .findFirst().orElse(null)

@@ -27,7 +27,7 @@ class MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
         if (profile?.match != null) {
-            val match = Match.getByUUID(profile.match)
+            val match = Match.getByUUID(profile.match!!)
             if (match!!.kit.kitData.build) {
                 match.blocksPlaced.add(event.blockPlaced)
             } else {
@@ -41,7 +41,7 @@ class MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
         if (profile?.match != null) {
-            val match = Match.getByUUID(profile.match)
+            val match = Match.getByUUID(profile.match!!)
             if (match!!.kit.kitData.build && match.blocksPlaced.contains(event.block)) {
                 match.blocksPlaced.remove(event.block)
             } else {
@@ -56,7 +56,7 @@ class MatchListener : Listener {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.match != null) {
-            val match = Match.getByUUID(profile.match)
+            val match = Match.getByUUID(profile.match!!)
             if (match!!.kit.kitData.build) {
                 match.blocksPlaced.add(event.blockClicked)
             }else {
@@ -71,7 +71,7 @@ class MatchListener : Listener {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.match != null) {
-            val match = Match.getByUUID(profile.match)
+            val match = Match.getByUUID(profile.match!!)
 
             if (match!!.kit.kitData.build && match.blocksPlaced.contains(event.blockClicked)) {
                 match.blocksPlaced.remove(event.blockClicked)
@@ -91,10 +91,10 @@ class MatchListener : Listener {
             val profile1 = Profile.getByUUID(damager.uniqueId)
 
             if (profile?.match?.equals(profile1?.match)!!) {
-                val match = Match.getByUUID(profile.match)
+                val match = Match.getByUUID(profile.match!!)
 
                 val matchPlayer = match?.getMatchPlayer(player.uniqueId)
-                val matchPlayer1 = match?.getMatchPlayer(damager.uniqueId)
+                //val matchPlayer1 = match?.getMatchPlayer(damager.uniqueId)
 
                 if (!match?.canHit(player, damager)!!) {
                     event.isCancelled = true
@@ -103,9 +103,9 @@ class MatchListener : Listener {
                 }
 
                 if (event.finalDamage >= player.health) {
-                    // Death
-
-
+                    if (matchPlayer != null) {
+                        match.handleDeath(matchPlayer)
+                    }
                 }
             }
         }else if (event.entity is Player && event.damager == null || event.damager !is Player) {
@@ -113,7 +113,7 @@ class MatchListener : Listener {
             val profile = Profile.getByUUID(player.uniqueId)
 
             if (profile?.match != null) {
-                val match = Match.getByUUID(profile.match)
+                val match = Match.getByUUID(profile.match!!)
 
                 val matchPlayer = match?.getMatchPlayer(player.uniqueId)
                 matchPlayer?.lastDamager = null

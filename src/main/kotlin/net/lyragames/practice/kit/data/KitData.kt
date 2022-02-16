@@ -10,9 +10,9 @@ package net.lyragames.practice.kit.data
  */
 
 class KitData {
-    val combo = false
-    val sumo = false
-    val build = false
-    val hcf = false
-    val ranked = true
+    var combo = false
+    var sumo = false
+    var build = false
+    var hcf = false
+    var ranked = true
 }
