@@ -51,6 +51,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="Maven: net.lyragames:MenuAPI:1.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/MenuAPI.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="Maven: com.github.vaperion:blade:1.3.2">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/libs/blade.jar!/" />

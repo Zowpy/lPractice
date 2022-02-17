@@ -135,6 +135,14 @@
         </dependency>
 
         <dependency>
+            <groupId>net.lyragames</groupId>
+            <artifactId>MenuAPI</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\libs\MenuAPI.jar</systemPath>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.vaperion</groupId>
             <artifactId>blade</artifactId>
             <version>1.3.2</version>

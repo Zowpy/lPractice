@@ -8,8 +8,10 @@ import me.vaperion.blade.command.bindings.impl.DefaultBindings
 import me.vaperion.blade.command.container.impl.BukkitCommandContainer
 import net.lyragames.llib.LyraPlugin
 import net.lyragames.llib.utils.ConfigFile
+import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
+import net.lyragames.practice.command.QueueCommand
 import net.lyragames.practice.command.admin.ArenaCommand
 import net.lyragames.practice.command.admin.KitCommand
 import net.lyragames.practice.database.PracticeMongo
@@ -52,6 +54,8 @@ class PracticePlugin : LyraPlugin() {
         queueManager = QueueManager()
         queueManager.load()
 
+        MenuAPI(this)
+
         blade = Blade.of()
             .containerCreator(BukkitCommandContainer.CREATOR).binding(BukkitBindings()).binding(DefaultBindings())
             .bind(Arena::class.java, ArenaProvider())
@@ -60,6 +64,7 @@ class PracticePlugin : LyraPlugin() {
         blade
             .register(ArenaCommand())
             .register(KitCommand())
+            .register(QueueCommand())
 
         QueueTask()
 

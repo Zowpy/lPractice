@@ -6,6 +6,7 @@ import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Cuboid
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.impl.StandaloneArena
 import org.bukkit.entity.Player
 
 
@@ -28,7 +29,7 @@ class ArenaCommand {
             return
         }
 
-        val arena = Arena(name)
+        val arena = StandaloneArena(name)
         arena.save()
         Arena.arenas.add(arena)
 

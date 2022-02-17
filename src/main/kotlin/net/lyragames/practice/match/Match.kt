@@ -70,7 +70,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             player1.inventory.armorContents = kit.armorContent
             player1.updateInventory()
         }
-        CustomItemStack.getCustomItemStacks().add(customItemStack)
+        customItemStack.create()
+
         player.inventory.setItem(0, customItemStack.itemStack)
         for (editedKit in profile!!.getEditKitsByKit(kit)) {
             val item = CustomItemStack(
@@ -84,7 +85,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 player1.inventory.armorContents = editedKit.armorContent
                 player1.updateInventory()
             }
-            CustomItemStack.getCustomItemStacks().add(item)
+            item.create()
             if (i++ == 9) i++
             player.inventory.setItem(i, item.itemStack)
         }
