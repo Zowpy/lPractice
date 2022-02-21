@@ -54,7 +54,10 @@ object Hotbar {
         customItemStack.clicked
         customItemStack.clicked = consumer
 
-        customItemStack.create()
+        if (!CustomItemStack.getCustomItemStacks().contains(customItemStack)) {
+            customItemStack.create()
+        }
+
         return customItemStack
     }
 }

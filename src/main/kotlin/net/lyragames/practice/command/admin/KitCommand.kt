@@ -5,6 +5,7 @@ import me.vaperion.blade.command.annotation.Permission
 import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.kit.admin.AdminKitEditMenu
 import org.bukkit.entity.Player
 
 
@@ -42,5 +43,11 @@ object KitCommand {
         kit.save()
 
         player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + kit.name + "'s " + CC.YELLOW + "item contents!")
+    }
+
+    @Permission("lpractice.command.kit.edit")
+    @Command(value = ["kit edit"], description = "edit a kit!")
+    fun edit(@Sender player: Player, kit: Kit) {
+        AdminKitEditMenu(kit).openMenu(player)
     }
 }

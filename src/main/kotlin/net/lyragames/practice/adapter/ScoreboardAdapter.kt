@@ -56,6 +56,19 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
 
         }
 
+        if (profile?.state == ProfileState.QUEUE) {
+
+            val queuePlayer = profile.queuePlayer
+
+            if (queuePlayer == null) return mutableListOf()
+
+            return configFile.getStringList("scoreboard.queue").stream()
+                .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                    .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                    .replace("<in_match>", Match.inMatch().toString())
+                    .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - queuePlayer.started))}.collect(Collectors.toList())
+        }
+
         return mutableListOf()
     }
 }
