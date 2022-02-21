@@ -40,7 +40,7 @@ class StandaloneArena(name: String) : Arena(name) {
 
     override fun save() {
         val configFile = PracticePlugin.instance.arenasFile
-        val configSection = configFile.getConfigurationSection("arenas.$name")
+        val configSection = configFile.createSection("arenas.$name")
 
         configSection.set("l1", LocationUtil.serialize(l1))
         configSection.set("l2", LocationUtil.serialize(l2))
@@ -51,7 +51,7 @@ class StandaloneArena(name: String) : Arena(name) {
             var i = 1
 
             for (arena in duplicates) {
-                val configSection1 = configSection.getConfigurationSection("duplicates.$i")
+                val configSection1 = configSection.createSection("duplicates.$i")
 
                 configSection1.set("l1", LocationUtil.serialize(arena.l1))
                 configSection1.set("l2", LocationUtil.serialize(arena.l2))
@@ -124,10 +124,6 @@ class StandaloneArena(name: String) : Arena(name) {
     }
 
     override fun isFree(): Boolean {
-        if (free) {
-            return free
-        }
-
-        return duplicates.stream().anyMatch { it.free && it.isSetup }
+        return free || duplicates.stream().anyMatch { it.free && it.isSetup }
     }
 }

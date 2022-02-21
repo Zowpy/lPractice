@@ -21,6 +21,10 @@ class QueueMenu(val ranked: Boolean): Menu() {
         return if (ranked) "Ranked" else "Unranked"
     }
 
+    override fun isAutoUpdate(): Boolean {
+        return true
+    }
+
     override fun getButtons(player: Player?): MutableMap<Int, Button> {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
 

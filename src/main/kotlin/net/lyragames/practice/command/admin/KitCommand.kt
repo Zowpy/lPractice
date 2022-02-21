@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
  * Project: lPractice
  */
 
-class KitCommand {
+object KitCommand {
 
     @Permission("lpractice.command.kit.create")
     @Command(value = ["kit create"], description = "create a new kit")

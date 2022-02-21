@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom
  * Project: lPractice
  */
 
-class QueueTask: BukkitRunnable() {
+object QueueTask: BukkitRunnable() {
 
     init {
         runTaskTimer(PracticePlugin.instance, 40L, 40L)
@@ -39,6 +39,8 @@ class QueueTask: BukkitRunnable() {
                 var indexed = 0
 
                 for (queuePlayer in queuePlayers) {
+                    if (indexed >= queue.requiredPlayers) continue
+
                     val player = Bukkit.getPlayer(queuePlayer.uuid) ?: continue
 
                     val profile = Profile.getByUUID(queuePlayer.uuid)
@@ -48,22 +50,24 @@ class QueueTask: BukkitRunnable() {
 
                     if (indexed == 0) {
                         if (pos == 1) {
-                            arena.l1?.let { match.addPlayer(player, it) }
+                            match.addPlayer(player, arena.l1!!)
                         }else {
-                            arena.l2?.let { match.addPlayer(player, it) }
+                            match.addPlayer(player, arena.l2!!)
                         }
                     }else {
                         if (pos == 1) {
-                            arena.l2?.let { match.addPlayer(player, it) }
+                            match.addPlayer(player, arena.l2!!)
                         }else {
-                            arena.l1?.let { match.addPlayer(player, it) }
+                            match.addPlayer(player, arena.l1!!)
                         }
                     }
 
                     indexed++
                 }
 
+                queue.queuePlayers.removeAll(queuePlayers)
                 Match.matches.add(match)
+
                 match.start()
             }
         }

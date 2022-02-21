@@ -5,6 +5,7 @@ import com.mongodb.client.model.ReplaceOptions
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.profile.editor.KitEditorData
 import net.lyragames.practice.profile.statistics.KitStatistic
 import net.lyragames.practice.profile.statistics.global.GlobalStatistics
 import net.lyragames.practice.queue.QueuePlayer
@@ -24,7 +25,6 @@ import java.util.stream.Collectors
 
 class Profile(val uuid: UUID, val name: String) {
 
-    var editedKits: List<EditedKit> = ArrayList()
     var match: UUID? = null
 
     var queuePlayer: QueuePlayer? = null
@@ -32,17 +32,13 @@ class Profile(val uuid: UUID, val name: String) {
     var kitStatistics: MutableList<KitStatistic> = mutableListOf()
     var globalStatistic = GlobalStatistics()
 
-    var state = ProfileState.LOBBY
+    var kitEditorData: KitEditorData? = KitEditorData()
 
-    fun getEditKitsByKit(kit: Kit): List<EditedKit> {
-        return editedKits.stream().filter { editedKit: EditedKit -> editedKit.originalKit == kit.name }
-            .collect(Collectors.toList())
-    }
+    var state = ProfileState.LOBBY
 
     private fun toBson() : Document {
         return Document("uuid", uuid.toString())
             .append("name", name)
-            .append("editedKits", editedKits.stream().map { editedKits -> PracticePlugin.GSON.toJson(editedKits) }.collect(Collectors.toList()))
             .append("kitsStatistics", kitStatistics.stream().map { kitStatistic -> PracticePlugin.GSON.toJson(kitStatistic) }.collect(Collectors.toList()))
             .append("globalStatistics", PracticePlugin.GSON.toJson(globalStatistic))
     }
@@ -57,6 +53,10 @@ class Profile(val uuid: UUID, val name: String) {
         val document = PracticePlugin.instance.practiceMongo.profiles.find(Filters.eq("uuid", uuid.toString())).first()
 
         if (document == null) {
+            for (kit in Kit.kits) {
+                val kitStatistic = KitStatistic(kit.name)
+                kitStatistics.add(kitStatistic)
+            }
             save()
             return
         }
@@ -76,7 +76,6 @@ class Profile(val uuid: UUID, val name: String) {
             save = true
         }
 
-        editedKits = document.getList("editedKits", String::class.java).stream().map { s -> PracticePlugin.GSON.fromJson(s, EditedKit::class.java) }.collect(Collectors.toList())
         kitStatistics = document.getList("kitsStatistics", String::class.java).stream().map { s -> PracticePlugin.GSON.fromJson(s, KitStatistic::class.java) }.collect(Collectors.toList())
         globalStatistic = PracticePlugin.GSON.fromJson(document.getString("globalStatistics"), GlobalStatistics::class.java)
 

@@ -2,6 +2,7 @@ package net.lyragames.practice.match.listener
 
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.profile.ProfileState
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -10,7 +11,8 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerBucketFillEvent
-import sun.audio.AudioPlayer.player
+import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerPickupItemEvent
 
 /**
  * This Project is property of Zowpy © 2022
@@ -20,7 +22,7 @@ import sun.audio.AudioPlayer.player
  * Created: 1/27/2022
  * Project: lPractice
  */
-class MatchListener : Listener {
+object MatchListener : Listener {
 
     @EventHandler
     fun onPlace(event: BlockPlaceEvent) {
@@ -81,6 +83,38 @@ class MatchListener : Listener {
         }
     }
 
+    @EventHandler
+    fun onDrop(event: PlayerDropItemEvent) {
+        val player = event.player
+        val profile = Profile.getByUUID(player.uniqueId)
+
+        if (profile?.match != null) {
+            val match = Match.getByUUID(profile.match!!)
+
+            match!!.droppedItems.add(event.itemDrop)
+        }else {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler
+    fun onPickup(event: PlayerPickupItemEvent) {
+        val player = event.player
+        val profile = Profile.getByUUID(player.uniqueId)
+
+        if (profile?.match != null) {
+            val match = Match.getByUUID(profile.match!!)
+
+            if (match!!.droppedItems.contains(event.item)) {
+                match.droppedItems.remove(event.item)
+            }else {
+                event.isCancelled = true
+            }
+        }else {
+            event.isCancelled = true
+        }
+    }
+
     @EventHandler(ignoreCancelled = true)
     fun onHit(event: EntityDamageByEntityEvent) {
         if (event.entity is Player && event.damager is Player) {
@@ -90,7 +124,12 @@ class MatchListener : Listener {
             val profile = Profile.getByUUID(player.uniqueId)
             val profile1 = Profile.getByUUID(damager.uniqueId)
 
-            if (profile?.match?.equals(profile1?.match)!!) {
+            if (profile?.state != ProfileState.MATCH || profile1?.state != ProfileState.MATCH) {
+                event.isCancelled = true
+                return
+            }
+
+            if (profile.match?.equals(profile1.match)!!) {
                 val match = Match.getByUUID(profile.match!!)
 
                 val matchPlayer = match?.getMatchPlayer(player.uniqueId)

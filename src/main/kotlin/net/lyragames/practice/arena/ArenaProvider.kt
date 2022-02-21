@@ -15,7 +15,7 @@ import me.vaperion.blade.command.exception.BladeExitMessage
  * Project: lPractice
  */
 
-class ArenaProvider: BladeProvider<Arena> {
+object ArenaProvider: BladeProvider<Arena> {
 
     override fun provide(p0: BladeContext, p1: BladeParameter, p2: String?): Arena {
         return p2?.let { Arena.getByName(it) } ?: throw BladeExitMessage("That specific arena doesn't exist!")

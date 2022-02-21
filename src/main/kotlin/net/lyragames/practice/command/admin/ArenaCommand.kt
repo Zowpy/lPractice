@@ -19,7 +19,7 @@ import org.bukkit.entity.Player
  * Project: lPractice
  */
 
-class ArenaCommand {
+object ArenaCommand {
 
     @Command(value = ["arena create"], description = "create a new arena")
     @Permission("lpractice.command.arena.create")

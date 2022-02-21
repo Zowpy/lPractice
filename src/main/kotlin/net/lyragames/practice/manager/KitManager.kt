@@ -15,7 +15,7 @@ import org.bukkit.Material
  * Project: lPractice
  */
 
-class KitManager {
+object KitManager {
 
     fun load() {
         val configFile = PracticePlugin.instance.kitsFile

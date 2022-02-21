@@ -1,9 +1,12 @@
 package net.lyragames.practice.profile
 
 import net.lyragames.llib.utils.CC
+import net.lyragames.llib.utils.PlayerUtil
+import net.lyragames.practice.profile.hotbar.Hotbar
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerJoinEvent
 
 
 /**
@@ -15,7 +18,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
  * Project: lPractice
  */
 
-class ProfileListener: Listener {
+object ProfileListener: Listener {
 
     @EventHandler
     fun onAsyncLogin(event: AsyncPlayerPreLoginEvent) {
@@ -28,5 +31,11 @@ class ProfileListener: Listener {
             event.kickMessage = CC.RED + "Failed to load your profile!"
             e.printStackTrace()
         }
+    }
+
+    @EventHandler
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        PlayerUtil.reset(event.player)
+        Hotbar.giveHotbar(Profile.getByUUID(event.player.uniqueId)!!)
     }
 }

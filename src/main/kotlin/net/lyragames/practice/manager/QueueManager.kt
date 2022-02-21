@@ -13,7 +13,7 @@ import net.lyragames.practice.queue.Queue
  * Project: lPractice
  */
 
-class QueueManager {
+object QueueManager {
 
     val queues: MutableList<Queue> = mutableListOf()
 
@@ -27,5 +27,15 @@ class QueueManager {
                 queues.add(queue1)
             }
         }
+    }
+
+    fun inQueue(): Int {
+        var count = 0
+
+        for (queue in queues) {
+            count += queue.queuePlayers.size
+        }
+
+        return count
     }
 }

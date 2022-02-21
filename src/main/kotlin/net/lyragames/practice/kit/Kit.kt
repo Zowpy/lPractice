@@ -23,13 +23,13 @@ class Kit(val name: String) {
 
     fun save() {
         val configFile = PracticePlugin.instance.kitsFile
-        val section = configFile.getConfigurationSection("kits.$name")
+        val section = configFile.createSection("kits.$name")
 
         section.set("material", displayItem.name)
         if (content.isEmpty()) section.set("content", "null") else section.set("content", InventoryUtil.serializeInventory(content))
         if (armorContent.isEmpty()) section.set("armorContent", "null") else section.set("armorContent", InventoryUtil.serializeInventory(armorContent))
 
-        val dataSection = section.getConfigurationSection("kitData")
+        val dataSection = section.createSection("kitData")
         dataSection.set("build", kitData.build)
         dataSection.set("combo", kitData.combo)
         dataSection.set("hcf", kitData.hcf)

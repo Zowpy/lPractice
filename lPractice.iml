@@ -87,5 +87,14 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.lib:jlibnoise:1.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q:jchronic:0.2.4a" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: junit:junit:4.8.1" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: io.github.thatkawaiisam:assemble:1.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/assemble.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

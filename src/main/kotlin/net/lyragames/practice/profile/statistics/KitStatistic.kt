@@ -1,5 +1,7 @@
 package net.lyragames.practice.profile.statistics
 
+import net.lyragames.practice.kit.EditedKit
+
 
 /**
  * This Project is property of Zowpy © 2022
@@ -19,4 +21,30 @@ class KitStatistic constructor(val kit: String) {
     var rankedWins = 0
     var currentStreak = 0
     var bestStreak = 0
+
+    var editedKits: MutableList<EditedKit?> = mutableListOf(null, null, null, null)
+
+    fun replaceKit(index: Int, loadout: EditedKit?) {
+        editedKits[index] = loadout
+    }
+
+    fun deleteKit(loadout: EditedKit?) {
+        for (i in 0..3) {
+            if (editedKits[i] == loadout) {
+                editedKits[i] = null
+                break
+            }
+        }
+    }
+
+    fun getKitCount(): Int {
+        var i = 0
+        for (editKit in editedKits) {
+            if (editKit != null) {
+                i++
+            }
+        }
+        return i
+    }
+
 }

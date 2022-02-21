@@ -16,7 +16,7 @@ import net.lyragames.practice.arena.impl.StandaloneArena
  * Project: lPractice
  */
 
-class ArenaManager {
+object ArenaManager {
 
     fun load() {
         val configFile = PracticePlugin.instance.arenasFile

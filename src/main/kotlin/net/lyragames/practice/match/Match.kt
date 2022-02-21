@@ -10,6 +10,8 @@ import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.profile.hotbar.Hotbar
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -17,6 +19,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemFlag
 import java.util.*
 import java.util.function.Consumer
 
@@ -42,7 +45,12 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     fun start() {
         for (matchPlayer in players) {
             if (matchPlayer.offline) continue
+
             val player = matchPlayer.player
+
+            PlayerUtil.reset(player)
+
+            player.teleport(matchPlayer.spawn)
             generateBooks(player)
             Countdown(
                 PracticePlugin.instance,
@@ -58,9 +66,9 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
     private fun generateBooks(player: Player) {
         val profile: Profile? = Profile.getByUUID(player.uniqueId)
-        var i = 1
+        var i = 0
         val customItemStack = CustomItemStack(
-            player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY)
+            player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY).addFlags(ItemFlag.HIDE_ENCHANTS)
                 .name(CC.RED + "Default").build()
         )
         customItemStack.isRightClick = true
@@ -72,10 +80,11 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
         customItemStack.create()
 
-        player.inventory.setItem(0, customItemStack.itemStack)
-        for (editedKit in profile!!.getEditKitsByKit(kit)) {
+        player.inventory.setItem(8, customItemStack.itemStack)
+        for (editedKit in profile!!.getKitStatistic(kit.name)?.editedKits!!) {
+            if (editedKit == null) continue
             val item = CustomItemStack(
-                player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY)
+                player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY).addFlags(ItemFlag.HIDE_ENCHANTS)
                     .name(CC.RED + editedKit.name).build()
             )
             item.isRightClick = true
@@ -86,8 +95,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 player1.updateInventory()
             }
             item.create()
-            if (i++ == 9) i++
             player.inventory.setItem(i, item.itemStack)
+            if (i++ == 8) i++
         }
     }
 
@@ -124,9 +133,11 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
             PlayerUtil.reset(bukkitPlayer)
             profile?.match = null
+            profile?.state = ProfileState.LOBBY
+            Hotbar.giveHotbar(profile!!)
 
             if (winner) {
-                val globalStatistics = profile!!.globalStatistic
+                val globalStatistics = profile.globalStatistic
 
                 globalStatistics.wins++
                 globalStatistics.streak++
@@ -156,7 +167,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
                 profile.save()
             }else {
-                val globalStatistics = profile!!.globalStatistic
+                val globalStatistics = profile.globalStatistic
 
                 globalStatistics.losses++
                 globalStatistics.streak = 0
@@ -173,10 +184,24 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 profile.save()
             }
         }
+
+
+        matches.remove(this)
+        reset()
+    }
+
+    fun reset() {
+        blocksPlaced.forEach { it.type = Material.AIR }
+        droppedItems.forEach { it.remove() }
     }
 
     fun getMatchPlayer(uuid: UUID): MatchPlayer {
-        return players.stream().filter { matchPlayer -> matchPlayer.uuid == uuid }
+        return players.stream().filter { it.uuid == uuid }
+            .findFirst().orElse(null)
+    }
+
+    fun getOpponent(uuid: UUID): MatchPlayer {
+        return players.stream().filter { it.uuid != uuid }
             .findFirst().orElse(null)
     }
 
@@ -188,6 +213,17 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         fun getByUUID(uuid: UUID): Match? {
             return matches.stream().filter { match: Match? -> match?.uuid == uuid }
                 .findFirst().orElse(null)
+        }
+
+        @JvmStatic
+        fun inMatch(): Int {
+            var count = 0
+
+            for (match in matches) {
+                count += match!!.players.size
+            }
+
+            return count
         }
     }
 }

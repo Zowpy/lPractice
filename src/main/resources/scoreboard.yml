@@ -1,0 +1,21 @@
+scoreboard:
+  enabled: true
+  title: "&bLyra"
+  lobby:
+    - "&7&m-------------------"
+    - "&bOnline: &f<online>"
+    - "&bQueuing: &f<queuing>"
+    - ""
+    - "&bIn Match: &f<in_match>"
+    - ""
+    - "&7&olyra.gg"
+    - "&7&m-------------------"
+  match:
+    - "&7&m-------------------"
+    - "&bOpponent: &f<opponent>"
+    - "&bLadder: &f<kit>"
+    - ""
+    - "&bTime Elapsed: &f<time>"
+    - ""
+    - "&7&olyra.gg"
+    - "&7&m-------------------"

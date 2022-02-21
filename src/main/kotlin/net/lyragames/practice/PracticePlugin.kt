@@ -2,19 +2,26 @@ package net.lyragames.practice
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import io.github.thatkawaiisam.assemble.Assemble
 import me.vaperion.blade.Blade
 import me.vaperion.blade.command.bindings.impl.BukkitBindings
 import me.vaperion.blade.command.bindings.impl.DefaultBindings
 import me.vaperion.blade.command.container.impl.BukkitCommandContainer
 import net.lyragames.llib.LyraPlugin
+import net.lyragames.llib.item.ItemListener
 import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.menu.MenuAPI
+import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
-import net.lyragames.practice.command.QueueCommand
 import net.lyragames.practice.command.admin.ArenaCommand
 import net.lyragames.practice.command.admin.KitCommand
 import net.lyragames.practice.database.PracticeMongo
+import net.lyragames.practice.kit.EditedKit
+import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.kit.KitProvider
+import net.lyragames.practice.kit.editor.listener.KitEditorListener
+import net.lyragames.practice.kit.serializer.EditKitSerializer
 import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.manager.KitManager
 import net.lyragames.practice.manager.QueueManager
@@ -27,6 +34,7 @@ class PracticePlugin : LyraPlugin() {
     private lateinit var settingsFile: ConfigFile
     lateinit var kitsFile: ConfigFile
     lateinit var arenasFile: ConfigFile
+    lateinit var scoreboardFile: ConfigFile
 
     lateinit var arenaManager: ArenaManager
     private lateinit var kitManager: KitManager
@@ -42,34 +50,40 @@ class PracticePlugin : LyraPlugin() {
         settingsFile = ConfigFile(this, "settings")
         kitsFile = ConfigFile(this, "kits")
         arenasFile = ConfigFile(this, "arenas")
+        scoreboardFile = ConfigFile(this, "scoreboard")
 
         practiceMongo = PracticeMongo(settingsFile.getString("mongodb.uri"))
 
-        arenaManager = ArenaManager()
+        arenaManager = ArenaManager
         arenaManager.load()
 
-        kitManager = KitManager()
+        kitManager = KitManager
         kitManager.load()
 
-        queueManager = QueueManager()
+        queueManager = QueueManager
         queueManager.load()
 
         MenuAPI(this)
 
         blade = Blade.of()
             .containerCreator(BukkitCommandContainer.CREATOR).binding(BukkitBindings()).binding(DefaultBindings())
-            .bind(Arena::class.java, ArenaProvider())
+            .bind(Arena::class.java, ArenaProvider).bind(Kit::class.java, KitProvider)
             .build()
 
         blade
-            .register(ArenaCommand())
-            .register(KitCommand())
-            .register(QueueCommand())
+            .register(ArenaCommand)
+            .register(KitCommand)
 
-        QueueTask()
+        QueueTask
 
-        server.pluginManager.registerEvents(ProfileListener(), this)
-        server.pluginManager.registerEvents(MatchListener(), this)
+        if (scoreboardFile.getBoolean("scoreboard.enabled")) {
+            Assemble(this, ScoreboardAdapter(scoreboardFile))
+        }
+
+        server.pluginManager.registerEvents(ProfileListener, this)
+        server.pluginManager.registerEvents(MatchListener, this)
+        server.pluginManager.registerEvents(KitEditorListener, this)
+        server.pluginManager.registerEvents(ItemListener(), this)
     }
 
     companion object {
@@ -81,6 +95,7 @@ class PracticePlugin : LyraPlugin() {
             .setPrettyPrinting()
             .disableHtmlEscaping()
             .serializeNulls()
+            .registerTypeHierarchyAdapter(EditedKit::class.java, EditKitSerializer)
             .create()
     }
 }

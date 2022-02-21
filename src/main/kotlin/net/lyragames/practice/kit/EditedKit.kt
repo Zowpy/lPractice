@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack
  * Project: Practice
  */
 
-class EditedKit(val name: String) {
-    val originalKit: String? = null
-    lateinit var content: Array<ItemStack>
-    lateinit var armorContent: Array<ItemStack>
+class EditedKit(var name: String) {
+    var originalKit: String? = null
+    var content: Array<ItemStack>? = null
+    var armorContent: Array<ItemStack>? = null
 }
