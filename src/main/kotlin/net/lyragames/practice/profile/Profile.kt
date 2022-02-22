@@ -3,8 +3,8 @@ package net.lyragames.practice.profile
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
 import net.lyragames.practice.PracticePlugin
-import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.party.invitation.PartyInvitation
 import net.lyragames.practice.profile.editor.KitEditorData
 import net.lyragames.practice.profile.statistics.KitStatistic
 import net.lyragames.practice.profile.statistics.global.GlobalStatistics
@@ -31,6 +31,10 @@ class Profile(val uuid: UUID, val name: String) {
 
     var kitStatistics: MutableList<KitStatistic> = mutableListOf()
     var globalStatistic = GlobalStatistics()
+
+    var party: UUID? = null
+
+    val partyInvites: MutableList<PartyInvitation> = mutableListOf()
 
     var kitEditorData: KitEditorData? = KitEditorData()
 
@@ -62,6 +66,11 @@ class Profile(val uuid: UUID, val name: String) {
         }
 
         load(document)
+    }
+
+    fun getPartyInvite(uuid: UUID): PartyInvitation {
+        return partyInvites.stream().filter { it.uuid == uuid }
+            .findFirst().orElse(null)
     }
 
     fun getKitStatistic(name: String): KitStatistic? {
