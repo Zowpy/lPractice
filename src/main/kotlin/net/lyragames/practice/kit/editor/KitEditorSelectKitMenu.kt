@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 class KitEditorSelectKitMenu: Menu() {
 
     override fun getTitle(player: Player?): String {
-        return "&6&lSelect a kit"
+        return "&eSelect a kit"
     }
 
     override fun getButtons(player: Player?): Map<Int, Button> {
@@ -40,7 +40,7 @@ class KitEditorSelectKitMenu: Menu() {
 
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(kit.displayItem)
-                .name("&a&l" + kit.name)
+                .name("&e" + kit.name)
                 .build()
         }
 

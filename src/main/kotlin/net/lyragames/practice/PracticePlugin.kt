@@ -7,6 +7,7 @@ import me.vaperion.blade.Blade
 import me.vaperion.blade.command.bindings.impl.BukkitBindings
 import me.vaperion.blade.command.bindings.impl.DefaultBindings
 import me.vaperion.blade.command.container.impl.BukkitCommandContainer
+import mkremins.fanciful.FancyMessage
 import net.lyragames.llib.LyraPlugin
 import net.lyragames.llib.item.ItemListener
 import net.lyragames.llib.utils.ConfigFile
@@ -14,6 +15,7 @@ import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
+import net.lyragames.practice.command.PartyCommand
 import net.lyragames.practice.command.admin.ArenaCommand
 import net.lyragames.practice.command.admin.KitCommand
 import net.lyragames.practice.database.PracticeMongo
@@ -73,6 +75,7 @@ class PracticePlugin : LyraPlugin() {
         blade
             .register(ArenaCommand)
             .register(KitCommand)
+            .register(PartyCommand)
 
         QueueTask
 

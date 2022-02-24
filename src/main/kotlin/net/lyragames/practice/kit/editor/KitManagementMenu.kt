@@ -34,7 +34,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
     }
 
     override fun getTitle(player: Player?): String {
-        return "&6Viewing " + kit.name + " kits"
+        return "&eViewing " + kit.name + " kits"
     }
 
     override fun getButtons(player: Player): Map<Int, Button> {
@@ -66,13 +66,13 @@ class KitManagementMenu(val kit: Kit): Menu() {
     private class DeleteKitButton(private val kit: Kit?, private val kitLoadout: EditedKit) : Button() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.STAINED_CLAY)
-                .name("&c&lDelete")
+                .name("&cDelete")
                 .durability(14)
                 .lore(
                     listOf(
                         "&cClick to delete this kit.",
                         "&cYou will &lNOT &cbe able to",
-                        "&crecover this kitLoadout."
+                        "&crecover this KitLoadout."
                     )
                 )
                 .build()
@@ -117,7 +117,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
     private class RenameKitButton(private val kit: Kit, private val kitLoadout: EditedKit) : Button() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.SIGN)
-                .name("&e&lRename")
+                .name("&eRename")
                 .lore(CC.translate("&eClick to rename this kit."))
                 .build()
         }
@@ -138,7 +138,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
 
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.BOOK)
-                .name("&a&lLoad/Edit")
+                .name("&aLoad/Edit")
                 .lore(CC.translate("&eClick to edit this kit."))
                 .build()
         }
@@ -170,7 +170,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
     private class KitDisplayButton(private val kitLoadout: EditedKit) : Button() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.BOOK)
-                .name("&a&l" + kitLoadout.name)
+                .name("&a" + kitLoadout.name)
                 .build()
         }
     }

@@ -133,12 +133,16 @@ object MatchListener : Listener {
                 val match = Match.getByUUID(profile.match!!)
 
                 val matchPlayer = match?.getMatchPlayer(player.uniqueId)
-                //val matchPlayer1 = match?.getMatchPlayer(damager.uniqueId)
+                val matchPlayer1 = match?.getMatchPlayer(damager.uniqueId)
 
                 if (!match?.canHit(player, damager)!!) {
                     event.isCancelled = true
                 }else {
                     matchPlayer?.lastDamager = damager.uniqueId
+                    matchPlayer!!.hits++
+                    matchPlayer.combo++
+
+                    matchPlayer1?.combo = 0
                 }
 
                 if (event.finalDamage >= player.health) {

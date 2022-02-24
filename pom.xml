@@ -192,5 +192,10 @@
             <scope>system</scope>
             <systemPath>${project.basedir}\libs\assemble.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>7.9.1.1</version>
+        </dependency>
     </dependencies>
 </project>

@@ -23,4 +23,7 @@ open class MatchPlayer(val uuid: UUID, val name: String, val spawn: Location) {
         get() = Bukkit.getPlayer(uuid)
 
     var lastDamager: UUID? = null
+
+    var hits = 0
+    var combo = 0
 }

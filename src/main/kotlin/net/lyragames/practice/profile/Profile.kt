@@ -10,6 +10,8 @@ import net.lyragames.practice.profile.statistics.KitStatistic
 import net.lyragames.practice.profile.statistics.global.GlobalStatistics
 import net.lyragames.practice.queue.QueuePlayer
 import org.bson.Document
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.stream.Collectors
@@ -40,6 +42,9 @@ class Profile(val uuid: UUID, val name: String) {
 
     var state = ProfileState.LOBBY
 
+    val player: Player
+        get() = Bukkit.getPlayer(uuid)
+
     private fun toBson() : Document {
         return Document("uuid", uuid.toString())
             .append("name", name)
@@ -68,8 +73,8 @@ class Profile(val uuid: UUID, val name: String) {
         load(document)
     }
 
-    fun getPartyInvite(uuid: UUID): PartyInvitation {
-        return partyInvites.stream().filter { it.uuid == uuid }
+    fun getPartyInvite(uuid: UUID): PartyInvitation? {
+        return partyInvites.stream().filter { it.uuid == uuid && !it.isExpired() }
             .findFirst().orElse(null)
     }
 

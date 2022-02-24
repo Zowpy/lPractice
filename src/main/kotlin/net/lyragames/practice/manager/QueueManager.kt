@@ -2,6 +2,7 @@ package net.lyragames.practice.manager
 
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.queue.Queue
+import java.util.*
 
 
 /**
@@ -27,6 +28,12 @@ object QueueManager {
                 queues.add(queue1)
             }
         }
+    }
+
+    fun getQueue(uuid: UUID): Queue? {
+        return queues.stream().filter { queue ->
+            queue.queuePlayers.stream().anyMatch { it.uuid == uuid }
+        }.findFirst().orElse(null)
     }
 
     fun inQueue(): Int {

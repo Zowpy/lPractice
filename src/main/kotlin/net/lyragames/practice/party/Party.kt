@@ -1,5 +1,7 @@
 package net.lyragames.practice.party
 
+import net.lyragames.llib.utils.CC
+import org.bukkit.Bukkit
 import java.util.*
 
 
@@ -12,11 +14,16 @@ import java.util.*
  * Project: lPractice
  */
 
-class Party {
+class Party(val leader: UUID) {
     
     val uuid: UUID = UUID.randomUUID()
-    var leader: UUID? = null
 
+    var partyType = PartyType.PRIVATE
     val players: MutableList<UUID> = mutableListOf()
+    val banned: MutableList<UUID> = mutableListOf()
 
+    fun sendMessage(message: String) {
+        players.stream().map { Bukkit.getPlayer(it) }
+            .forEach { it.sendMessage(CC.translate(message)) }
+    }
 }

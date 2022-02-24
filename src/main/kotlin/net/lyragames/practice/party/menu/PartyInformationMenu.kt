@@ -1,0 +1,101 @@
+package net.lyragames.practice.party.menu
+
+import com.google.common.base.Joiner
+import net.lyragames.llib.utils.CC
+import net.lyragames.menu.Button
+import net.lyragames.menu.ItemBuilder
+import net.lyragames.menu.Menu
+import net.lyragames.practice.party.Party
+import net.lyragames.practice.party.PartyType
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.inventory.ItemStack
+import java.util.stream.Collectors
+
+/**
+ * This Project is property of Zowpy © 2022
+ * Redistribution of this Project is not allowed
+ *
+ * @author Zowpy
+ * Created: 2/24/2022
+ * Project: lPractice
+ */
+
+class PartyInformationMenu(private val party: Party): Menu() {
+
+    override fun getTitle(player: Player): String {
+        return "Party Information"
+    }
+
+    override fun getSize(): Int {
+        return 27
+    }
+
+    override fun isUpdateAfterClick(): Boolean {
+        return true
+    }
+
+    override fun getButtons(player: Player): MutableMap<Int, Button> {
+        val toReturn: MutableMap<Int, Button> = mutableMapOf()
+
+        toReturn[10] = object : Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.NETHER_STAR).name("&eParty Leader")
+                    .lore(listOf(
+                        "&eLeader: &a${Bukkit.getPlayer(party.leader).name}"
+                    )).build()
+            }
+        }
+
+        toReturn[13] = object : Button() {
+
+            override fun getButtonItem(player: Player?): ItemStack {
+                return ItemBuilder(Material.HOPPER).name("&ePrivacy")
+                    .lore(listOf(
+                        if (party.partyType == PartyType.PRIVATE) "&a⚫ &ePrivate" else "&7⚫ &ePrivate",
+                        if (party.partyType == PartyType.PRIVATE) "&7⚫ &ePublic" else "&a⚫ &ePublic"
+                    ))
+                    .build()
+            }
+
+            override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                if (party.leader != player.uniqueId) {
+                    player.sendMessage("${CC.RED}You can't change the party's privacy mode!")
+                    return
+                }
+
+                if (party.partyType == PartyType.PRIVATE) {
+                    party.partyType = PartyType.PUBLIC
+                }else {
+                    party.partyType = PartyType.PRIVATE
+                }
+
+                player.sendMessage("${CC.GREEN}Successfully changed privacy mode!")
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
+        toReturn[16] = object : Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.BOOK).name("&ePlayers")
+                    .lore(listOf(
+                        "&ePlayers in party: &6${Joiner.on("&7, &6").join(party.players.stream()
+                            .map { Bukkit.getPlayer(it).name }.collect(Collectors.toList()))}"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                PartyPlayersMenu(party).openMenu(player)
+            }
+        }
+
+        return toReturn
+    }
+}

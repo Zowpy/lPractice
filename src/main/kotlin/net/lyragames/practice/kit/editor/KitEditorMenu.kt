@@ -41,7 +41,7 @@ class KitEditorMenu(private val index: Int): Menu() {
 
     override fun getTitle(player: Player): String {
         val profile = Profile.getByUUID(player.uniqueId)
-        return "&6&lEditing: &a" + profile?.kitEditorData?.kit?.name
+        return "&eEditing: &a" + profile?.kitEditorData?.kit?.name
     }
 
     override fun getButtons(player: Player): Map<Int, Button> {
@@ -113,7 +113,7 @@ class KitEditorMenu(private val index: Int): Menu() {
         override fun getButtonItem(player: Player): ItemStack {
             val profile = Profile.getByUUID(player.uniqueId)
             return ItemBuilder(Material.NAME_TAG)
-                .name("&6&lEditing: &a${profile?.kitEditorData!!.kit!!.name}")
+                .name("&eEditing: &a${profile?.kitEditorData!!.kit!!.name}")
                 .build()
         }
     }
@@ -122,7 +122,7 @@ class KitEditorMenu(private val index: Int): Menu() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.STAINED_CLAY)
                 .durability(7)
-                .name("&e&lClear Inventory")
+                .name("&eClear Inventory")
                 .lore(
                     listOf(
                         "&eThis will clear your inventory",
@@ -148,11 +148,11 @@ class KitEditorMenu(private val index: Int): Menu() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.STAINED_CLAY)
                 .durability(7)
-                .name(CC.YELLOW + CC.BOLD + "Load default kit")
+                .name("&eLoad default kit")
                 .lore(
                     listOf(
-                        CC.YELLOW + "Click this to load the default kit",
-                        CC.YELLOW + "into the kit editing menu."
+                        "&eClick this to load the default kit",
+                        "&einto the kit editing menu."
                     )
                 )
                 .build()
@@ -175,7 +175,7 @@ class KitEditorMenu(private val index: Int): Menu() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.STAINED_CLAY)
                 .durability(5)
-                .name("&a&lSave")
+                .name("&aSave")
                 .lore(CC.translate("&eClick this to save your kit."))
                 .build()
         }
@@ -196,7 +196,7 @@ class KitEditorMenu(private val index: Int): Menu() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.STAINED_CLAY)
                 .durability(14)
-                .name("&c&lCancel")
+                .name("&cCancel")
                 .lore(
                     listOf(
                         "&eClick this to abort editing your kit,",

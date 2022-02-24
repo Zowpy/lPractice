@@ -6,6 +6,7 @@ import net.lyragames.menu.Button
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.queue.Queue
 import net.lyragames.practice.queue.QueuePlayer
 import org.bukkit.entity.Player
@@ -55,6 +56,7 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
             queue.queuePlayers.add(queuePlayer)
 
             player.sendMessage("${CC.YELLOW}You have been added to the queue!")
+            Hotbar.giveHotbar(profile!!)
             player.closeInventory()
         }
     }
