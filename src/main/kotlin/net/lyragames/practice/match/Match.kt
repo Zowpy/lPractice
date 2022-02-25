@@ -1,5 +1,6 @@
 package net.lyragames.practice.match
 
+import mkremins.fanciful.FancyMessage
 import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Countdown
@@ -9,6 +10,7 @@ import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.player.MatchPlayer
+import net.lyragames.practice.match.snapshot.MatchSnapshot
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
@@ -22,6 +24,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemFlag
 import java.util.*
 import java.util.function.Consumer
+
 
 /**
  * This Project is property of Zowpy © 2021
@@ -41,6 +44,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val players: MutableList<MatchPlayer> = mutableListOf()
     val blocksPlaced: MutableList<Block> = mutableListOf()
     val droppedItems: MutableList<Item> = mutableListOf()
+    val snapshots: MutableList<MatchSnapshot> = mutableListOf()
 
     fun start() {
         for (matchPlayer in players) {
@@ -121,7 +125,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c" + player.name + " &ehas been killed by &c" + matchPlayer.name + "&e!")
+            sendMessage("&c" + player.name + " &ehas been killed by &c" + matchPlayer?.name + "&e!")
         }
 
         for (matchPlayer in players) {
@@ -131,9 +135,19 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             val bukkitPlayer = matchPlayer.player
             val profile = Profile.getByUUID(matchPlayer.uuid)
 
+            val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
+            snapshot.potionsThrown = matchPlayer.potionsThrown
+            snapshot.potionsMissed = matchPlayer.potionsMissed
+            snapshot.longestCombo = matchPlayer.longestCombo
+            snapshot.totalHits = matchPlayer.hits
+            snapshot.opponent = getOpponent(bukkitPlayer.uniqueId)?.uuid
+
+            snapshots.add(snapshot)
+
             PlayerUtil.reset(bukkitPlayer)
             profile?.match = null
             profile?.state = ProfileState.LOBBY
+
             Hotbar.giveHotbar(profile!!)
 
             if (winner) {
@@ -185,9 +199,35 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             }
         }
 
+        for (snapshot in snapshots) {
+            snapshot.createdAt = System.currentTimeMillis()
+            snapshot.uuid?.let { MatchSnapshot.snapshots.put(it, snapshot) }
+        }
+
+        getOpponent(player.uuid)?.let { endMessage(it, player) }
 
         matches.remove(this)
         reset()
+    }
+
+    fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
+        val fancyMessage = FancyMessage()
+            .text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------\n")
+            .then()
+            .text("${CC.GREEN}Winner: ")
+            .then()
+            .text("${winner.name} \n")
+            .command("/matchsnapshot ${winner.uuid.toString()}")
+            .then()
+            .text("${CC.RED}Loser: ")
+            .then()
+            .text("${loser.name} \n")
+            .command("/matchsnapshot ${loser.uuid.toString()}")
+            .then()
+            .text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+
+        players.stream().filter { !it.offline }
+            .forEach { fancyMessage.send(it.player) }
     }
 
     fun reset() {
@@ -195,12 +235,12 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         droppedItems.forEach { it.remove() }
     }
 
-    fun getMatchPlayer(uuid: UUID): MatchPlayer {
+    fun getMatchPlayer(uuid: UUID): MatchPlayer? {
         return players.stream().filter { it.uuid == uuid }
             .findFirst().orElse(null)
     }
 
-    fun getOpponent(uuid: UUID): MatchPlayer {
+    fun getOpponent(uuid: UUID): MatchPlayer? {
         return players.stream().filter { it.uuid != uuid }
             .findFirst().orElse(null)
     }

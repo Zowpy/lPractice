@@ -50,7 +50,7 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
                 .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
                     .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
                     .replace("<in_match>", Match.inMatch().toString())
-                    .replace("<opponent>", match.getOpponent(player.uniqueId).name)
+                    .replace("<opponent>", match.getOpponent(player.uniqueId)?.name!!)
                     .replace("<kit>", match.kit.name)
                     .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - match.started)) }.collect(Collectors.toList())
 

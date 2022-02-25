@@ -7,7 +7,6 @@ import me.vaperion.blade.Blade
 import me.vaperion.blade.command.bindings.impl.BukkitBindings
 import me.vaperion.blade.command.bindings.impl.DefaultBindings
 import me.vaperion.blade.command.container.impl.BukkitCommandContainer
-import mkremins.fanciful.FancyMessage
 import net.lyragames.llib.LyraPlugin
 import net.lyragames.llib.item.ItemListener
 import net.lyragames.llib.utils.ConfigFile
@@ -15,6 +14,7 @@ import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
+import net.lyragames.practice.command.MatchSnapshotCommand
 import net.lyragames.practice.command.PartyCommand
 import net.lyragames.practice.command.admin.ArenaCommand
 import net.lyragames.practice.command.admin.KitCommand
@@ -30,6 +30,7 @@ import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
+import net.lyragames.practice.task.MatchSnapshotExpireTask
 
 class PracticePlugin : LyraPlugin() {
 
@@ -76,8 +77,10 @@ class PracticePlugin : LyraPlugin() {
             .register(ArenaCommand)
             .register(KitCommand)
             .register(PartyCommand)
+            .register(MatchSnapshotCommand)
 
         QueueTask
+        MatchSnapshotExpireTask
 
         if (scoreboardFile.getBoolean("scoreboard.enabled")) {
             Assemble(this, ScoreboardAdapter(scoreboardFile))

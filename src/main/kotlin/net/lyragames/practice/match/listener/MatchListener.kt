@@ -1,18 +1,25 @@
 package net.lyragames.practice.match.listener
 
 import net.lyragames.practice.match.Match
+import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.entity.ThrownPotion
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.PotionSplashEvent
+import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerBucketFillEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerPickupItemEvent
+
 
 /**
  * This Project is property of Zowpy © 2022
@@ -24,7 +31,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent
  */
 object MatchListener : Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onPlace(event: BlockPlaceEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
@@ -38,7 +45,7 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onBreak(event: BlockBreakEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
@@ -52,7 +59,7 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onLiquidPlace(event: PlayerBucketEmptyEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
@@ -67,7 +74,7 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onLiquidFill(event: PlayerBucketFillEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
@@ -83,7 +90,7 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onDrop(event: PlayerDropItemEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
@@ -97,7 +104,7 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onPickup(event: PlayerPickupItemEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
@@ -139,10 +146,10 @@ object MatchListener : Listener {
                     event.isCancelled = true
                 }else {
                     matchPlayer?.lastDamager = damager.uniqueId
-                    matchPlayer!!.hits++
-                    matchPlayer.combo++
+                    matchPlayer1!!.hits++
+                    matchPlayer1.combo++
 
-                    matchPlayer1?.combo = 0
+                    matchPlayer?.combo = 0
                 }
 
                 if (event.finalDamage >= player.health) {
@@ -164,6 +171,51 @@ object MatchListener : Listener {
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
                         match.handleDeath(matchPlayer)
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onProjectileLaunchEvent(event: ProjectileLaunchEvent) {
+        if (event.entity.shooter is Player) {
+            val shooter = event.entity.shooter as Player
+            val profile = Profile.getByUUID(shooter.uniqueId)
+
+            if (profile?.state == ProfileState.MATCH) {
+                val match = Match.getByUUID(profile.match!!)
+
+                if (match?.matchState == MatchState.STARTING) {
+                    event.isCancelled = true
+                } else if (match?.matchState == MatchState.FIGHTING) {
+                    if (event.entity is ThrownPotion) {
+                        match.getMatchPlayer(shooter.uniqueId)!!.potionsThrown++
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPotionSplashEvent(event: PotionSplashEvent) {
+        if (event.potion.shooter is Player) {
+            val shooter = event.potion.shooter as Player
+            val shooterData = Profile.getByUUID(shooter.uniqueId)
+
+            if (shooterData?.state == ProfileState.MATCH &&
+                Match.getByUUID(shooterData.match!!)?.matchState == MatchState.FIGHTING
+            ) {
+                val match = Match.getByUUID(shooterData.match!!)
+
+                if (event.getIntensity(shooter) <= 0.5) {
+                    match?.getMatchPlayer(shooter.uniqueId)!!.potionsMissed++
+                }
+                for (entity in event.affectedEntities) {
+                    if (entity is Player) {
+                        if (match?.getMatchPlayer(entity.uniqueId) == null) {
+                            event.setIntensity(entity as LivingEntity, 0.0)
+                        }
                     }
                 }
             }
