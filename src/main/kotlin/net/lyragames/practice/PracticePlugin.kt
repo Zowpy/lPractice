@@ -20,7 +20,8 @@ import net.lyragames.practice.command.PartyCommand
 import net.lyragames.practice.command.admin.ArenaCommand
 import net.lyragames.practice.command.admin.KitCommand
 import net.lyragames.practice.command.admin.SetSpawnCommand
-import net.lyragames.practice.database.PracticeMongo
+import net.lyragames.practice.database.Mongo
+import net.lyragames.practice.database.MongoCredentials
 import net.lyragames.practice.entity.EntityHider
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
@@ -34,6 +35,11 @@ import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
 import net.lyragames.practice.task.MatchSnapshotExpireTask
+import org.bukkit.ChatColor
+import org.bukkit.entity.ExperienceOrb
+import org.bukkit.entity.Item
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 
 
 class PracticePlugin : LyraPlugin() {
@@ -48,7 +54,7 @@ class PracticePlugin : LyraPlugin() {
     private lateinit var kitManager: KitManager
     lateinit var queueManager: QueueManager
 
-    lateinit var practiceMongo: PracticeMongo
+    lateinit var mongo: Mongo
 
     private lateinit var blade: Blade
 
@@ -61,8 +67,7 @@ class PracticePlugin : LyraPlugin() {
         scoreboardFile = ConfigFile(this, "scoreboard")
         ffaFile = ConfigFile(this, "ffa")
 
-        practiceMongo = PracticeMongo(settingsFile.getString("mongodb.uri"))
-
+        loadMongo()
         arenaManager = ArenaManager
         arenaManager.load()
 
@@ -101,6 +106,35 @@ class PracticePlugin : LyraPlugin() {
         server.pluginManager.registerEvents(MatchListener, this)
         server.pluginManager.registerEvents(KitEditorListener, this)
         server.pluginManager.registerEvents(ItemListener(), this)
+        cleanupWorld()
+    }
+
+    private fun loadMongo() {
+        val builder = MongoCredentials.Builder()
+            .host(settingsFile.getString("mongodb.host"))
+            .port(settingsFile.getInt("mongodb.port"))
+
+            if (settingsFile.getBoolean("mongodb.Auth.enabled")) {
+                builder.username(settingsFile.getString("mongodb.Auth.username"))
+                builder.password(settingsFile.getString("mongodb.Auth.password"))
+            }
+        mongo = Mongo(settingsFile.getString("mongodb.dbName"))
+        mongo.load(builder.build())
+    }
+
+    private fun cleanupWorld() {
+        server.worlds[0].time = 4000
+
+        for( entity in server.worlds[0].entities) {
+            if (entity is Player) {
+                continue;
+            }
+            if (entity is LivingEntity || entity is Item || entity is ExperienceOrb) {
+                entity.remove()
+            }
+        }
+        server.consoleSender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&b[LPractice] Cleaning world task has completed"))
+
     }
 
     companion object {
