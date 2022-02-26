@@ -70,7 +70,7 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
     private class SwitchInventoryButton(private val opponent: UUID) : Button() {
 
         override fun getButtonItem(player: Player): ItemStack {
-            val snapshot = MatchSnapshot.snapshots[opponent]
+            val snapshot = MatchSnapshot.getByUuid(opponent)
             return if (snapshot != null) {
                 ItemBuilder(Material.LEVER)
                     .name("&6Opponent's Inventory")
@@ -82,7 +82,7 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
         }
 
         override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
-            val snapshot = MatchSnapshot.snapshots[opponent]
+            val snapshot = MatchSnapshot.getByUuid(opponent)
 
             if (snapshot != null) {
                 player?.chat("/matchsnapshot ${snapshot.uuid.toString()}")

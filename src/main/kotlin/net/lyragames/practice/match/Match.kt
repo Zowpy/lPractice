@@ -1,14 +1,14 @@
 package net.lyragames.practice.match
 
 import mkremins.fanciful.FancyMessage
-import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Countdown
-import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
 import net.lyragames.practice.profile.Profile
@@ -17,13 +17,10 @@ import net.lyragames.practice.profile.hotbar.Hotbar
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.ItemFlag
 import java.util.*
-import java.util.function.Consumer
+import java.util.stream.Collectors
 
 
 /**
@@ -47,15 +44,18 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val snapshots: MutableList<MatchSnapshot> = mutableListOf()
 
     fun start() {
+
         for (matchPlayer in players) {
             if (matchPlayer.offline) continue
 
             val player = matchPlayer.player
+            val profile = Profile.getByUUID(player.uniqueId)
 
             PlayerUtil.reset(player)
 
             player.teleport(matchPlayer.spawn)
-            generateBooks(player)
+            profile?.getKitStatistic(kit.name)?.generateBooks(player)
+
             Countdown(
                 PracticePlugin.instance,
                 player,
@@ -68,49 +68,27 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
     }
 
-    private fun generateBooks(player: Player) {
-        val profile: Profile? = Profile.getByUUID(player.uniqueId)
-        var i = 0
-        val customItemStack = CustomItemStack(
-            player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY).addFlags(ItemFlag.HIDE_ENCHANTS)
-                .name(CC.RED + "Default").build()
-        )
-        customItemStack.isRightClick = true
-        customItemStack.clicked = Consumer { event: PlayerInteractEvent ->
-            val player1 = event.player
-            player1.inventory.contents = kit.content
-            player1.inventory.armorContents = kit.armorContent
-            player1.updateInventory()
-        }
-        customItemStack.create()
-
-        player.inventory.setItem(8, customItemStack.itemStack)
-        for (editedKit in profile!!.getKitStatistic(kit.name)?.editedKits!!) {
-            if (editedKit == null) continue
-            val item = CustomItemStack(
-                player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY).addFlags(ItemFlag.HIDE_ENCHANTS)
-                    .name(CC.RED + editedKit.name).build()
-            )
-            item.isRightClick = true
-            item.clicked = Consumer { event: PlayerInteractEvent ->
-                val player1 = event.player
-                player1.inventory.contents = editedKit.content
-                player1.inventory.armorContents = editedKit.armorContent
-                player1.updateInventory()
-            }
-            item.create()
-            player.inventory.setItem(i, item.itemStack)
-            if (i++ == 8) i++
+    open fun getMatchType(): MatchType {
+        return if (this is TeamMatch) {
+            MatchType.TEAM
+        }else {
+            MatchType.NORMAL
         }
     }
 
-    open fun canHit(player: Player, target: Player) :Boolean {
+    open fun canHit(player: Player, target: Player): Boolean {
         return true
     }
 
     open fun addPlayer(player: Player, location: Location) {
         val matchPlayer = MatchPlayer(player.uniqueId, player.name, location)
         players.add(matchPlayer)
+
+        players.stream().map { it.player }
+            .forEach {
+                player.showPlayer(it)
+                it.showPlayer(player)
+            }
     }
 
     fun sendMessage(message: String) {
@@ -148,7 +126,17 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             profile?.match = null
             profile?.state = ProfileState.LOBBY
 
+            if (Constants.SPAWN != null) {
+                bukkitPlayer.teleport(Constants.SPAWN)
+            }
+
             Hotbar.giveHotbar(profile!!)
+
+            players.stream().map { it.player }
+                .forEach {
+                    bukkitPlayer.hidePlayer(it)
+                    it.hidePlayer(bukkitPlayer)
+                }
 
             if (winner) {
                 val globalStatistics = profile.globalStatistic
@@ -201,7 +189,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         for (snapshot in snapshots) {
             snapshot.createdAt = System.currentTimeMillis()
-            snapshot.uuid?.let { MatchSnapshot.snapshots.put(it, snapshot) }
+            MatchSnapshot.snapshots.add(snapshot)
         }
 
         getOpponent(player.uuid)?.let { endMessage(it, player) }
@@ -210,7 +198,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         reset()
     }
 
-    fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
+    open fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
         val fancyMessage = FancyMessage()
             .text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------\n")
             .then()
@@ -243,6 +231,15 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     fun getOpponent(uuid: UUID): MatchPlayer? {
         return players.stream().filter { it.uuid != uuid }
             .findFirst().orElse(null)
+    }
+
+    open fun getOpponentString(uuid: UUID): String? {
+        return getOpponent(uuid)?.name
+    }
+
+    fun getAlivePlayers(): MutableList<MatchPlayer> {
+        return players.stream().filter { !it.dead && !it.offline }
+            .collect(Collectors.toList())
     }
 
     companion object {

@@ -11,11 +11,6 @@ object MatchSnapshotExpireTask: BukkitRunnable() {
     }
 
     override fun run() {
-        for (matchSnapshot in MatchSnapshot.snapshots.values) {
-            if (matchSnapshot.isExpired()) {
-                MatchSnapshot.snapshots.remove(matchSnapshot.uuid, matchSnapshot)
-                continue
-            }
-        }
+        MatchSnapshot.snapshots.removeIf { it.isExpired() }
     }
 }

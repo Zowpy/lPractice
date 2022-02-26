@@ -36,6 +36,7 @@ class Kit(val name: String) {
         dataSection.set("ranked", kitData.ranked)
         dataSection.set("sumo", kitData.sumo)
         dataSection.set("boxing", kitData.boxing)
+        dataSection.set("ffa", kitData.ffa)
 
         configFile.save()
     }

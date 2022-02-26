@@ -6,6 +6,8 @@ import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.match.Match
+import net.lyragames.practice.match.MatchType
+import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Bukkit
@@ -46,11 +48,21 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
 
             if (match == null) return mutableListOf()
 
+            if (match.getMatchType() == MatchType.TEAM) {
+                return configFile.getStringList("scoreboard.match").stream()
+                    .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                        .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                        .replace("<in_match>", Match.inMatch().toString())
+                        .replace("<opponent>", (match as TeamMatch).getOpponentString(player.uniqueId)!!)
+                        .replace("<kit>", (match as TeamMatch).kit.name)
+                        .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - match.started)) }.collect(Collectors.toList())
+            }
+
             return configFile.getStringList("scoreboard.match").stream()
                 .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
                     .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
                     .replace("<in_match>", Match.inMatch().toString())
-                    .replace("<opponent>", match.getOpponent(player.uniqueId)?.name!!)
+                    .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
                     .replace("<kit>", match.kit.name)
                     .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - match.started)) }.collect(Collectors.toList())
 

@@ -83,7 +83,7 @@ object KitEditorListener: Listener {
                 }
             }
             val profile = Profile.getByUUID(player.uniqueId)
-            if (profile?.state != ProfileState.MATCH && player.gameMode == GameMode.SURVIVAL) {
+            if (profile?.state != ProfileState.MATCH && profile?.state != ProfileState.FFA && player.gameMode == GameMode.SURVIVAL) {
                 val clicked = event.clickedInventory
                 if (profile?.kitEditorData?.active!!) {
                     if (clicked == player.openInventory.topInventory) {

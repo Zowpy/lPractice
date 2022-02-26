@@ -3,6 +3,7 @@ package net.lyragames.practice.profile
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.profile.hotbar.Hotbar
+import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
@@ -37,5 +38,10 @@ object ProfileListener: Listener {
     fun onPlayerJoin(event: PlayerJoinEvent) {
         PlayerUtil.reset(event.player)
         Hotbar.giveHotbar(Profile.getByUUID(event.player.uniqueId)!!)
+
+        for (player in Bukkit.getOnlinePlayers()) {
+            event.player.hidePlayer(player)
+            player.hidePlayer(event.player)
+        }
     }
 }

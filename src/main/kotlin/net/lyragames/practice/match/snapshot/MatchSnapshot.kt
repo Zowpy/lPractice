@@ -73,21 +73,18 @@ class MatchSnapshot(player: Player, dead: Boolean) {
 
     companion object {
         @JvmStatic
-        val snapshots: MutableMap<UUID, MatchSnapshot> = mutableMapOf()
+        val snapshots: MutableList<MatchSnapshot> = mutableListOf()
 
         @JvmStatic
         fun getByUuid(uuid: UUID?): MatchSnapshot? {
-            return snapshots[uuid]
+            return snapshots.stream().filter { it.uuid == uuid }
+                .findFirst().orElse(null)
         }
 
         @JvmStatic
         fun getByName(name: String?): MatchSnapshot? {
-            for (snapshot in snapshots.values) {
-                if (snapshot.username.equals(name, true)) {
-                    return snapshot
-                }
-            }
-            return null
+            return snapshots.stream().filter { it.username.equals(name, true) }
+                .findFirst().orElse(null)
         }
     }
 }

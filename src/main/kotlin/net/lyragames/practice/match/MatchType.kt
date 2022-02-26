@@ -1,4 +1,4 @@
-package net.lyragames.practice.profile
+package net.lyragames.practice.match
 
 
 /**
@@ -6,11 +6,11 @@ package net.lyragames.practice.profile
  * Redistribution of this Project is not allowed
  *
  * @author Zowpy
- * Created: 2/16/2022
+ * Created: 2/26/2022
  * Project: lPractice
  */
 
-enum class ProfileState {
+enum class MatchType {
 
-    LOBBY, QUEUE, MATCH, FFA, SPECTATING
+    NORMAL, TEAM
 }

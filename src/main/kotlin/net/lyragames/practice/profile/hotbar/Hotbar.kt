@@ -7,7 +7,10 @@ import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.practice.kit.editor.KitEditorSelectKitMenu
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.manager.QueueManager
+import net.lyragames.practice.match.ffa.menu.FFAChoosingMenu
 import net.lyragames.practice.party.menu.PartyInformationMenu
+import net.lyragames.practice.party.menu.ffa.PartyFFAKitSelect
+import net.lyragames.practice.party.menu.ffa.PartySplitKitSelect
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.queue.menu.QueueMenu
@@ -44,6 +47,15 @@ object Hotbar {
                     ItemBuilder(Material.NETHER_STAR).name("&eParty Information").build()
                 ) { PartyManager.getByUUID(profile.party!!)?.let { it1 -> PartyInformationMenu(it1).openMenu(player) } }.itemStack)
 
+                player.inventory.setItem(4, createCustomItem(
+                    player,
+                    ItemBuilder(Material.GOLD_AXE).name("&eFFA").addFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE).setUnbreakable(true).build()
+                ) { PartyManager.getByUUID(profile.party!!)?.let { it1 -> PartyFFAKitSelect(it1).openMenu(player) } }.itemStack)
+                player.inventory.setItem(5, createCustomItem(
+                    player,
+                    ItemBuilder(Material.DIAMOND_SWORD).name("&eParty Split").addFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE).setUnbreakable(true).build()
+                ) { PartyManager.getByUUID(profile.party!!)?.let { it1 -> PartySplitKitSelect(it1).openMenu(player) } }.itemStack)
+
                 player.inventory.setItem(8, createCustomItem(
                     player,
                     ItemBuilder(XMaterial.RED_DYE.parseItem()).name("&cLeave Party").build(), true
@@ -62,6 +74,11 @@ object Hotbar {
                 player,
                 ItemBuilder(Material.DIAMOND_SWORD).name("&eRanked").addFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE).setUnbreakable(true).build()
             ) { QueueMenu(true).openMenu(player) }.itemStack)
+
+            player.inventory.setItem(2, createCustomItem(
+                player,
+                ItemBuilder(Material.GOLD_SWORD).name("&eFFA").addFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES).setUnbreakable(true).build(),
+            ) { FFAChoosingMenu().openMenu(player) }.itemStack)
 
             player.inventory.setItem(4, createCustomItem(
                 player,

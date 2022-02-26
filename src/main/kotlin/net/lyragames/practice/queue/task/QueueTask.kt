@@ -1,5 +1,6 @@
 package net.lyragames.practice.queue.task
 
+import net.lyragames.llib.utils.CC
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
@@ -33,7 +34,13 @@ object QueueTask: BukkitRunnable() {
                 val queuePlayers = queue.queuePlayers.subList(0, queue.requiredPlayers)
 
                 val arena = PracticePlugin.instance.arenaManager.getFreeArena()
-                val match = arena?.let { Match(queue.kit, it, queue.ranked) } ?: continue
+
+                if (arena == null) {
+                    queuePlayers.stream().map { Bukkit.getPlayer(it.uuid) }.forEach { it.sendMessage("${CC.RED}There is no free arenas!") }
+                    continue
+                }
+
+                val match = Match(queue.kit, arena, queue.ranked)
 
                 val pos = ThreadLocalRandom.current().nextInt(2)
                 var indexed = 0

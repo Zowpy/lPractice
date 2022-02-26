@@ -28,6 +28,7 @@ import java.util.stream.Collectors
 class Profile(val uuid: UUID, val name: String) {
 
     var match: UUID? = null
+    var ffa: UUID? = null
 
     var queuePlayer: QueuePlayer? = null
 

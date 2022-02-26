@@ -97,5 +97,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Maven: com.github.cryptomorin:XSeries:7.9.1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.comphenix.protocol:ProtocolLib:4.7.0" level="project" />
+    <orderEntry type="library" name="Maven: net.bytebuddy:byte-buddy:1.11.0" level="project" />
   </component>
 </module>

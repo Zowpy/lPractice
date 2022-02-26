@@ -1,6 +1,7 @@
 package net.lyragames.practice.match.team
 
 import net.lyragames.practice.match.player.TeamMatchPlayer
+import org.bukkit.Location
 import java.util.*
 
 /**
@@ -14,5 +15,7 @@ import java.util.*
 
 class Team {
     val uuid = UUID.randomUUID()
-    val players: List<TeamMatchPlayer> = ArrayList()
+    val players: MutableList<TeamMatchPlayer> = mutableListOf()
+
+    var spawn: Location? = null
 }

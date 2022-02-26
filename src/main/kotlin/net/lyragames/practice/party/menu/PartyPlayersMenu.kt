@@ -50,7 +50,7 @@ class PartyPlayersMenu(private val party: Party): PaginatedMenu() {
                                 "&e&o(( left click to kick player ))",
                                 "&e&o(( right click to ban player ))"
                             ))
-                            .toSkullBuilder()
+                            .skullBuilder()
                             .setOwner(it.name)
                             .buildSkull()
                     }
