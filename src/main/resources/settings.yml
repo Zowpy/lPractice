@@ -2,7 +2,7 @@
 # lPractice made by LyraGames
 #
 
-MONGO:
+MONGODB:
   URI-MODE: false
   NORMAL:
     HOST: "127.0.0.1"
@@ -15,7 +15,6 @@ MONGO:
       AUTH-DATABASE: "admin"
   URI:
     CONNECTION-STRING: ""
-    DATABASE-NAME: ""
 
 
 spawn: ""

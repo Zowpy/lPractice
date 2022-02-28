@@ -52,6 +52,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.build = !kit.kitData.build
+                kit.save()
             }
 
             override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
@@ -73,6 +74,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.hcf = !kit.kitData.hcf
+                kit.save()
             }
 
             override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
@@ -94,6 +96,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.combo = !kit.kitData.combo
+                kit.save()
             }
 
             override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
@@ -114,6 +117,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.ranked = !kit.kitData.ranked
+                kit.save()
 
                 if (kit.kitData.ranked) {
                     val queue = Queue(kit, true)
@@ -141,6 +145,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.sumo = !kit.kitData.sumo
+                kit.save()
             }
 
             override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
@@ -161,6 +166,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.boxing = !kit.kitData.boxing
+                kit.save()
             }
 
             override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {

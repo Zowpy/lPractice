@@ -60,6 +60,22 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
                         .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - match.started)) }.collect(Collectors.toList())
             }
 
+            if (match.kit.kitData.boxing) {
+
+                val matchPlayer = match.getMatchPlayer(player.uniqueId)
+
+                return configFile.getStringList("scoreboard.boxing").stream()
+                    .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                        .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                        .replace("<in_match>", Match.inMatch().toString())
+                        .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
+                        .replace("<kit>", match.kit.name)
+                        .replace("<hits>", matchPlayer?.hits.toString())
+                        .replace("<opponent-hits>", match.getOpponent(player.uniqueId)?.hits.toString())
+                        .replace("<combo>", if (matchPlayer?.combo == 0 && matchPlayer.comboed == 0) "" else if (matchPlayer?.combo == 0) "${CC.RED}(-${matchPlayer.comboed})" else "${CC.GREEN}(+${matchPlayer?.combo})")
+                        .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - match.started)) }.collect(Collectors.toList())
+            }
+
             return configFile.getStringList("scoreboard.match").stream()
                 .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
                     .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))

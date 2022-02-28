@@ -28,6 +28,8 @@ open class MatchPlayer(val uuid: UUID, val name: String, val spawn: Location) {
     var combo = 0
     var longestCombo = 0
 
+    var comboed = 0
+
     var potionsThrown = 0
     var potionsMissed = 0
 }

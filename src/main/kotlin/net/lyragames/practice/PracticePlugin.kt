@@ -56,7 +56,7 @@ class PracticePlugin : LyraPlugin() {
     private lateinit var kitManager: KitManager
     lateinit var queueManager: QueueManager
 
-    lateinit var mongo: Mongo
+    lateinit var practiceMongo: Mongo
 
     private lateinit var blade: Blade
 
@@ -114,15 +114,15 @@ class PracticePlugin : LyraPlugin() {
 
     private fun loadMongo() {
         val builder = MongoCredentials.Builder()
-            .host(settingsFile.getString("mongodb.host"))
-            .port(settingsFile.getInt("mongodb.port"))
+            .host(settingsFile.getString("MONGODB.NORMAL.HOST"))
+            .port(settingsFile.getInt("MONGODB.NORMAL.PORT"))
 
-            if (settingsFile.getBoolean("mongodb.Auth.enabled")) {
-                builder.username(settingsFile.getString("mongodb.Auth.username"))
-                builder.password(settingsFile.getString("mongodb.Auth.password"))
+            if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED")) {
+                builder.username(settingsFile.getString("MONGODB.NORMAL.AUTH.USERNAME"))
+                builder.password(settingsFile.getString("MONGODB.NORMAL.AUTH.PASSWORD"))
             }
-        mongo = Mongo(settingsFile.getString("mongodb.dbName"))
-        mongo.load(builder.build())
+        practiceMongo = Mongo(settingsFile.getString("MONGODB.NORMAL.AUTH.AUTH-DATABASE"))
+        practiceMongo.load(builder.build())
     }
 
     private fun cleanupWorld() {

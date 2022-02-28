@@ -110,7 +110,7 @@ class StandaloneArena(name: String) : Arena(name) {
             copy.sourceMask = ExistingBlockMask(clipboard)
             val operation: Operation = ClipboardHolder(clipboard, worldData)
                 .createPaste(destination, worldData)
-                .ignoreAirBlocks(false).fast
+                .ignoreAirBlocks(false)
                 .to(to)
                 .build()
             try {

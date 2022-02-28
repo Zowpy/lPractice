@@ -4,9 +4,9 @@ import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
-import net.lyragames.practice.match.MatchType
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.ThrownPotion
@@ -231,8 +231,23 @@ object MatchListener : Listener {
                     event.isCancelled = true
                 }else {
                     matchPlayer?.lastDamager = damager.uniqueId
+                    matchPlayer!!.comboed++
+
                     matchPlayer1!!.hits++
                     matchPlayer1.combo++
+                    matchPlayer1.comboed = 0
+
+                    if (matchPlayer1.combo > matchPlayer1.longestCombo) {
+                        matchPlayer1.longestCombo = matchPlayer1.combo
+                    }
+
+                    if (match.kit.kitData.boxing) {
+                        event.damage = 0.0
+
+                        if (matchPlayer1.hits >= 100) {
+                            match.handleDeath(matchPlayer)
+                        }
+                    }
 
                     matchPlayer?.combo = 0
                 }
@@ -364,5 +379,24 @@ object MatchListener : Listener {
         }
 
         Profile.profiles.remove(profile)
+    }
+
+    @EventHandler
+    fun onMove(event: PlayerMoveEvent) {
+        val player = event.player
+
+        val profile = Profile.getByUUID(player.uniqueId)
+
+        if (profile?.match != null) {
+
+            val match = Match.getByUUID(profile.match!!)
+
+            if (match?.kit?.kitData?.sumo!!) {
+                if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
+                    match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
+                }
+            }
+
+        }
     }
 }
