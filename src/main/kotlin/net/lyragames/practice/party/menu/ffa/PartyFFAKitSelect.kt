@@ -43,28 +43,36 @@ class PartyFFAKitSelect(private val party: Party): Menu() {
                 }
 
                 override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
-                    val arena = PracticePlugin.instance.arenaManager.getFreeArena()
+                    if (clickType?.isLeftClick!!) {
 
-                    if (arena == null) {
-                        player.sendMessage("${CC.RED}There is no free arenas!")
-                        return
+                        if (party.players.size < 2) {
+                            player.sendMessage("${CC.RED}You need at least 2 players to start a FFA match!")
+                            return
+                        }
+
+                        val arena = PracticePlugin.instance.arenaManager.getFreeArena()
+
+                        if (arena == null) {
+                            player.sendMessage("${CC.RED}There is no free arenas!")
+                            return
+                        }
+
+                        val match = PartyFFAMatch(kit, arena)
+
+                        for (uuid in party.players) {
+                            val partyPlayer = Bukkit.getPlayer(uuid) ?: continue
+                            val profile = Profile.getByUUID(uuid)
+
+                            profile?.match = match.uuid
+                            profile?.state = ProfileState.MATCH
+                            match.addPlayer(partyPlayer, arena.l1!!)
+                        }
+
+                        Match.matches.add(match)
+
+                        player.closeInventory()
+                        match.start()
                     }
-
-                    val match = PartyFFAMatch(kit, arena)
-
-                    for (uuid in party.players) {
-                        val partyPlayer = Bukkit.getPlayer(uuid) ?: continue
-                        val profile = Profile.getByUUID(uuid)
-
-                        profile?.match = match.uuid
-                        profile?.state = ProfileState.MATCH
-                        match.addPlayer(partyPlayer, arena.l1!!)
-                    }
-
-                    Match.matches.add(match)
-
-                    player.closeInventory()
-                    match.start()
                 }
             }
         }

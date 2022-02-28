@@ -3,6 +3,7 @@ package net.lyragames.practice.profile
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
 import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.duel.DuelRequest
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.party.invitation.PartyInvitation
 import net.lyragames.practice.profile.editor.KitEditorData
@@ -38,6 +39,7 @@ class Profile(val uuid: UUID, val name: String) {
     var party: UUID? = null
 
     val partyInvites: MutableList<PartyInvitation> = mutableListOf()
+    val duelRequests: MutableList<DuelRequest> = mutableListOf()
 
     var kitEditorData: KitEditorData? = KitEditorData()
 
@@ -76,6 +78,11 @@ class Profile(val uuid: UUID, val name: String) {
 
     fun getPartyInvite(uuid: UUID): PartyInvitation? {
         return partyInvites.stream().filter { it.uuid == uuid && !it.isExpired() }
+            .findFirst().orElse(null)
+    }
+
+    fun getDuelRequest(uuid: UUID): DuelRequest? {
+        return duelRequests.stream().filter { it.uuid == uuid && !it.isExpired() }
             .findFirst().orElse(null)
     }
 

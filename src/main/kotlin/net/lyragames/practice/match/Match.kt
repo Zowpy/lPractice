@@ -92,18 +92,20 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     fun sendMessage(message: String) {
-        players.stream().map { matchPlayer -> matchPlayer.player }.forEach{ player -> player.sendMessage(CC.translate(message)) }
+        players.stream().map { it.player }.forEach{ player -> if (player != null) player.sendMessage(CC.translate(message)) }
     }
 
     open fun handleDeath(player: MatchPlayer) {
         player.dead = true
 
-        if (player.lastDamager == null) {
-            sendMessage("&c" + player.name + " &ehas died from natural causes!")
-        }else {
+        if (player.offline) {
+            sendMessage("&c${player.name} &ehas disconnected!")
+        } else if (player.lastDamager == null && !player.offline) {
+            sendMessage("&c${player.name} &ehas died from natural causes!")
+        } else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c" + player.name + " &ehas been killed by &c" + matchPlayer?.name + "&e!")
+            sendMessage("&c${player.name} &ehas been killed by &c" + matchPlayer?.name + "&e!")
         }
 
         for (matchPlayer in players) {
@@ -196,6 +198,12 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         matches.remove(this)
         reset()
+    }
+
+    fun handleQuit(matchPlayer: MatchPlayer) {
+        matchPlayer.offline = true
+
+        handleDeath(matchPlayer)
     }
 
     open fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {

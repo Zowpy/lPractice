@@ -1,8 +1,10 @@
 package net.lyragames.practice.match.listener
 
 import net.lyragames.practice.manager.FFAManager
+import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
+import net.lyragames.practice.match.MatchType
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.entity.LivingEntity
@@ -15,10 +17,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
-import org.bukkit.event.player.PlayerBucketEmptyEvent
-import org.bukkit.event.player.PlayerBucketFillEvent
-import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerPickupItemEvent
+import org.bukkit.event.player.*
 
 
 /**
@@ -323,5 +322,47 @@ object MatchListener : Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    fun onQuit(event: PlayerQuitEvent) {
+        val player = event.player
+        val profile = Profile.getByUUID(player.uniqueId)
+
+        if (profile?.state == ProfileState.FFA) {
+
+            if (profile.ffa != null) {
+                val ffa = FFAManager.getByUUID(profile.ffa!!)
+
+                ffa?.players?.removeIf { it.uuid == player.uniqueId }
+                profile.state = ProfileState.LOBBY
+                profile.ffa = null
+            }
+        }
+
+        if (profile?.state == ProfileState.QUEUE) {
+
+            if (profile.queuePlayer != null) {
+
+                val queue = QueueManager.getQueue(player.uniqueId)
+                queue?.queuePlayers?.remove(profile.queuePlayer)
+
+                profile.state = ProfileState.LOBBY
+                profile.queuePlayer = null
+            }
+
+        }
+
+        if (profile?.state == ProfileState.MATCH) {
+
+            if (profile.match != null) {
+
+                val match = Match.getByUUID(profile.match!!)
+
+                match?.handleQuit(match.getMatchPlayer(player.uniqueId)!!)
+            }
+        }
+
+        Profile.profiles.remove(profile)
     }
 }

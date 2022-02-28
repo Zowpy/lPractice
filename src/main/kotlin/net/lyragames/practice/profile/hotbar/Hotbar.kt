@@ -10,7 +10,7 @@ import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.ffa.menu.FFAChoosingMenu
 import net.lyragames.practice.party.menu.PartyInformationMenu
 import net.lyragames.practice.party.menu.ffa.PartyFFAKitSelect
-import net.lyragames.practice.party.menu.ffa.PartySplitKitSelect
+import net.lyragames.practice.party.menu.split.PartySplitKitSelect
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.queue.menu.QueueMenu

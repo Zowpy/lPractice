@@ -14,6 +14,7 @@ import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
+import net.lyragames.practice.command.DuelCommand
 import net.lyragames.practice.command.LeaveCommand
 import net.lyragames.practice.command.MatchSnapshotCommand
 import net.lyragames.practice.command.PartyCommand
@@ -89,6 +90,7 @@ class PracticePlugin : LyraPlugin() {
             .register(MatchSnapshotCommand)
             .register(LeaveCommand)
             .register(SetSpawnCommand)
+            .register(DuelCommand)
 
         QueueTask
         MatchSnapshotExpireTask
