@@ -2,13 +2,20 @@
 # lPractice made by LyraGames
 #
 
-mongodb:
-  host: ""
-  port: 27017
-  dbName: ""
-  Auth:
-    enabled: false
-    username: "admin"
-    password: ""
+MONGO:
+  URI-MODE: false
+  NORMAL:
+    HOST: "127.0.0.1"
+    PORT: 27017
+    DATABASE: "lpractice"
+    AUTH:
+      ENABLED: false
+      USERNAME: "user"
+      PASSWORD: "pass"
+      AUTH-DATABASE: "admin"
+  URI:
+    CONNECTION-STRING: ""
+    DATABASE-NAME: ""
+
 
 spawn: ""

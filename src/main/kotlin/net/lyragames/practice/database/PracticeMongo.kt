@@ -22,6 +22,7 @@ class PracticeMongo(uri: String) {
     private var mongoDatabase: MongoDatabase
     var profiles: MongoCollection<Document>
 
+
     init {
         mongoClient = MongoClient(MongoClientURI(uri))
         mongoDatabase = mongoClient.getDatabase("lpractice")
