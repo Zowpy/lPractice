@@ -9,6 +9,7 @@ import me.vaperion.blade.command.bindings.impl.DefaultBindings
 import me.vaperion.blade.command.container.impl.BukkitCommandContainer
 import net.lyragames.llib.LyraPlugin
 import net.lyragames.llib.item.ItemListener
+import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
@@ -135,7 +136,7 @@ class PracticePlugin : LyraPlugin() {
                 entity.remove()
             }
         }
-        server.consoleSender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&b[LPractice] Cleaning world task has completed"))
+        server.consoleSender.sendMessage(CC.translate("&b[LPractice] Cleaning world task has completed"))
 
     }
 
