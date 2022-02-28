@@ -3,6 +3,12 @@
 #
 
 mongodb:
-  uri: ""
+  host: ""
+  port: 27017
+  dbName: ""
+  Auth:
+    enabled: false
+    username: "admin"
+    password: ""
 
 spawn: ""

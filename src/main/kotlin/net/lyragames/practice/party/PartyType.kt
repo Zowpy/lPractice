@@ -12,5 +12,5 @@ package net.lyragames.practice.party
 
 enum class PartyType {
 
-    PUBLIC, PRIVATE
+    PUBLIC, PRIVATE, PASSWORD
 }

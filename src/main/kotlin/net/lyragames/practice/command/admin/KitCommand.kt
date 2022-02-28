@@ -6,6 +6,7 @@ import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.admin.AdminKitEditMenu
+import org.bukkit.GameMode
 import org.bukkit.entity.Player
 
 
@@ -38,6 +39,9 @@ object KitCommand {
     @Permission("lpractice.command.kit.content")
     @Command(value = ["kit content"], description = "set a kit's items")
     fun content(@Sender player: Player, kit: Kit) {
+
+        if (player.gameMode != GameMode.SURVIVAL) player.sendMessage(CC.RED + "You must be in surival mode to set inventory contents")
+
         kit.content = player.inventory.contents
         kit.armorContent = player.inventory.armorContents
         kit.save()
