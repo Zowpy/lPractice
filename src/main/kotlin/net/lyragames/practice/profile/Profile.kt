@@ -10,6 +10,7 @@ import net.lyragames.practice.profile.editor.KitEditorData
 import net.lyragames.practice.profile.statistics.KitStatistic
 import net.lyragames.practice.profile.statistics.global.GlobalStatistics
 import net.lyragames.practice.queue.QueuePlayer
+import net.lyragames.practice.winstreak.Winstreak
 import org.bson.Document
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -35,6 +36,7 @@ class Profile(val uuid: UUID, val name: String) {
 
     var kitStatistics: MutableList<KitStatistic> = mutableListOf()
     var globalStatistic = GlobalStatistics()
+    var winstreak: Winstreak? = null
 
     var party: UUID? = null
 

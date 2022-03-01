@@ -7,6 +7,7 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Cuboid
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.StandaloneArena
+import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
 
@@ -87,5 +88,18 @@ object ArenaCommand {
         if (arena.min != null) {
             arena.bounds = Cuboid(arena.min, arena.max)
         }
+    }
+
+
+    @Command(value = ["arena deadzone", "arena yval"], description = "set an arena's lowest Y location (Used for sumo, bridges, bedfight, pearlfight, etc")
+    @Permission("lpractice.command.arena.setup")
+    fun deadzone(@Sender player: Player, arena: Arena) {
+
+
+        arena.deadzone = player.location.y
+        arena.save()
+
+        player.sendMessage("${CC.YELLOW}Successfully set${CC.GOLD}" + arena.name + "${CC.YELLOW}'s deadzone location!")
+
     }
 }

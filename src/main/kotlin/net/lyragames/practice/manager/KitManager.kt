@@ -3,7 +3,6 @@ package net.lyragames.practice.manager
 import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
-import net.lyragames.practice.match.ffa.FFA
 import org.bukkit.Material
 
 
@@ -43,12 +42,6 @@ object KitManager {
             kit.kitData.ranked = section.getBoolean("kitData.ranked")
             kit.kitData.sumo = section.getBoolean("kitData.sumo")
             kit.kitData.boxing = section.getBoolean("kitData.boxing")
-            kit.kitData.ffa = section.getBoolean("kitData.ffa")
-
-            if (kit.kitData.ffa) {
-                val ffa = FFA(kit)
-                FFAManager.ffaMatches.add(ffa)
-            }
 
             Kit.kits.add(kit)
         }
