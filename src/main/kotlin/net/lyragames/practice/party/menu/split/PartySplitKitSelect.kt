@@ -46,7 +46,7 @@ class PartySplitKitSelect(private val party: Party): Menu() {
                     if (clickType?.isLeftClick!!) {
 
                         if (party.players.size < 2) {
-                            player.sendMessage("${CC.RED}You need at least 2 players to start a FFA match!")
+                            player.sendMessage("${CC.RED}You need at least 2 players to start a Split match!")
                             return
                         }
 

@@ -19,6 +19,13 @@ object DuelCommand {
             return
         }
 
+        val profile = Profile.getByUUID(target.uniqueId)
+
+        if (profile?.state != ProfileState.LOBBY) {
+            player.sendMessage("${CC.RED}That player is currently busy!")
+            return
+        }
+
         val duelProcedure = DuelProcedure(player.uniqueId, target.uniqueId)
         DuelProcedure.duelProcedures.add(duelProcedure)
 

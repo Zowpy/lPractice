@@ -92,7 +92,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     fun sendMessage(message: String) {
-        players.stream().map { it.player }.forEach{ player -> if (player != null) player.sendMessage(CC.translate(message)) }
+        players.stream().map { it.player }.forEach{ player -> player?.sendMessage(CC.translate(message)) }
     }
 
     open fun handleDeath(player: MatchPlayer) {
@@ -213,12 +213,12 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             .text("${CC.GREEN}Winner: ")
             .then()
             .text("${winner.name} \n")
-            .command("/matchsnapshot ${winner.uuid.toString()}")
+            .command("/matchsnapshot ${winner.uuid}")
             .then()
             .text("${CC.RED}Loser: ")
             .then()
             .text("${loser.name} \n")
-            .command("/matchsnapshot ${loser.uuid.toString()}")
+            .command("/matchsnapshot ${loser.uuid}")
             .then()
             .text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
 

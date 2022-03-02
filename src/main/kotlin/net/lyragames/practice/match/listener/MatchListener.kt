@@ -6,6 +6,7 @@ import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -35,8 +36,10 @@ object MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
+        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
+            if (player.gameMode != GameMode.CREATIVE) {
+                event.isCancelled = true
+            }
             return
         }
 
@@ -61,8 +64,10 @@ object MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
+        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
+            if (player.gameMode != GameMode.CREATIVE) {
+                event.isCancelled = true
+            }
             return
         }
 

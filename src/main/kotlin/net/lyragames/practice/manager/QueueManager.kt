@@ -36,6 +36,11 @@ object QueueManager {
         }.findFirst().orElse(null)
     }
 
+    fun getByKit(kit: Kit): Queue? {
+        return queues.stream().filter { it.kit.name.equals(kit.name, false) }
+            .findFirst().orElse(null)
+    }
+
     fun inQueue(): Int {
         var count = 0
 

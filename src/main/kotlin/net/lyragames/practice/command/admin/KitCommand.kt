@@ -33,14 +33,17 @@ object KitCommand {
         kit.save()
         Kit.kits.add(kit)
 
-        player.sendMessage(CC.YELLOW + "Successfully created" + CC.GOLD + "'$name'!")
+        player.sendMessage(CC.YELLOW + "Successfully created ${CC.GOLD}${kit.name}!")
     }
 
     @Permission("lpractice.command.kit.content")
     @Command(value = ["kit content"], description = "set a kit's items")
     fun content(@Sender player: Player, kit: Kit) {
 
-        if (player.gameMode != GameMode.SURVIVAL) player.sendMessage(CC.RED + "You must be in surival mode to set inventory contents")
+        if (player.gameMode != GameMode.SURVIVAL) {
+            player.sendMessage("${CC.RED}You must be in survival mode to set inventory contents!")
+            return
+        }
 
         kit.content = player.inventory.contents
         kit.armorContent = player.inventory.armorContents

@@ -64,6 +64,8 @@ class DuelSelectKitMenu: Menu() {
 
                         if (player.hasPermission("lpractice.duel.arena")) {
                             duelProcedure.stage = DuelProcedureStage.ARENA
+                            isClosedByMenu = true
+                            DuelSelectArenaMenu().openMenu(player)
                         }else {
                             val arena = ArenaManager.getFreeArena()
 

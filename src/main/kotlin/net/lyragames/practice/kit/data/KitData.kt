@@ -10,6 +10,7 @@ package net.lyragames.practice.kit.data
  */
 
 class KitData {
+    var enabled = false
     var combo = false
     var sumo = false
     var build = false

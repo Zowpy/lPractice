@@ -6,6 +6,10 @@ import net.lyragames.menu.Button
 import net.lyragames.menu.Menu
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.manager.QueueManager
+import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.queue.Queue
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -38,6 +42,52 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
     override fun getButtons(player: Player): MutableMap<Int, Button> {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
+
+        toReturn[0] = object: Button() {
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.COBBLESTONE)
+                    .name(CC.YELLOW + "Enabled")
+                    .lore(listOf(
+                        if (kit.kitData.enabled) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.enabled) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.enabled = !kit.kitData.enabled
+                kit.save()
+
+                if (kit.kitData.enabled) {
+                    val queue = Queue(kit, false)
+                    QueueManager.queues.add(queue)
+
+                    if (kit.kitData.ranked) {
+                        val queue1 = Queue(kit, true)
+                        QueueManager.queues.add(queue1)
+                    }
+                }else {
+                    val queue = QueueManager.getByKit(kit)
+
+                    QueueManager.queues.remove(queue)
+
+                    queue?.queuePlayers?.stream()?.map { Profile.getByUUID(it.uuid) }
+                        ?.forEach {
+                            it?.state = ProfileState.LOBBY
+                            it?.queuePlayer = null
+
+                            Hotbar.giveHotbar(it!!)
+
+                            it.player.sendMessage("${CC.RED}You have been removed from the queue.")
+                        }
+
+
+                }
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
 
         toReturn[3] = object: Button() {
 

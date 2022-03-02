@@ -86,8 +86,8 @@ class Profile(val uuid: UUID, val name: String) {
             .findFirst().orElse(null)
     }
 
-    fun getKitStatistic(name: String): KitStatistic? {
-        return kitStatistics.stream().filter { kitStatistic -> kitStatistic.kit.equals(name, true) }
+    fun getKitStatistic(kit: String): KitStatistic? {
+        return kitStatistics.stream().filter { kitStatistic -> kitStatistic.kit.equals(kit, true) }
             .findFirst().orElse(null)
     }
 
