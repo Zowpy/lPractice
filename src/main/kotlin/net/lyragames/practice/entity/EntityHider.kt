@@ -15,6 +15,7 @@ import net.minecraft.server.v1_8_R3.BlockPosition
 import net.minecraft.server.v1_8_R3.EntityItem
 import net.minecraft.server.v1_8_R3.MathHelper
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy
+import net.royawesome.jlibnoise.MathHelper
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material

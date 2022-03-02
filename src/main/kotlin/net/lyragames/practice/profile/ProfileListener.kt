@@ -37,6 +37,10 @@ object ProfileListener: Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         PlayerUtil.reset(event.player)
+        val profile = Profile.getByUUID(event.player.uniqueId)
+        profile?.state = ProfileState.LOBBY
+
+        // Load in permissions and rank data to give player abilities like flight on join and other perks
         Hotbar.giveHotbar(Profile.getByUUID(event.player.uniqueId)!!)
 
         for (player in Bukkit.getOnlinePlayers()) {

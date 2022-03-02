@@ -4,6 +4,7 @@ import net.lyragames.llib.utils.Cuboid
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.ArenaType
 import net.lyragames.practice.arena.impl.StandaloneArena
 
 
@@ -41,6 +42,14 @@ object ArenaManager {
 
             if (!section.getString("max").equals("null", false)) {
                 arena.max = LocationUtil.deserialize(section.getString("l1"))
+            }
+
+            if (!section.getString("arenaType").equals("null", false)) {
+                arena.arenaType = ArenaType.valueOf(section.getString("arenaType"))
+            }
+
+            if (!section.getDouble("deadzone").equals("null")) {
+                arena.deadzone = section.getDouble("deadzone")
             }
 
             if (arena.min != null && arena.max != null) {

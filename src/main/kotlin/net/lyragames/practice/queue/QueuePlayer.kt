@@ -15,4 +15,5 @@ import java.util.*
 class QueuePlayer(var uuid: UUID, var name: String) {
 
     var started: Long = System.currentTimeMillis()
+
 }

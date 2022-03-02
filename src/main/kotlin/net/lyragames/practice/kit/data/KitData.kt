@@ -17,5 +17,4 @@ class KitData {
     var hcf = false
     var ranked = true
     var boxing = false
-    var ffa = false
 }
