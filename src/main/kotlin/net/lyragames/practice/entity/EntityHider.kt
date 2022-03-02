@@ -8,14 +8,11 @@ import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.google.common.base.Preconditions
 import com.google.common.collect.HashBasedTable
-import com.google.common.collect.Table
 import lombok.SneakyThrows
 import net.lyragames.practice.PracticePlugin
-import net.minecraft.server.v1_8_R3.BlockPosition
 import net.minecraft.server.v1_8_R3.EntityItem
 import net.minecraft.server.v1_8_R3.MathHelper
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy
-import net.royawesome.jlibnoise.MathHelper
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
