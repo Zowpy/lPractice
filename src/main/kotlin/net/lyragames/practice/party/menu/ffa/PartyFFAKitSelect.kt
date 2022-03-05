@@ -6,6 +6,7 @@ import net.lyragames.menu.ItemBuilder
 import net.lyragames.menu.Menu
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.impl.PartyFFAMatch
 import net.lyragames.practice.party.Party
@@ -50,7 +51,7 @@ class PartyFFAKitSelect(private val party: Party): Menu() {
                             return
                         }
 
-                        val arena = PracticePlugin.instance.arenaManager.getFreeArena()
+                        val arena = ArenaManager.getFreeArena()
 
                         if (arena == null) {
                             player.sendMessage("${CC.RED}There is no free arenas!")

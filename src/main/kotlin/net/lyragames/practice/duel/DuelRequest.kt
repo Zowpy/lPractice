@@ -21,7 +21,7 @@ import java.util.*
 
 class DuelRequest(var uuid: UUID, var target: UUID, var kit: Kit, var arena: Arena) {
 
-    val executedAt = System.currentTimeMillis()
+    private val executedAt = System.currentTimeMillis()
 
     fun isExpired(): Boolean {
         return System.currentTimeMillis() - executedAt >= 60_000
@@ -36,9 +36,9 @@ class DuelRequest(var uuid: UUID, var target: UUID, var kit: Kit, var arena: Are
         profile?.duelRequests?.add(this)
 
         FancyMessage()
-            .text("${CC.PINK}${sender.name}${CC.GREEN} (${PlayerUtil.getPing(sender)} ms)${CC.YELLOW} has sent you a duel request with kit ${CC.PINK}${kit.name}${CC.YELLOW} on\n")
+            .text("${CC.PINK}${sender.name}${CC.GREEN} (${PlayerUtil.getPing(sender)} ms)${CC.YELLOW} has sent you a duel request with kit ${CC.PINK}${kit.name}${CC.YELLOW} on")
             .then()
-            .text("${CC.YELLOW}arena ${CC.PINK}${arena.name}${CC.YELLOW}.")
+            .text("${CC.YELLOW} arena ${CC.PINK}${arena.name}${CC.YELLOW}.")
             .then()
             .text("${CC.GREEN} [Click to accept]")
             .command("/duel accept ${sender.name}")

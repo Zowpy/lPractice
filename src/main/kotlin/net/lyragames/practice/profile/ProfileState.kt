@@ -12,5 +12,5 @@ package net.lyragames.practice.profile
 
 enum class ProfileState {
 
-    LOBBY, QUEUE, MATCH, EVENT, TOURNAMENT
+    LOBBY, QUEUE, MATCH, EVENT, TOURNAMENT, SPECTATING, FFA
 }

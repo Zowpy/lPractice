@@ -35,7 +35,7 @@ import java.util.stream.Collectors
 open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
     val uuid: UUID = UUID.randomUUID()
-    val party = false
+    var friendly = false
     var matchState = MatchState.STARTING
     val started = System.currentTimeMillis()
     val players: MutableList<MatchPlayer> = mutableListOf()
@@ -140,7 +140,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                     it.hidePlayer(bukkitPlayer)
                 }
 
-            if (winner) {
+            if (winner && !friendly) {
                 val globalStatistics = profile.globalStatistic
 
                 globalStatistics.wins++
@@ -171,21 +171,23 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
                 profile.save()
             }else {
-                val globalStatistics = profile.globalStatistic
+                if (!friendly) {
+                    val globalStatistics = profile.globalStatistic
 
-                globalStatistics.losses++
-                globalStatistics.streak = 0
+                    globalStatistics.losses++
+                    globalStatistics.streak = 0
 
-                val kitStatistic = profile.getKitStatistic(kit.name)!!
+                    val kitStatistic = profile.getKitStatistic(kit.name)!!
 
-                kitStatistic.currentStreak = 0
+                    kitStatistic.currentStreak = 0
 
-                if (ranked) {
-                    kitStatistic.rankedWins++
-                    kitStatistic.elo =- 13
+                    if (ranked) {
+                        kitStatistic.rankedWins++
+                        kitStatistic.elo = -13
+                    }
+
+                    profile.save()
                 }
-
-                profile.save()
             }
         }
 

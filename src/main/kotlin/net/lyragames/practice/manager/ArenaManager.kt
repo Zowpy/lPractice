@@ -44,13 +44,13 @@ object ArenaManager {
                 arena.max = LocationUtil.deserialize(section.getString("l1"))
             }
 
-            if (!section.getString("arenaType").equals("null", false)) {
-                arena.arenaType = ArenaType.valueOf(section.getString("arenaType"))
-            }
+         //   if (!section.getString("arenaType").equals("null", false)) {
+          //      arena.arenaType = ArenaType.valueOf(section.getString("arenaType"))
+          //  }
 
-            if (!section.getDouble("deadzone").equals("null")) {
-                arena.deadzone = section.getDouble("deadzone")
-            }
+            //if (!section.getDouble("deadzone").equals("null")) {
+            //    arena.deadzone = section.getDouble("deadzone")
+          //  }
 
             if (arena.min != null && arena.max != null) {
                 arena.bounds = Cuboid(arena.min, arena.max)

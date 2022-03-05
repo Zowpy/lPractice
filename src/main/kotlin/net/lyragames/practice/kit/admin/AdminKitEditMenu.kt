@@ -171,9 +171,9 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
                 if (kit.kitData.ranked) {
                     val queue = Queue(kit, true)
-                    PracticePlugin.instance.queueManager.queues.add(queue)
+                    QueueManager.queues.add(queue)
                 }else {
-                    PracticePlugin.instance.queueManager.queues.removeIf { it.kit.name.equals(kit.name, false) && it.ranked }
+                    QueueManager.queues.removeIf { it.kit.name.equals(kit.name, false) && it.ranked }
                 }
             }
 
@@ -224,13 +224,6 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
             override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
                 return true
             }
-        }
-        // lemme figure out how kotlin would do it sec..
-        // what are you trying to do?
-        // for every option avaliable in KitData section it will create a button at the next best location
-        // there all the fields in the class
-        for (field in kit.kitData.javaClass.fields) {
-
         }
 
         return toReturn

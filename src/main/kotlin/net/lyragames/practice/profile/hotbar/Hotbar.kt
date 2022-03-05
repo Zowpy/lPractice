@@ -1,16 +1,17 @@
 package net.lyragames.practice.profile.hotbar
 
 import com.cryptomorin.xseries.XMaterial
-import com.sun.org.apache.xpath.internal.operations.Bool
 import net.lyragames.llib.item.CustomItemStack
+import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.practice.kit.editor.KitEditorSelectKitMenu
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.ffa.menu.FFAChoosingMenu
+import net.lyragames.practice.party.duel.procedure.PartyDuelProcedure
+import net.lyragames.practice.party.duel.procedure.menu.PartyDuelSelectPartyMenu
 import net.lyragames.practice.party.menu.PartyInformationMenu
-import net.lyragames.practice.party.menu.ffa.PartyFFAKitSelect
-import net.lyragames.practice.party.menu.split.PartySplitKitSelect
+import net.lyragames.practice.party.menu.event.PartyStartEventMenu
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.queue.menu.QueueMenu
@@ -49,12 +50,18 @@ object Hotbar {
 
                 player.inventory.setItem(4, createCustomItem(
                     player,
-                    ItemBuilder(Material.GOLD_AXE).name("&eFFA").addFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE).setUnbreakable(true).build()
-                ) { PartyManager.getByUUID(profile.party!!)?.let { it1 -> PartyFFAKitSelect(it1).openMenu(player) } }.itemStack)
+                    ItemBuilder(Material.GOLD_AXE).name("&eStart Party Event").addFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE).setUnbreakable(true).build()
+                ) { PartyStartEventMenu().openMenu(player) }.itemStack)
+
                 player.inventory.setItem(5, createCustomItem(
                     player,
-                    ItemBuilder(Material.DIAMOND_SWORD).name("&eParty Split").addFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE).setUnbreakable(true).build()
-                ) { PartyManager.getByUUID(profile.party!!)?.let { it1 -> PartySplitKitSelect(it1).openMenu(player) } }.itemStack)
+                    ItemBuilder(Material.DIAMOND_AXE).name("&eParty Duel").addFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE).setUnbreakable(true).build()
+                ) {
+                    val duelProcedure = PartyDuelProcedure(player.uniqueId)
+                    PartyDuelProcedure.duelProcedures.add(duelProcedure)
+
+                    PartyDuelSelectPartyMenu().openMenu(player)
+                }.itemStack)
 
                 player.inventory.setItem(8, createCustomItem(
                     player,

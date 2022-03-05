@@ -7,6 +7,7 @@ import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.manager.FFAManager
+import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchType
 import net.lyragames.practice.match.impl.TeamMatch
@@ -27,7 +28,7 @@ import java.util.stream.Collectors
  * Project: lPractice
  */
 
-class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
+class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
 
     override fun getTitle(p0: Player?): String {
         return CC.translate(configFile.getString("scoreboard.title"))
@@ -36,15 +37,19 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
     override fun getLines(player: Player): MutableList<String>? {
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state == ProfileState.LOBBY) {
+        if (!profile?.settings?.scoreboard!!) {
+            return mutableListOf()
+        }
+
+        if (profile.state == ProfileState.LOBBY) {
 
             return configFile.getStringList("scoreboard.lobby").stream()
                 .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
-                    .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                    .replace("<queuing>", QueueManager.inQueue().toString()))
                     .replace("<in_match>", Match.inMatch().toString()) }.collect(Collectors.toList())
         }
 
-        if (profile?.state == ProfileState.MATCH) {
+        if (profile.state == ProfileState.MATCH) {
 
             val match = profile.match?.let { Match.getByUUID(it) }
 
@@ -53,7 +58,7 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
             if (match.getMatchType() == MatchType.TEAM) {
                 return configFile.getStringList("scoreboard.match").stream()
                     .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
-                        .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                        .replace("<queuing>", QueueManager.inQueue().toString()))
                         .replace("<in_match>", Match.inMatch().toString())
                         .replace("<opponent>", (match as TeamMatch).getOpponentString(player.uniqueId)!!)
                         .replace("<kit>", (match as TeamMatch).kit.name)
@@ -66,7 +71,7 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
 
                 return configFile.getStringList("scoreboard.boxing").stream()
                     .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
-                        .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                        .replace("<queuing>", QueueManager.inQueue().toString()))
                         .replace("<in_match>", Match.inMatch().toString())
                         .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
                         .replace("<kit>", match.kit.name)
@@ -78,7 +83,7 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
 
             return configFile.getStringList("scoreboard.match").stream()
                 .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
-                    .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                    .replace("<queuing>", QueueManager.inQueue().toString()))
                     .replace("<in_match>", Match.inMatch().toString())
                     .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
                     .replace("<kit>", match.kit.name)
@@ -86,7 +91,7 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
 
         }
 
-        if (profile?.state == ProfileState.QUEUE) {
+        if (profile.state == ProfileState.QUEUE) {
 
             val queuePlayer = profile.queuePlayer
 
@@ -94,16 +99,16 @@ class ScoreboardAdapter(val configFile: ConfigFile): AssembleAdapter {
 
             return configFile.getStringList("scoreboard.queue").stream()
                 .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
-                    .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                    .replace("<queuing>", QueueManager.inQueue().toString()))
                     .replace("<in_match>", Match.inMatch().toString())
                     .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - queuePlayer.started))}.collect(Collectors.toList())
         }
 
-        if (profile?.state == ProfileState.FFA) {
+        if (profile.state == ProfileState.FFA) {
 
             if (profile.ffa == null) return configFile.getStringList("scoreboard.lobby").stream()
                 .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
-                    .replace("<queuing>", PracticePlugin.instance.queueManager.inQueue().toString()))
+                    .replace("<queuing>", QueueManager.inQueue().toString()))
                     .replace("<in_match>", Match.inMatch().toString()) }.collect(Collectors.toList())
 
             val ffa = FFAManager.getByUUID(profile.ffa!!)

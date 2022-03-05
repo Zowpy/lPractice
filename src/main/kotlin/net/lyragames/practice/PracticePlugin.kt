@@ -9,14 +9,21 @@ import me.vaperion.blade.command.bindings.impl.DefaultBindings
 import me.vaperion.blade.command.container.impl.BukkitCommandContainer
 import net.lyragames.llib.LyraPlugin
 import net.lyragames.llib.item.ItemListener
+import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
+import net.lyragames.practice.command.DuelCommand
+import net.lyragames.practice.command.LeaveCommand
+import net.lyragames.practice.command.MatchSnapshotCommand
+import net.lyragames.practice.command.PartyCommand
 import net.lyragames.practice.command.admin.ArenaCommand
 import net.lyragames.practice.command.admin.KitCommand
-import net.lyragames.practice.database.PracticeMongo
+import net.lyragames.practice.command.admin.SetSpawnCommand
+import net.lyragames.practice.database.Mongo
+import net.lyragames.practice.database.MongoCredentials
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.KitProvider
@@ -28,20 +35,21 @@ import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
+import org.bukkit.entity.ExperienceOrb
+import org.bukkit.entity.Item
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 
 class PracticePlugin : LyraPlugin() {
 
-    private lateinit var settingsFile: ConfigFile
+    lateinit var settingsFile: ConfigFile
     lateinit var kitsFile: ConfigFile
     lateinit var arenasFile: ConfigFile
     lateinit var scoreboardFile: ConfigFile
+    lateinit var ffaFile: ConfigFile
     lateinit var eventsFile: ConfigFile
 
-    lateinit var arenaManager: ArenaManager
-    private lateinit var kitManager: KitManager
-    lateinit var queueManager: QueueManager
-
-    lateinit var practiceMongo: PracticeMongo
+    lateinit var practiceMongo: Mongo
 
     private lateinit var blade: Blade
 
@@ -52,18 +60,17 @@ class PracticePlugin : LyraPlugin() {
         kitsFile = ConfigFile(this, "kits")
         arenasFile = ConfigFile(this, "arenas")
         scoreboardFile = ConfigFile(this, "scoreboard")
+        ffaFile = ConfigFile(this, "ffa")
         eventsFile = ConfigFile(this, "events")
 
-        practiceMongo = PracticeMongo(settingsFile.getString("mongodb.uri"))
+        loadMongo()
+        cleanupWorld()
 
-        arenaManager = ArenaManager
-        arenaManager.load()
+        ArenaManager.load()
 
-        kitManager = KitManager
-        kitManager.load()
+        KitManager.load()
 
-        queueManager = QueueManager
-        queueManager.load()
+        QueueManager.load()
 
         MenuAPI(this)
 
@@ -75,6 +82,11 @@ class PracticePlugin : LyraPlugin() {
         blade
             .register(ArenaCommand)
             .register(KitCommand)
+            .register(SetSpawnCommand)
+            .register(DuelCommand)
+            .register(LeaveCommand)
+            .register(MatchSnapshotCommand)
+            .register(PartyCommand)
 
         QueueTask
 
@@ -86,6 +98,34 @@ class PracticePlugin : LyraPlugin() {
         server.pluginManager.registerEvents(MatchListener, this)
         server.pluginManager.registerEvents(KitEditorListener, this)
         server.pluginManager.registerEvents(ItemListener(), this)
+    }
+
+    private fun loadMongo() {
+        val builder = MongoCredentials.Builder()
+            .host(settingsFile.getString("MONGODB.NORMAL.HOST"))
+            .port(settingsFile.getInt("MONGODB.NORMAL.PORT"))
+
+        if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED")) {
+            builder.username(settingsFile.getString("MONGODB.NORMAL.AUTH.USERNAME"))
+            builder.password(settingsFile.getString("MONGODB.NORMAL.AUTH.PASSWORD"))
+        }
+        practiceMongo = Mongo(settingsFile.getString("MONGODB.NORMAL.AUTH.AUTH-DATABASE"))
+        practiceMongo.load(builder.build())
+    }
+
+    private fun cleanupWorld() {
+        server.worlds[0].time = 4000
+
+        for( entity in server.worlds[0].entities) {
+            if (entity is Player) {
+                continue;
+            }
+            if (entity is LivingEntity || entity is Item || entity is ExperienceOrb) {
+                entity.remove()
+            }
+        }
+        server.consoleSender.sendMessage(CC.translate("&b[LPractice] Cleaning world task has completed"))
+
     }
 
     companion object {

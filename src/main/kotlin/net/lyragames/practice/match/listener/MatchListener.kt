@@ -254,11 +254,12 @@ object MatchListener : Listener {
                         }
                     }
 
-                    matchPlayer?.combo = 0
+                    matchPlayer.combo = 0
                 }
 
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
+                        player.health = 0.0
                         match.handleDeath(matchPlayer)
                     }
                 }

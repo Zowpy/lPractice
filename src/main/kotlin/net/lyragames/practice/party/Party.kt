@@ -1,5 +1,8 @@
 package net.lyragames.practice.party
 
+import net.lyragames.llib.utils.CC
+import net.lyragames.practice.party.duel.PartyDuelRequest
+import org.bukkit.Bukkit
 import java.util.*
 
 
@@ -12,11 +15,27 @@ import java.util.*
  * Project: lPractice
  */
 
-class Party {
+class Party(var leader: UUID) {
     
     val uuid: UUID = UUID.randomUUID()
-    var leader: UUID? = null
 
     val players: MutableList<UUID> = mutableListOf()
+    val duelRequests: MutableList<PartyDuelRequest> = mutableListOf()
+    val banned: MutableList<UUID> = mutableListOf()
+    var partyType = PartyType.PRIVATE
 
+    fun sendMessage(string: String) {
+        players.stream().forEach {
+            val player = Bukkit.getPlayer(it)
+
+            if (player == null) return@forEach
+
+            player.sendMessage(CC.translate(string))
+        }
+    }
+
+    fun getDuelRequest(uuid: UUID): PartyDuelRequest? {
+        return duelRequests.stream().filter { it.partyUUID == uuid }
+            .findFirst().orElse(null)
+    }
 }

@@ -21,11 +21,10 @@ open class Arena(val name: String) {
     var max: Location? = null
     var arenaType: ArenaType = ArenaType.NORMAL
 
-    var deadzone: Double? = null
+   // var deadzone: Double? = null
     var free = true
 
     var duplicate = false
-
 
     lateinit var bounds: Cuboid
 
@@ -40,10 +39,10 @@ open class Arena(val name: String) {
         configSection.set("l2", LocationUtil.serialize(l2))
         configSection.set("min", LocationUtil.serialize(min))
         configSection.set("max", LocationUtil.serialize(max))
-        configSection.set("ArenaType", arenaType.toString())
-        if(arenaType.equals(ArenaType.SUMO) || arenaType.equals(ArenaType.BRIDGES) || arenaType.equals(ArenaType.BEDFIGHT)) {
-            configSection.set("deadzone", 0)
-        }
+    //    configSection.set("ArenaType", arenaType.toString())
+      //  if(arenaType.equals(ArenaType.SUMO) || arenaType.equals(ArenaType.BRIDGES) || arenaType.equals(ArenaType.BEDFIGHT)) {
+       //     configSection.set("deadzone", 0)
+      //  }
 
         configFile.save()
     }

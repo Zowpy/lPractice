@@ -204,6 +204,18 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
         players.add(teamMatchPlayer)
     }
 
+    fun addPlayer(player: Player, team: Team) {
+        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team.spawn!!, team.uuid!!)
+
+        team.players.add(teamMatchPlayer)
+
+        players.stream().map { it.player }.forEach {
+            it.showPlayer(player)
+            player.showPlayer(it)
+        }
+        players.add(teamMatchPlayer)
+    }
+
     override fun getOpponentString(uuid: UUID): String? {
         val team = teams.stream().filter { team -> team.players.stream().anyMatch { it.uuid == uuid } }.findFirst().orElse(null)
         val opponentTeam = teams.stream().filter { it.uuid != team.uuid }.findFirst().orElse(null)

@@ -7,10 +7,10 @@ import net.lyragames.practice.duel.DuelRequest
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.party.invitation.PartyInvitation
 import net.lyragames.practice.profile.editor.KitEditorData
+import net.lyragames.practice.profile.settings.Settings
 import net.lyragames.practice.profile.statistics.KitStatistic
 import net.lyragames.practice.profile.statistics.global.GlobalStatistics
 import net.lyragames.practice.queue.QueuePlayer
-import net.lyragames.practice.winstreak.Winstreak
 import org.bson.Document
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -36,7 +36,6 @@ class Profile(val uuid: UUID, val name: String) {
 
     var kitStatistics: MutableList<KitStatistic> = mutableListOf()
     var globalStatistic = GlobalStatistics()
-    var winstreak: Winstreak? = null
 
     var party: UUID? = null
 
@@ -44,6 +43,7 @@ class Profile(val uuid: UUID, val name: String) {
     val duelRequests: MutableList<DuelRequest> = mutableListOf()
 
     var kitEditorData: KitEditorData? = KitEditorData()
+    var settings: Settings = Settings()
 
     var state = ProfileState.LOBBY
 
@@ -55,6 +55,7 @@ class Profile(val uuid: UUID, val name: String) {
             .append("name", name)
             .append("kitsStatistics", kitStatistics.stream().map { kitStatistic -> PracticePlugin.GSON.toJson(kitStatistic) }.collect(Collectors.toList()))
             .append("globalStatistics", PracticePlugin.GSON.toJson(globalStatistic))
+            .append("settings", PracticePlugin.GSON.toJson(settings))
     }
 
     fun save() {
@@ -102,6 +103,7 @@ class Profile(val uuid: UUID, val name: String) {
 
         kitStatistics = document.getList("kitsStatistics", String::class.java).stream().map { s -> PracticePlugin.GSON.fromJson(s, KitStatistic::class.java) }.collect(Collectors.toList())
         globalStatistic = PracticePlugin.GSON.fromJson(document.getString("globalStatistics"), GlobalStatistics::class.java)
+        settings = PracticePlugin.GSON.fromJson(document.getString("settings"), Settings::class.java)
 
         for (kit in Kit.kits) {
             var found = false

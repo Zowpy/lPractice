@@ -3,6 +3,7 @@ package net.lyragames.practice.queue.menu
 import net.lyragames.menu.Button
 import net.lyragames.menu.Menu
 import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.manager.QueueManager
 import org.bukkit.entity.Player
 
 
@@ -29,7 +30,7 @@ class QueueMenu(val ranked: Boolean): Menu() {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
 
         var i = 0
-        for (queue in PracticePlugin.instance.queueManager.queues) {
+        for (queue in QueueManager.queues) {
             if (ranked != queue.ranked) continue
 
             toReturn[i] = QueueButton(queue, ranked)
