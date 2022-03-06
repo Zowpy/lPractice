@@ -88,7 +88,7 @@ object DuelCommand {
             return
         }
 
-        val duelRequest = party?.getDuelRequest(profile1.party!!)
+        val duelRequest = party?.getDuelRequest(profile1.uuid)
 
         if (duelRequest == null) {
             player.sendMessage("${CC.RED}Invalid duel request!")

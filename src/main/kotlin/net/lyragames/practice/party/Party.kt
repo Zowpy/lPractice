@@ -35,7 +35,7 @@ class Party(var leader: UUID) {
     }
 
     fun getDuelRequest(uuid: UUID): PartyDuelRequest? {
-        return duelRequests.stream().filter { it.partyUUID == uuid }
+        return duelRequests.stream().filter { it.issuer == uuid }
             .findFirst().orElse(null)
     }
 }
