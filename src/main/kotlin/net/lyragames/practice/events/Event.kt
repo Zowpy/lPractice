@@ -1,7 +1,11 @@
 package net.lyragames.practice.events
 
+import net.lyragames.llib.utils.CC
+import net.lyragames.practice.events.map.EventMap
+import net.lyragames.practice.events.player.EventPlayer
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.stream.Collectors
 
 
 /**
@@ -13,7 +17,7 @@ import java.util.*
  * Project: lPractice
  */
 
-open class Event(val host: UUID) {
+open class Event(val host: UUID, val eventMap: EventMap) {
 
     val players: MutableList<EventPlayer> = mutableListOf()
     val round = 1
@@ -21,11 +25,18 @@ open class Event(val host: UUID) {
     var state = EventState.ANNOUNCING
     var type = EventType.SUMO
 
+    var playingPlayers: MutableList<EventPlayer> = mutableListOf()
+
     fun getRemainingRounds(): Int {
         return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed == 1 }.count().toInt()
     }
 
-    open fun endRound() {
+    fun getNextPlayers(): MutableList<EventPlayer> {
+        return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed == 1 }
+            .collect(Collectors.toList()).subList(0, 1)
+    }
+
+    open fun endRound(winner: EventPlayer?) {
 
     }
 
@@ -33,7 +44,7 @@ open class Event(val host: UUID) {
 
     }
 
-    open fun end() {
+    open fun end(winner: EventPlayer?) {
 
     }
 
@@ -45,6 +56,13 @@ open class Event(val host: UUID) {
 
     open fun canHit(player: Player, target: Player): Boolean {
         return true
+    }
+
+    fun sendMessage(message: String) {
+        players.stream().filter { !it.offline }
+            .forEach {
+                it.player.sendMessage(CC.translate(message))
+            }
     }
 
     fun getPlayer(uuid: UUID): EventPlayer? {

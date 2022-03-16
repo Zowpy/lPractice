@@ -1,4 +1,4 @@
-package net.lyragames.practice.events
+package net.lyragames.practice.events.player
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -23,4 +23,6 @@ class EventPlayer(val uuid: UUID) {
     var offline = false
 
     var roundsPlayed = 0
+
+    var state = EventPlayerState.LOBBY
 }
