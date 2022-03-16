@@ -35,6 +35,7 @@ import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
+import net.lyragames.practice.task.EventAnnounceTask
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
@@ -62,13 +63,16 @@ class PracticePlugin : LyraPlugin() {
         scoreboardFile = ConfigFile(this, "scoreboard")
         ffaFile = ConfigFile(this, "ffa")
         eventsFile = ConfigFile(this, "events")
+        logger.info("Successfully loaded files!")
 
         loadMongo()
         cleanupWorld()
 
         ArenaManager.load()
+        logger.info("Successfully loaded ${Arena.arenas.size} arenas!")
 
         KitManager.load()
+        logger.info("Successfully loaded ${Kit.kits.size} kits!")
 
         QueueManager.load()
 
@@ -89,6 +93,7 @@ class PracticePlugin : LyraPlugin() {
             .register(PartyCommand)
 
         QueueTask
+        EventAnnounceTask
 
         if (scoreboardFile.getBoolean("scoreboard.enabled")) {
             Assemble(this, ScoreboardAdapter(scoreboardFile))
@@ -101,31 +106,40 @@ class PracticePlugin : LyraPlugin() {
     }
 
     private fun loadMongo() {
-        val builder = MongoCredentials.Builder()
-            .host(settingsFile.getString("MONGODB.NORMAL.HOST"))
-            .port(settingsFile.getInt("MONGODB.NORMAL.PORT"))
+        try {
+            val builder = MongoCredentials.Builder()
+                .host(settingsFile.getString("MONGODB.NORMAL.HOST"))
+                .port(settingsFile.getInt("MONGODB.NORMAL.PORT"))
 
-        if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED")) {
-            builder.username(settingsFile.getString("MONGODB.NORMAL.AUTH.USERNAME"))
-            builder.password(settingsFile.getString("MONGODB.NORMAL.AUTH.PASSWORD"))
+            if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED")) {
+                builder.username(settingsFile.getString("MONGODB.NORMAL.AUTH.USERNAME"))
+                builder.password(settingsFile.getString("MONGODB.NORMAL.AUTH.PASSWORD"))
+            }
+            practiceMongo = Mongo(settingsFile.getString("MONGODB.NORMAL.AUTH.AUTH-DATABASE"))
+            practiceMongo.load(builder.build())
+
+            logger.info("Successfully connected MongoDB!")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            logger.severe("Failed to connect MongoDB!")
         }
-        practiceMongo = Mongo(settingsFile.getString("MONGODB.NORMAL.AUTH.AUTH-DATABASE"))
-        practiceMongo.load(builder.build())
     }
 
     private fun cleanupWorld() {
-        server.worlds[0].time = 4000
+        for (world in server.worlds) {
+            world.time = 4000
 
-        for( entity in server.worlds[0].entities) {
-            if (entity is Player) {
-                continue;
-            }
-            if (entity is LivingEntity || entity is Item || entity is ExperienceOrb) {
-                entity.remove()
+            for (entity in world.entities) {
+                if (entity is Player) {
+                    continue;
+                }
+                if (entity is LivingEntity || entity is Item || entity is ExperienceOrb) {
+                    entity.remove()
+                }
             }
         }
-        server.consoleSender.sendMessage(CC.translate("&b[LPractice] Cleaning world task has completed"))
 
+        logger.info("Cleaned all worlds")
     }
 
     companion object {
