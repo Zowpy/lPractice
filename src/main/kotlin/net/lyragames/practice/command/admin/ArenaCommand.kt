@@ -34,7 +34,7 @@ object ArenaCommand {
         arena.save()
         Arena.arenas.add(arena)
 
-        player.sendMessage(CC.YELLOW + "Successfully created " + CC.GOLD + "'$arena'!")
+        player.sendMessage(CC.YELLOW + "Successfully created " + CC.GOLD + "'$name'!")
     }
 
     @Command(value = ["arena delete"], description = "delete an arena")
@@ -43,7 +43,7 @@ object ArenaCommand {
         arena.delete()
         Arena.arenas.remove(arena)
 
-        player.sendMessage(CC.YELLOW + "Successfully deleted " + CC.GOLD + "'$arena'!")
+        player.sendMessage(CC.YELLOW + "Successfully deleted ${CC.GOLD}'${arena.name}'!")
     }
 
     @Command(value = ["arena pos1", "arena position1", "arena l1", "arena location1"], description = "set an arena's first location")

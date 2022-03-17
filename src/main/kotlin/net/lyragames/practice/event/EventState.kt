@@ -1,4 +1,4 @@
-package net.lyragames.practice.events
+package net.lyragames.practice.event
 
 
 /**

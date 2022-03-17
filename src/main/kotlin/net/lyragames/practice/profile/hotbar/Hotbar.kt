@@ -2,9 +2,9 @@ package net.lyragames.practice.profile.hotbar
 
 import com.cryptomorin.xseries.XMaterial
 import net.lyragames.llib.item.CustomItemStack
-import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.practice.kit.editor.KitEditorSelectKitMenu
+import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.ffa.menu.FFAChoosingMenu
@@ -100,7 +100,7 @@ object Hotbar {
 
             player.inventory.setItem(8, createCustomItem(
                 player,
-                ItemBuilder(XMaterial.RED_DYE.parseItem()).name("&eLeave Queue").build(), true
+                ItemBuilder(XMaterial.RED_DYE.parseItem()).name("&cLeave Queue").build(), true
             ) {
                 profile.state = ProfileState.LOBBY
                 profile.queuePlayer = null
@@ -108,6 +108,14 @@ object Hotbar {
                 giveHotbar(profile)
             }.itemStack)
 
+        }else if (profile.state == ProfileState.EVENT) {
+
+            player.inventory.setItem(8, createCustomItem(
+                player,
+                ItemBuilder(XMaterial.RED_DYE.parseItem()).name("&cLeave Event").build(), true
+            ) {
+                EventManager.event?.removePlayer(player)
+            }.itemStack)
         }
     }
 

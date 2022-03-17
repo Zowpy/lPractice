@@ -1,4 +1,4 @@
-package net.lyragames.practice.events.map
+package net.lyragames.practice.event.map
 
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
@@ -27,6 +27,14 @@ class EventMap(val name: String) {
         section.set("l1", if (l1 == null) "null" else LocationUtil.serialize(l1))
         section.set("l2", if (l2 == null) "null" else LocationUtil.serialize(l2))
         section.set("spawn", if (spawn == null) "null" else LocationUtil.serialize(spawn))
+
+        configFile.save()
+    }
+
+    fun delete() {
+        val configFile = PracticePlugin.instance.eventsFile
+
+        configFile.config.set("maps.$name", null)
 
         configFile.save()
     }

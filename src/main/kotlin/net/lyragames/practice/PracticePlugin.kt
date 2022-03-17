@@ -9,27 +9,27 @@ import me.vaperion.blade.command.bindings.impl.DefaultBindings
 import me.vaperion.blade.command.container.impl.BukkitCommandContainer
 import net.lyragames.llib.LyraPlugin
 import net.lyragames.llib.item.ItemListener
-import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
-import net.lyragames.practice.command.DuelCommand
-import net.lyragames.practice.command.LeaveCommand
-import net.lyragames.practice.command.MatchSnapshotCommand
-import net.lyragames.practice.command.PartyCommand
+import net.lyragames.practice.command.*
 import net.lyragames.practice.command.admin.ArenaCommand
+import net.lyragames.practice.command.admin.EventMapCommand
 import net.lyragames.practice.command.admin.KitCommand
 import net.lyragames.practice.command.admin.SetSpawnCommand
 import net.lyragames.practice.database.Mongo
 import net.lyragames.practice.database.MongoCredentials
+import net.lyragames.practice.event.map.EventMap
+import net.lyragames.practice.event.map.EventMapProvider
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.KitProvider
 import net.lyragames.practice.kit.editor.listener.KitEditorListener
 import net.lyragames.practice.kit.serializer.EditKitSerializer
 import net.lyragames.practice.manager.ArenaManager
+import net.lyragames.practice.manager.EventMapManager
 import net.lyragames.practice.manager.KitManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.listener.MatchListener
@@ -69,18 +69,21 @@ class PracticePlugin : LyraPlugin() {
         cleanupWorld()
 
         ArenaManager.load()
-        logger.info("Successfully loaded ${Arena.arenas.size} arenas!")
+        logger.info("Successfully loaded ${if (Arena.arenas.size == 1) "1 arena!" else "${Arena.arenas.size} arenas!"}")
 
         KitManager.load()
-        logger.info("Successfully loaded ${Kit.kits.size} kits!")
+        logger.info("Successfully loaded ${if (Kit.kits.size == 1) "1 kit!" else "${Kit.kits.size} kits!"}")
 
         QueueManager.load()
+
+        EventMapManager.load()
+        logger.info("Successfully loaded ${if (EventMapManager.maps.size == 1) "1 event map!" else "${EventMapManager.maps.size} arenas!"}")
 
         MenuAPI(this)
 
         blade = Blade.of()
             .containerCreator(BukkitCommandContainer.CREATOR).binding(BukkitBindings()).binding(DefaultBindings())
-            .bind(Arena::class.java, ArenaProvider).bind(Kit::class.java, KitProvider)
+            .bind(Arena::class.java, ArenaProvider).bind(Kit::class.java, KitProvider).bind(EventMap::class.java, EventMapProvider)
             .build()
 
         blade
@@ -91,6 +94,8 @@ class PracticePlugin : LyraPlugin() {
             .register(LeaveCommand)
             .register(MatchSnapshotCommand)
             .register(PartyCommand)
+            .register(EventMapCommand)
+            .register(EventCommand)
 
         QueueTask
         EventAnnounceTask

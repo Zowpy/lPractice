@@ -1,4 +1,4 @@
-package net.lyragames.practice.events.player
+package net.lyragames.practice.event.player
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

@@ -1,14 +1,14 @@
-package net.lyragames.practice.events.impl
+package net.lyragames.practice.event.impl
 
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
-import net.lyragames.practice.events.Event
-import net.lyragames.practice.events.EventState
-import net.lyragames.practice.events.map.EventMap
-import net.lyragames.practice.events.player.EventPlayer
-import net.lyragames.practice.events.player.EventPlayerState
+import net.lyragames.practice.event.Event
+import net.lyragames.practice.event.EventState
+import net.lyragames.practice.event.map.EventMap
+import net.lyragames.practice.event.player.EventPlayer
+import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar

@@ -1,8 +1,12 @@
-package net.lyragames.practice.events
+package net.lyragames.practice.event
 
 import net.lyragames.llib.utils.CC
-import net.lyragames.practice.events.map.EventMap
-import net.lyragames.practice.events.player.EventPlayer
+import net.lyragames.practice.event.map.EventMap
+import net.lyragames.practice.event.player.EventPlayer
+import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.profile.hotbar.Hotbar
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.stream.Collectors
@@ -24,6 +28,9 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
     var state = EventState.ANNOUNCING
     var type = EventType.SUMO
+    var requiredPlayers = 32
+
+    var created = System.currentTimeMillis()
 
     var playingPlayers: MutableList<EventPlayer> = mutableListOf()
 
@@ -49,9 +56,24 @@ open class Event(val host: UUID, val eventMap: EventMap) {
     }
 
     open fun addPlayer(player: Player) {
+        val profile = Profile.getByUUID(player.uniqueId)
         val eventPlayer = EventPlayer(player.uniqueId)
 
+        profile?.state = ProfileState.EVENT
         players.add(eventPlayer)
+        Hotbar.giveHotbar(profile!!)
+
+        Bukkit.broadcastMessage("${CC.GREEN}${player.name}${CC.YELLOW} has joined the event. ${CC.GRAY}(${players.size}/${requiredPlayers})")
+    }
+
+    open fun removePlayer(player: Player) {
+        val profile = Profile.getByUUID(player.uniqueId)
+        players.removeIf { it.uuid == player.uniqueId }
+
+        profile?.state = ProfileState.LOBBY
+        Hotbar.giveHotbar(profile!!)
+
+        Bukkit.broadcastMessage("${CC.GREEN}${player.name}${CC.YELLOW} has left the event. ${CC.GRAY}(${players.size}/${requiredPlayers})")
     }
 
     open fun canHit(player: Player, target: Player): Boolean {

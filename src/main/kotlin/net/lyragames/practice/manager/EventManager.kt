@@ -1,10 +1,10 @@
 package net.lyragames.practice.manager
 
-import net.lyragames.practice.events.Event
+import net.lyragames.practice.event.Event
 
 object EventManager {
 
-    val event: Event? = null
+    var event: Event? = null
 
 
 }
