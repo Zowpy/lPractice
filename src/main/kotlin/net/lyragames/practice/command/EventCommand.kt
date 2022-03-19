@@ -1,6 +1,7 @@
 package net.lyragames.practice.command
 
 import me.vaperion.blade.command.annotation.Command
+import me.vaperion.blade.command.annotation.Permission
 import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
 import net.lyragames.practice.event.EventState
@@ -53,5 +54,18 @@ object EventCommand {
         }
 
         event.addPlayer(player)
+    }
+
+    @Permission("lpractice.command.event.forcestart")
+    @Command(value = ["event start", "event forcestart", "event fs"], description = "force start an event")
+    fun forcestart(@Sender player: Player) {
+
+        if (EventManager.event?.players?.size!! < 2) {
+            player.sendMessage("${CC.RED}You need at least 2 players to force start!")
+            return
+        }
+
+        EventManager.event?.startRound()
+
     }
 }

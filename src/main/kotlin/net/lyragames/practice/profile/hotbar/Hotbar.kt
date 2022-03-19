@@ -2,7 +2,9 @@ package net.lyragames.practice.profile.hotbar
 
 import com.cryptomorin.xseries.XMaterial
 import net.lyragames.llib.item.CustomItemStack
+import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ItemBuilder
+import net.lyragames.practice.event.EventState
 import net.lyragames.practice.kit.editor.KitEditorSelectKitMenu
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.PartyManager
@@ -109,6 +111,17 @@ object Hotbar {
             }.itemStack)
 
         }else if (profile.state == ProfileState.EVENT) {
+
+            if (player.hasPermission("lpractice.command.event.forcestart")) {
+                if (EventManager.event != null && EventManager.event?.state == EventState.ANNOUNCING) {
+                    player.inventory.setItem(0, createCustomItem(
+                        player,
+                        ItemBuilder(Material.HOPPER).name("&eForce Start").build(), true
+                    ) {
+                        player.chat("/event forcestart")
+                    }.itemStack)
+                }
+            }
 
             player.inventory.setItem(8, createCustomItem(
                 player,

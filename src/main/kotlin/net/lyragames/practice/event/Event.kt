@@ -29,7 +29,7 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
     var state = EventState.ANNOUNCING
     var type = EventType.SUMO
-    var requiredPlayers = 2
+    var requiredPlayers = 32
 
     var created = System.currentTimeMillis()
 

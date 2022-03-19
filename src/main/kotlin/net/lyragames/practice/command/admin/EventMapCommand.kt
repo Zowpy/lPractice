@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 
 object EventMapCommand {
 
+    @Permission("lpractice.command.eventmap.help")
     @Command(value = ["eventmap", "eventmap help"], description = "eventmap help commands")
     fun help(@Sender sender: CommandSender) {
         sender.sendMessage("${CC.GOLD}EventMap Commands:")
