@@ -8,6 +8,7 @@ import net.lyragames.menu.Button
 import net.lyragames.menu.Menu
 import net.lyragames.menu.buttons.DisplayButton
 import net.lyragames.practice.match.snapshot.MatchSnapshot
+import net.lyragames.practice.utils.PotionGradeUtil
 import org.apache.commons.lang.StringEscapeUtils
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -39,13 +40,13 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
         for (i in fixedContents.indices) {
             val itemStack: ItemStack = fixedContents[i]
-            if (itemStack != null && itemStack.getType() !== Material.AIR) {
+            if (itemStack != null && itemStack.type !== Material.AIR) {
                 buttons[i] = DisplayButton(itemStack, true)
             }
         }
         for (i in 0 until snapshot.armor.size) {
-            val itemStack: ItemStack = snapshot.armor.get(i)
-            if (itemStack != null && itemStack.getType() !== Material.AIR) {
+            val itemStack: ItemStack = snapshot.armor[i]
+            if (itemStack != null && itemStack.type !== Material.AIR) {
                 buttons[39 - i] = DisplayButton(itemStack, true)
             }
         }
@@ -61,10 +62,6 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
             buttons[53] = SwitchInventoryButton(this.snapshot.opponent!!)
         }
         return buttons
-    }
-
-    override fun onOpen(player: Player) {
-        //player.sendMessage(Locale.VIEWING_INVENTORY.format(snapshot.getUsername()))
     }
 
     private class SwitchInventoryButton(private val opponent: UUID) : Button() {
@@ -153,9 +150,10 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
                     listOf(
                         "&aTotal Hits: &e" + snapshot.totalHits,
                         "&aLongest Combo: &e" + snapshot.longestCombo,
+                        "&aPotion Grade: ${PotionGradeUtil.getGrade(snapshot.getPotionAccuracy())}",
                         "&aPotions Thrown: &e" + snapshot.potionsThrown,
                         "&aPotions Missed: &e" + snapshot.potionsMissed,
-                        "&aPotion Accuracy: &e" + snapshot.getPotionAccuracy()
+                        "&aPotion Accuracy: &e" + snapshot.getPotionAccuracy() + "%"
                     )
                 )
                 .build()

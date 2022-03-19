@@ -17,14 +17,14 @@ object EventCommand {
 
     @Command(value = ["event host"], description = "host an event")
     fun host(@Sender player: Player) {
-       // val map = EventMapManager.getFreeMap()
+        val map = EventMapManager.getFreeMap()
 
-     //   if (map == null) {
-     //       player.sendMessage("${CC.RED} There are no event maps available!")
-    //        return
-    //    }
+        if (map == null) {
+            player.sendMessage("${CC.RED}There are no event maps available!")
+            return
+        }
 
-        val event = SumoEvent(player.uniqueId, EventMap("nigger"))
+        val event = SumoEvent(player.uniqueId, map)
         EventManager.event = event
     }
 

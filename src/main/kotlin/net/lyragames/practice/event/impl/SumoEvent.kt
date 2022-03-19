@@ -12,6 +12,7 @@ import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
+import org.bukkit.Bukkit
 import java.util.*
 
 
@@ -34,6 +35,8 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         for ((i, eventPlayer) in playingPlayers.withIndex()) {
             eventPlayer.roundsPlayed++
             eventPlayer.state = EventPlayerState.FIGHTING
+
+            PlayerUtil.reset(eventPlayer.player)
 
             if (i == 0) {
                 eventPlayer.player.teleport(eventMap.l1)
@@ -71,6 +74,8 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             eventPlayer.state = EventPlayerState.LOBBY
 
             eventPlayer.player.teleport(eventMap.spawn)
+            Hotbar.giveHotbar(Profile.getByUUID(eventPlayer.uuid)!!)
+            PlayerUtil.reset(eventPlayer.player)
         }
 
         if (getRemainingRounds() == 0) {
@@ -81,7 +86,7 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
     }
 
     override fun end(winner: EventPlayer?) {
-        sendMessage("${CC.GREEN}${if (winner != null) winner.player.name else "N/A"} won the event!")
+        Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "N/A"} won the event!")
         players.forEach {
             val profile = Profile.getByUUID(it.uuid)
 

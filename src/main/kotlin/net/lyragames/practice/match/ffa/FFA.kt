@@ -37,11 +37,11 @@ class FFA(val kit: Kit) {
         val player = ffaPlayer.player
         val profile = Profile.getByUUID(player.uniqueId)
 
-        PlayerUtil.reset(player)
-
         if (Constants.FFA_SPAWN != null) {
             player.teleport(Constants.FFA_SPAWN)
         }
+
+        PlayerUtil.reset(player)
 
         profile?.getKitStatistic(kit.name)?.generateBooks(player)
 

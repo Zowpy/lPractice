@@ -23,7 +23,7 @@ object EventAnnounceTask: BukkitRunnable() {
         if (event.state != EventState.ANNOUNCING) return
 
         if (event.requiredPlayers == event.players.size) {
-            event.state = EventState.STARTING
+            event.startRound()
             return
         }
 

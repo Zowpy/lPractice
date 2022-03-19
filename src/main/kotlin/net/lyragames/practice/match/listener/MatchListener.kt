@@ -1,5 +1,8 @@
 package net.lyragames.practice.match.listener
 
+import net.lyragames.practice.event.EventState
+import net.lyragames.practice.event.EventType
+import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
@@ -16,6 +19,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.player.*
@@ -197,6 +201,47 @@ object MatchListener : Listener {
             val profile = Profile.getByUUID(player.uniqueId)
             val profile1 = Profile.getByUUID(damager.uniqueId)
 
+            if (profile?.state == ProfileState.EVENT && profile1?.state == ProfileState.EVENT) {
+
+                val currentEvent = EventManager.event
+
+                if (currentEvent == null) {
+                    event.isCancelled = true
+                    return
+                }
+
+                if (currentEvent.state != EventState.FIGHTING) {
+                    event.isCancelled = true
+                    return
+                }
+
+                if (currentEvent.type == EventType.SUMO) {
+                    event.damage = 0.0
+                }
+
+                val eventPlayer = currentEvent.getPlayer(player.uniqueId)
+                val eventPlayer1 = currentEvent.getPlayer(damager.uniqueId)
+
+                if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == eventPlayer?.uuid }
+                    && currentEvent.playingPlayers.stream().noneMatch { it.uuid == eventPlayer1?.uuid }) {
+                    event.isCancelled = true
+                    return
+                }
+
+                if (!currentEvent.canHit(player, damager)) {
+                    event.isCancelled = true
+                    return
+                }
+
+                if (event.finalDamage >= player.health) {
+                    eventPlayer?.dead = true
+                    event.damage = 0.0
+                    currentEvent.endRound(eventPlayer1)
+                }
+
+                return
+            }
+
             if (profile?.state == ProfileState.FFA && profile1?.state == ProfileState.FFA) {
 
                 if (profile.ffa != profile1.ffa) {
@@ -210,6 +255,7 @@ object MatchListener : Listener {
                 val ffaPlayer1 = ffa?.getFFAPlayer(profile1.uuid)
 
                 if (event.finalDamage >= player.health) {
+                    event.damage = 0.0
                     ffa?.handleDeath(ffaPlayer!!, ffaPlayer1!!)
                 }
 
@@ -260,6 +306,7 @@ object MatchListener : Listener {
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
                         player.health = 0.0
+                        event.damage = 0.0
                         match.handleDeath(matchPlayer)
                     }
                 }
@@ -268,7 +315,7 @@ object MatchListener : Listener {
             val player = event.entity as Player
             val profile = Profile.getByUUID(player.uniqueId)
 
-            if (profile?.state == ProfileState.FFA) {
+            if (profile?.state == ProfileState.FFA || profile?.state == ProfileState.EVENT) {
                 return
             }
 
@@ -289,6 +336,17 @@ object MatchListener : Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    fun onDamage(event: EntityDamageEvent) {
+        if (event.entity is Player) {
+
+            if (event.cause == EntityDamageEvent.DamageCause.FALL) {
+                event.isCancelled = true
+            }
+
         }
     }
 
@@ -384,6 +442,19 @@ object MatchListener : Listener {
             }
         }
 
+        if (profile?.state == ProfileState.EVENT) {
+
+            val currentEvent = EventManager.event ?: return
+            val eventPlayer = currentEvent.getPlayer(player.uniqueId)
+
+            if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == player.uniqueId }) return
+
+            eventPlayer?.dead = true
+            eventPlayer?.offline = true
+
+            currentEvent.endRound(currentEvent.getOpponent(eventPlayer!!))
+        }
+
         Profile.profiles.remove(profile)
     }
 
@@ -391,18 +462,30 @@ object MatchListener : Listener {
     fun onMove(event: PlayerMoveEvent) {
         val player = event.player
 
-        val profile = Profile.getByUUID(player.uniqueId)
+        if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
+            val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.match != null) {
+            if (profile?.match != null) {
 
-            val match = Match.getByUUID(profile.match!!)
+                val match = Match.getByUUID(profile.match!!)
 
-            if (match?.kit?.kitData?.sumo!!) {
-                if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
-                    match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
+                if (match?.kit?.kitData?.sumo!!) {
+                    if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
+                        match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
+                    }
                 }
-            }
 
+            } else if (profile?.state == ProfileState.EVENT) {
+
+                val currentEvent = EventManager.event ?: return
+                val eventPlayer = currentEvent.getPlayer(player.uniqueId)
+
+                if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == player.uniqueId }) return
+
+                eventPlayer?.dead = true
+
+                currentEvent.endRound(currentEvent.getOpponent(eventPlayer!!))
+            }
         }
     }
 }

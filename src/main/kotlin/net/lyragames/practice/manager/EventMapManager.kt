@@ -3,7 +3,7 @@ package net.lyragames.practice.manager
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.map.EventMap
-import kotlin.random.Random
+import java.util.concurrent.ThreadLocalRandom
 
 object EventMapManager {
 
@@ -38,7 +38,7 @@ object EventMapManager {
     }
 
     fun getFreeMap(): EventMap? {
-        return if (maps.isEmpty()) null else maps[Random.nextInt(maps.size)]
+        return if (maps.isEmpty()) null else maps[ThreadLocalRandom.current().nextInt(maps.size)]
     }
 
     fun getByName(name: String): EventMap? {

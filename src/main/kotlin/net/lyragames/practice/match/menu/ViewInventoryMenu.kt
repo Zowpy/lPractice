@@ -11,6 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import java.util.function.Consumer
+import kotlin.math.roundToInt
 
 
 /**
@@ -36,10 +37,8 @@ class ViewInventoryMenu(private val target: Player) : Menu() {
         val fixedContents: Array<ItemStack> = InventoryUtil.fixInventoryOrder(target.inventory.contents)
         for (i in fixedContents.indices) {
             val itemStack: ItemStack = fixedContents[i]
-            if (itemStack != null) {
-                if (itemStack.type !== Material.AIR) {
-                    buttons[i] = DisplayButton(itemStack, true)
-                }
+            if (itemStack.type !== Material.AIR) {
+                buttons[i] = DisplayButton(itemStack, true)
             }
         }
         for (i in target.inventory.armorContents.indices) {
@@ -49,7 +48,7 @@ class ViewInventoryMenu(private val target: Player) : Menu() {
             }
         }
         var pos = 45
-        buttons[pos++] = HealthButton(if (target.health == 0.0) 0 else Math.round(target.health / 2.0).toInt())
+        buttons[pos++] = HealthButton(if (target.health == 0.0) 0 else (target.health / 2.0).roundToInt())
         buttons[pos++] = HungerButton(target.foodLevel)
         buttons[pos] = EffectsButton(target.activePotionEffects)
         return buttons
@@ -86,7 +85,7 @@ class ViewInventoryMenu(private val target: Player) : Menu() {
 
         override fun getButtonItem(player: Player?): ItemStack {
             val builder: ItemBuilder = ItemBuilder(Material.POTION).name("&e&lPotion Effects")
-            if (effects!!.isEmpty()) {
+            if (effects.isEmpty()) {
                 builder.lore(CC.GRAY + "No effects")
             } else {
                 val lore: MutableList<String> = ArrayList()

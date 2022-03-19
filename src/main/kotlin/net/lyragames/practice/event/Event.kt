@@ -1,6 +1,7 @@
 package net.lyragames.practice.event
 
 import net.lyragames.llib.utils.CC
+import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.player.EventPlayer
 import net.lyragames.practice.profile.Profile
@@ -28,7 +29,7 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
     var state = EventState.ANNOUNCING
     var type = EventType.SUMO
-    var requiredPlayers = 32
+    var requiredPlayers = 2
 
     var created = System.currentTimeMillis()
 
@@ -40,7 +41,7 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
     fun getNextPlayers(): MutableList<EventPlayer> {
         return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed == 1 }
-            .collect(Collectors.toList()).subList(0, 1)
+            .collect(Collectors.toList()).subList(0, 2)
     }
 
     open fun endRound(winner: EventPlayer?) {
@@ -55,11 +56,24 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
     }
 
+    open fun getOpponent(eventPlayer: EventPlayer): EventPlayer? {
+        return playingPlayers.stream().filter { it.uuid != eventPlayer.uuid }
+            .findFirst().orElse(null)
+    }
+
     open fun addPlayer(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
         val eventPlayer = EventPlayer(player.uniqueId)
 
         profile?.state = ProfileState.EVENT
+
+        players.forEach {
+            it.player.showPlayer(player)
+            player.showPlayer(it.player)
+        }
+
+        player.teleport(eventMap.spawn)
+
         players.add(eventPlayer)
         Hotbar.giveHotbar(profile!!)
 
@@ -69,6 +83,15 @@ open class Event(val host: UUID, val eventMap: EventMap) {
     open fun removePlayer(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
         players.removeIf { it.uuid == player.uniqueId }
+
+        players.forEach {
+            it.player.hidePlayer(player)
+            player.hidePlayer(it.player)
+        }
+
+        if (Constants.SPAWN != null) {
+            player.teleport(Constants.SPAWN)
+        }
 
         profile?.state = ProfileState.LOBBY
         Hotbar.giveHotbar(profile!!)

@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable
 object MatchSnapshotExpireTask: BukkitRunnable() {
 
     init {
-        this.runTaskTimerAsynchronously(PracticePlugin.instance, 20 * 60L, 20 * 60L)
+        this.runTaskTimerAsynchronously(PracticePlugin.instance, 0, 20L)
     }
 
     override fun run() {
