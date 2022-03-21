@@ -7,6 +7,7 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.impl.SumoEvent
 import net.lyragames.practice.event.map.EventMap
+import net.lyragames.practice.event.menu.EventHostMenu
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.EventMapManager
 import net.lyragames.practice.profile.Profile
@@ -18,15 +19,7 @@ object EventCommand {
 
     @Command(value = ["event host"], description = "host an event")
     fun host(@Sender player: Player) {
-        val map = EventMapManager.getFreeMap()
-
-        if (map == null) {
-            player.sendMessage("${CC.RED}There are no event maps available!")
-            return
-        }
-
-        val event = SumoEvent(player.uniqueId, map)
-        EventManager.event = event
+        EventHostMenu().openMenu(player)
     }
 
     @Command(value = ["event join"], description = "join an event")

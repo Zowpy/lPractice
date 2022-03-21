@@ -6,14 +6,19 @@ import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.Event
 import net.lyragames.practice.event.EventState
+import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.player.EventPlayer
 import net.lyragames.practice.event.player.EventPlayerState
+import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.block.Block
+import org.bukkit.entity.Item
 import java.util.*
 
 
@@ -22,11 +27,17 @@ import java.util.*
  * Redistribution of this Project is not allowed
  *
  * @author Zowpy
- * Created: 3/16/2022
+ * Created: 3/21/2022
  * Project: lPractice
  */
 
-class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
+class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, eventMap) {
+
+    init {
+        type = EventType.BRACKETS
+    }
+
+    val blocksPlaced: MutableList<Block> = mutableListOf()
 
     override fun startRound() {
         state = EventState.STARTING
@@ -37,7 +48,11 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             eventPlayer.roundsPlayed++
             eventPlayer.state = EventPlayerState.FIGHTING
 
+            val profile = Profile.getByUUID(eventPlayer.uuid)
+
             PlayerUtil.reset(eventPlayer.player)
+
+            profile?.getKitStatistic(kit.name)?.generateBooks(eventPlayer.player)
 
             if (i == 0) {
                 eventPlayer.player.teleport(eventMap.l1)
@@ -79,6 +94,8 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             PlayerUtil.reset(eventPlayer.player)
         }
 
+        reset()
+
         if (getRemainingRounds() == 0) {
             end(winner)
         }else {
@@ -92,5 +109,10 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             removePlayer(it.player)
         }
         EventManager.event = null
+    }
+
+    fun reset() {
+        blocksPlaced.forEach { it.type = Material.AIR }
+        droppedItems.forEach { it.remove() }
     }
 }

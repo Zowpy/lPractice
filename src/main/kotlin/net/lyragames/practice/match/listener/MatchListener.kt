@@ -2,6 +2,8 @@ package net.lyragames.practice.match.listener
 
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
+import net.lyragames.practice.event.impl.BracketsEvent
+import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
@@ -47,6 +49,29 @@ object MatchListener : Listener {
             return
         }
 
+        if (profile?.state == ProfileState.EVENT) {
+            val currentEvent = EventManager.event
+            val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
+
+            if (eventPlayer?.state == EventPlayerState.FIGHTING) {
+                if (currentEvent.type == EventType.BRACKETS) {
+                    val bracketEvent = currentEvent as BracketsEvent
+
+                    if (bracketEvent.kit.kitData.build && bracketEvent.state == EventState.FIGHTING) {
+                        bracketEvent.blocksPlaced.add(event.blockPlaced)
+                    }else {
+                        event.isCancelled = true
+                    }
+                }else {
+                    event.isCancelled = true
+                }
+            }else {
+                event.isCancelled = true
+            }
+
+            return
+        }
+
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
 
@@ -72,6 +97,29 @@ object MatchListener : Listener {
             if (player.gameMode != GameMode.CREATIVE) {
                 event.isCancelled = true
             }
+            return
+        }
+
+        if (profile?.state == ProfileState.EVENT) {
+            val currentEvent = EventManager.event
+            val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
+
+            if (eventPlayer?.state == EventPlayerState.FIGHTING) {
+                if (currentEvent.type == EventType.BRACKETS) {
+                    val bracketEvent = currentEvent as BracketsEvent
+
+                    if (bracketEvent.kit.kitData.build && bracketEvent.state == EventState.FIGHTING && bracketEvent.blocksPlaced.contains(event.block)) {
+                        bracketEvent.blocksPlaced.remove(event.block)
+                    }else {
+                        event.isCancelled = true
+                    }
+                }else {
+                    event.isCancelled = true
+                }
+            }else {
+                event.isCancelled = true
+            }
+
             return
         }
 
@@ -101,6 +149,29 @@ object MatchListener : Listener {
             return
         }
 
+        if (profile?.state == ProfileState.EVENT) {
+            val currentEvent = EventManager.event
+            val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
+
+            if (eventPlayer?.state == EventPlayerState.FIGHTING) {
+                if (currentEvent.type == EventType.BRACKETS) {
+                    val bracketEvent = currentEvent as BracketsEvent
+
+                    if (bracketEvent.kit.kitData.build && bracketEvent.state == EventState.FIGHTING) {
+                        bracketEvent.blocksPlaced.add(event.blockClicked)
+                    }else {
+                        event.isCancelled = true
+                    }
+                }else {
+                    event.isCancelled = true
+                }
+            }else {
+                event.isCancelled = true
+            }
+
+            return
+        }
+
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
             if (match!!.kit.kitData.build) {
@@ -118,6 +189,29 @@ object MatchListener : Listener {
 
         if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
             event.isCancelled = true
+            return
+        }
+
+        if (profile?.state == ProfileState.EVENT) {
+            val currentEvent = EventManager.event
+            val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
+
+            if (eventPlayer?.state == EventPlayerState.FIGHTING) {
+                if (currentEvent.type == EventType.BRACKETS) {
+                    val bracketEvent = currentEvent as BracketsEvent
+
+                    if (bracketEvent.kit.kitData.build && bracketEvent.state == EventState.FIGHTING && bracketEvent.blocksPlaced.contains(event.blockClicked)) {
+                        bracketEvent.blocksPlaced.remove(event.blockClicked)
+                    }else {
+                        event.isCancelled = true
+                    }
+                }else {
+                    event.isCancelled = true
+                }
+            }else {
+                event.isCancelled = true
+            }
+
             return
         }
 
@@ -146,6 +240,25 @@ object MatchListener : Listener {
             return
         }
 
+        if (profile?.state == ProfileState.EVENT) {
+            val currentEvent = EventManager.event
+            val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
+
+            if (eventPlayer?.state == EventPlayerState.FIGHTING) {
+
+                if (currentEvent.state == EventState.FIGHTING) {
+                    currentEvent.droppedItems.add(event.itemDrop)
+                }else {
+                    event.isCancelled = true
+                }
+
+            }else {
+                event.isCancelled = true
+            }
+
+            return
+        }
+
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
 
@@ -166,6 +279,25 @@ object MatchListener : Listener {
         }
 
         if (profile?.state == ProfileState.FFA) {
+            return
+        }
+
+        if (profile?.state == ProfileState.EVENT) {
+            val currentEvent = EventManager.event
+            val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
+
+            if (eventPlayer?.state == EventPlayerState.FIGHTING) {
+
+                if (currentEvent.state == EventState.FIGHTING && currentEvent.droppedItems.contains(event.item)) {
+                    currentEvent.droppedItems.remove(event.item)
+                }else {
+                    event.isCancelled = true
+                }
+
+            }else {
+                event.isCancelled = true
+            }
+
             return
         }
 
@@ -384,6 +516,15 @@ object MatchListener : Listener {
                 return
             }
 
+            if (shooterData?.state == ProfileState.EVENT) {
+                val currentEvent = EventManager.event
+                val eventPlayer = currentEvent?.getPlayer(shooter.uniqueId)
+
+                if (eventPlayer?.state != EventPlayerState.FIGHTING) {
+                    event.isCancelled = true
+                }
+            }
+
             if (shooterData?.state == ProfileState.MATCH &&
                 Match.getByUUID(shooterData.match!!)?.matchState == MatchState.FIGHTING
             ) {
@@ -478,6 +619,9 @@ object MatchListener : Listener {
             } else if (profile?.state == ProfileState.EVENT) {
 
                 val currentEvent = EventManager.event ?: return
+
+                if (currentEvent.type != EventType.SUMO) return
+
                 val eventPlayer = currentEvent.getPlayer(player.uniqueId)
 
                 if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == player.uniqueId }) return

@@ -23,6 +23,8 @@ import net.lyragames.practice.database.Mongo
 import net.lyragames.practice.database.MongoCredentials
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.EventMapProvider
+import net.lyragames.practice.event.map.type.EventMapType
+import net.lyragames.practice.event.map.type.EventMapTypeProvider
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.KitProvider
@@ -83,7 +85,7 @@ class PracticePlugin : LyraPlugin() {
 
         blade = Blade.of()
             .containerCreator(BukkitCommandContainer.CREATOR).binding(BukkitBindings()).binding(DefaultBindings())
-            .bind(Arena::class.java, ArenaProvider).bind(Kit::class.java, KitProvider).bind(EventMap::class.java, EventMapProvider)
+            .bind(Arena::class.java, ArenaProvider).bind(Kit::class.java, KitProvider).bind(EventMap::class.java, EventMapProvider).bind(EventMapType::class.java, EventMapTypeProvider)
             .build()
 
         blade

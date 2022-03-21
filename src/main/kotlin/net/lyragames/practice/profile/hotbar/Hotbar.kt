@@ -128,6 +128,7 @@ object Hotbar {
                 ItemBuilder(XMaterial.RED_DYE.parseItem()).name("&cLeave Event").build(), true
             ) {
                 EventManager.event?.removePlayer(player)
+                Bukkit.broadcastMessage("${CC.GREEN}${player.name}${CC.YELLOW} has left the event. ${CC.GRAY}(${EventManager.event?.players?.size}/${EventManager.event?.requiredPlayers})")
             }.itemStack)
         }
     }

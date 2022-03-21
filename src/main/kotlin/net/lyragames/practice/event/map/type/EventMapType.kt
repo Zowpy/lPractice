@@ -1,4 +1,4 @@
-package net.lyragames.practice.event
+package net.lyragames.practice.event.map.type
 
 
 /**
@@ -6,11 +6,11 @@ package net.lyragames.practice.event
  * Redistribution of this Project is not allowed
  *
  * @author Zowpy
- * Created: 3/13/2022
+ * Created: 3/21/2022
  * Project: lPractice
  */
 
-enum class EventType(val eventName: String) {
+enum class EventMapType(val eventName: String) {
 
     SUMO("Sumo"), BRACKETS("Brackets")
 }

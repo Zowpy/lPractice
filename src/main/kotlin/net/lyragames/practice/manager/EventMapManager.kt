@@ -3,6 +3,7 @@ package net.lyragames.practice.manager
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.map.EventMap
+import net.lyragames.practice.event.map.type.EventMapType
 import java.util.concurrent.ThreadLocalRandom
 
 object EventMapManager {
@@ -20,6 +21,7 @@ object EventMapManager {
             val eventMap = EventMap(key)
 
             val section = configFile.getConfigurationSection("maps.${key}")
+            eventMap.type = EventMapType.valueOf(section.getString("type").uppercase())
 
             if (section.getString("spawn") != null) {
                 eventMap.spawn = LocationUtil.deserialize(section.getString("spawn"))
@@ -39,6 +41,11 @@ object EventMapManager {
 
     fun getFreeMap(): EventMap? {
         return if (maps.isEmpty()) null else maps[ThreadLocalRandom.current().nextInt(maps.size)]
+    }
+
+    fun getFreeMap(eventMapType: EventMapType): EventMap? {
+        return maps.stream().filter { it.type == eventMapType }
+            .findAny().orElse(null)
     }
 
     fun getByName(name: String): EventMap? {

@@ -8,6 +8,7 @@ import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import org.bukkit.Bukkit
+import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.stream.Collectors
@@ -33,6 +34,7 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
     var created = System.currentTimeMillis()
 
+    val droppedItems: MutableList<Item> = mutableListOf()
     var playingPlayers: MutableList<EventPlayer> = mutableListOf()
 
     fun getRemainingRounds(): Int {
@@ -95,8 +97,6 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
         profile?.state = ProfileState.LOBBY
         Hotbar.giveHotbar(profile!!)
-
-        Bukkit.broadcastMessage("${CC.GREEN}${player.name}${CC.YELLOW} has left the event. ${CC.GRAY}(${players.size}/${requiredPlayers})")
     }
 
     open fun canHit(player: Player, target: Player): Boolean {

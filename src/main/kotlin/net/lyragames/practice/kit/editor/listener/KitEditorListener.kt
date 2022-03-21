@@ -1,7 +1,9 @@
 package net.lyragames.practice.kit.editor.listener
 
 import net.lyragames.llib.utils.CC
+import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.kit.editor.KitManagementMenu
+import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.GameMode
@@ -51,27 +53,6 @@ object KitEditorListener: Listener {
         }
     }
 
-   /* @EventHandler(priority = EventPriority.HIGH)
-    fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-        if (event.item != null && (event.action == Action.RIGHT_CLICK_AIR ||
-                    event.action == Action.RIGHT_CLICK_BLOCK)
-        ) {
-            val hotbarItem: HotbarItem = Hotbar.fromItemStack(event.item)
-            if (hotbarItem != null) {
-                var cancelled = true
-                if (hotbarItem === HotbarItem.KIT_EDITOR) {
-                    val profile: Profile = Profile.getByUuid(event.player.uniqueId)
-                    if (profile.getState() === ProfileState.LOBBY || profile.getState() === ProfileState.QUEUEING) {
-                        KitEditorSelectKitMenu().openMenu(event.player)
-                    }
-                } else {
-                    cancelled = false
-                }
-                event.isCancelled = cancelled
-            }
-        }
-    } */
-
     @EventHandler
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         if (event.whoClicked is Player) {
@@ -83,6 +64,16 @@ object KitEditorListener: Listener {
                 }
             }
             val profile = Profile.getByUUID(player.uniqueId)
+
+            if (profile?.state == ProfileState.EVENT) {
+                val currentEvent = EventManager.event
+                val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
+
+                if (eventPlayer?.state == EventPlayerState.FIGHTING) {
+                    return
+                }
+            }
+
             if (profile?.state != ProfileState.MATCH && profile?.state != ProfileState.FFA && player.gameMode == GameMode.SURVIVAL) {
                 val clicked = event.clickedInventory
                 if (profile?.kitEditorData?.active!!) {

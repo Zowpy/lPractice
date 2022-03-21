@@ -6,6 +6,7 @@ import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.event.map.EventMap
+import net.lyragames.practice.event.map.type.EventMapType
 import net.lyragames.practice.manager.EventMapManager
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -21,6 +22,7 @@ object EventMapCommand {
         sender.sendMessage("${CC.YELLOW}/eventmap spawn <name>")
         sender.sendMessage("${CC.YELLOW}/eventmap pos1 <name>")
         sender.sendMessage("${CC.YELLOW}/eventmap pos2 <name>")
+        sender.sendMessage("${CC.YELLOW}/eventmap type <name> <type> - you can choose from Sumo & Brackets")
     }
 
     @Command(value = ["eventmap create"], description = "create a new event map")
@@ -72,5 +74,14 @@ object EventMapCommand {
         arena.save()
 
         player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " location 2!")
+    }
+
+    @Command(value = ["eventmap type"], description = "set an event map's type")
+    @Permission("lpractice.command.eventmap.setup")
+    fun type(@Sender player: Player, arena: EventMap, type: EventMapType) {
+        arena.type = type
+        arena.save()
+
+        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " type!")
     }
 }
