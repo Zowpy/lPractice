@@ -20,10 +20,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.PotionSplashEvent
-import org.bukkit.event.entity.ProjectileLaunchEvent
+import org.bukkit.event.entity.*
 import org.bukkit.event.player.*
 
 
@@ -438,7 +435,6 @@ object MatchListener : Listener {
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
                         player.health = 0.0
-                        event.damage = 0.0
                         match.handleDeath(matchPlayer)
                     }
                 }
@@ -465,10 +461,16 @@ object MatchListener : Listener {
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
                         match.handleDeath(matchPlayer)
+                        event.isCancelled = true
                     }
                 }
             }
         }
+    }
+
+    @EventHandler
+    fun onDeath(event: PlayerDeathEvent) {
+        event.keepInventory = true
     }
 
     @EventHandler

@@ -4,6 +4,7 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.event.Event
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
@@ -105,8 +106,16 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
 
     override fun end(winner: EventPlayer?) {
         Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "N/A"} won the event!")
-        players.forEach {
-            removePlayer(it.player)
+        players.forEach { player ->
+            val profile = Profile.getByUUID(player.uuid)
+
+            players.forEach {
+                it.player.hidePlayer(player.player)
+                player.player.hidePlayer(it.player)
+            }
+
+            profile?.state = ProfileState.LOBBY
+            Hotbar.giveHotbar(profile!!)
         }
         EventManager.event = null
     }

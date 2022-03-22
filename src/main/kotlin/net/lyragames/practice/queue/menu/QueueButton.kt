@@ -30,10 +30,10 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
         return ItemBuilder(queue.kit.displayItem)
             .name(CC.BOLD + CC.YELLOW + queue.kit.name).addFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS)
             .lore(arrayListOf(
-                CC.YELLOW + "Playing: ${CC.PINK}${Match.matches.stream().filter { 
+                CC.YELLOW + "Playing: ${CC.GREEN}${Match.matches.stream().filter { 
                     it!!.kit.name.equals(queue.kit.name, false) && it.ranked == ranked
                 }.count() * 2}",
-                CC.YELLOW + "Queuing: ${CC.PINK}${queue.queuePlayers.size}",
+                CC.YELLOW + "Queuing: ${CC.GREEN}${queue.queuePlayers.size}",
                 "",
                 CC.YELLOW + "Click to play!"
             )).build()
@@ -48,15 +48,16 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
                 return
             }
 
-            val queuePlayer = QueuePlayer(player.uniqueId, player.name)
+            val queuePlayer = QueuePlayer(player.uniqueId, player.name, queue)
+            queuePlayer.elo = profile?.getKitStatistic(queue.kit.name)?.elo!!
 
-            profile?.queuePlayer = queuePlayer
-            profile?.state = ProfileState.QUEUE
+            profile.queuePlayer = queuePlayer
+            profile.state = ProfileState.QUEUE
 
             queue.queuePlayers.add(queuePlayer)
 
             player.sendMessage("${CC.YELLOW}You have been added to the queue!")
-            Hotbar.giveHotbar(profile!!)
+            Hotbar.giveHotbar(profile)
             player.closeInventory()
         }
     }

@@ -5,7 +5,7 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.llib.utils.TimeUtil
-import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
@@ -15,7 +15,6 @@ import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import java.util.stream.Collector
 import java.util.stream.Collectors
 
 
@@ -119,6 +118,24 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                     .replace("<kit>", ffa?.kit?.name!!).replace("<kills>", ffaPlayer?.kills.toString())
                     .replace("<killstreak>", ffaPlayer?.killStreak.toString())
                     .replace("<deaths>", ffaPlayer?.death.toString()).replace("<ping>", PlayerUtil.getPing(player).toString())) }.collect(Collectors.toList())
+        }
+
+        if (profile.state == ProfileState.EVENT) {
+
+            val event = EventManager.event
+                ?: return configFile.getStringList("scoreboard.lobby").stream()
+                    .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                        .replace("<queuing>", QueueManager.inQueue().toString()))
+                        .replace("<in_match>", Match.inMatch().toString()) }.collect(Collectors.toList())
+
+
+
+            return configFile.getStringList("scoreboard.event").stream()
+                .map { CC.translate(it.replace("<state>", event.state.stateName)
+                    .replace("<type>", event.type.eventName)
+                    .replace("<playing1>", if (event.playingPlayers.isEmpty()) "N/A" else event.playingPlayers[0].player.name)
+                    .replace("<playing2>", if (event.playingPlayers.isEmpty()) "N/A" else event.playingPlayers[1].player.name)) }
+                .collect(Collectors.toList())
         }
 
         return mutableListOf()

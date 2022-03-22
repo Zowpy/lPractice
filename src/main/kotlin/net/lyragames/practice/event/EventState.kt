@@ -10,7 +10,7 @@ package net.lyragames.practice.event
  * Project: lPractice
  */
 
-enum class EventState {
+enum class EventState(val stateName: String) {
 
-    ANNOUNCING, STARTING, FIGHTING, ENDING
+    ANNOUNCING("Announcing"), STARTING("Starting"), FIGHTING("Fighting"), ENDING("Ending")
 }

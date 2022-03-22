@@ -29,12 +29,10 @@ class QueueMenu(val ranked: Boolean): Menu() {
     override fun getButtons(player: Player?): MutableMap<Int, Button> {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
 
-        var i = 0
         for (queue in QueueManager.queues) {
             if (ranked != queue.ranked) continue
 
-            toReturn[i] = QueueButton(queue, ranked)
-            i++
+            toReturn[toReturn.size] = QueueButton(queue, ranked)
         }
 
         return toReturn
