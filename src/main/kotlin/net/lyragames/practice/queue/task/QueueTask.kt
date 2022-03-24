@@ -1,13 +1,17 @@
 package net.lyragames.practice.queue.task
 
 import net.lyragames.llib.utils.CC
+import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
@@ -101,18 +105,11 @@ object QueueTask: BukkitRunnable() {
 
                         val secondPlayer = Bukkit.getPlayer(secondQueueProfile.uuid) ?: continue
 
-//							if (firstProfile.getOptions().isUsingPingFactor() ||
-//							    secondProfile.getOptions().isUsingPingFactor()) {
-//								if (firstPlayer.getPing() >= secondPlayer.getPing()) {
-//									if (firstPlayer.getPing() - secondPlayer.getPing() >= 50) {
-//										continue;
-//									}
-//								} else {
-//									if (secondPlayer.getPing() - firstPlayer.getPing() >= 50) {
-//										continue;
-//									}
-//								}
-//							}
+                        if (secondQueueProfile.pingFactor != 0 && PlayerUtil.getPing(firstPlayer) > secondQueueProfile.pingFactor ||
+                                firstQueueProfile.pingFactor != 0 && PlayerUtil.getPing(secondPlayer) > firstQueueProfile.pingFactor) {
+                            continue
+                        }
+
                         if (queue.ranked) {
                             if (!firstQueueProfile.isInRange(secondQueueProfile.elo) || !secondQueueProfile.isInRange(
                                     firstQueueProfile.elo
@@ -134,8 +131,6 @@ object QueueTask: BukkitRunnable() {
 
                         arena.free = false
 
-
-
                         queue.queuePlayers.remove(firstQueueProfile)
                         queue.queuePlayers.remove(secondQueueProfile)
 
@@ -153,6 +148,8 @@ object QueueTask: BukkitRunnable() {
                         match.addPlayer(firstPlayer, arena.l1!!)
                         match.addPlayer(secondPlayer, arena.l2!!)
 
+                        generateMessage(firstPlayer, secondPlayer, queue.ranked, arena, queue.kit)
+
                         Match.matches.add(match)
 
                         match.start()
@@ -160,5 +157,32 @@ object QueueTask: BukkitRunnable() {
                 }
             }
         }catch (ignored: ConcurrentModificationException) {}
+    }
+
+    private fun generateMessage(firstPlayer: Player, secondPlayer: Player, ranked: Boolean, arena: Arena, kit: Kit) {
+        firstPlayer.sendMessage(" ")
+        secondPlayer.sendMessage(" ")
+
+        firstPlayer.sendMessage("${CC.YELLOW}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"} Match")
+        secondPlayer.sendMessage("${CC.YELLOW}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"} Match")
+
+        firstPlayer.sendMessage("${CC.YELLOW} ⚫ Map: ${CC.GREEN}${arena.name}")
+        firstPlayer.sendMessage("${CC.YELLOW} ⚫ Opponent: ${CC.RED}${secondPlayer.name}")
+        firstPlayer.sendMessage("${CC.YELLOW} ⚫ Ping: ${CC.RED}${PlayerUtil.getPing(secondPlayer)}")
+
+        secondPlayer.sendMessage("${CC.YELLOW} ⚫ Map: ${CC.GREEN}${arena.name}")
+        secondPlayer.sendMessage("${CC.YELLOW} ⚫ Opponent: ${CC.RED}${firstPlayer.name}")
+        secondPlayer.sendMessage("${CC.YELLOW} ⚫ Ping: ${CC.RED}${PlayerUtil.getPing(firstPlayer)}")
+
+        if (ranked) {
+            val profile = Profile.getByUUID(firstPlayer.uniqueId)
+            val profile1 = Profile.getByUUID(secondPlayer.uniqueId)
+
+            secondPlayer.sendMessage("${CC.YELLOW} ⚫ ELO: ${CC.RED}${profile?.getKitStatistic(kit.name)?.elo}")
+            firstPlayer.sendMessage("${CC.YELLOW} ⚫ ELO: ${CC.RED}${profile1?.getKitStatistic(kit.name)?.elo}")
+        }
+
+        firstPlayer.sendMessage(" ")
+        secondPlayer.sendMessage(" ")
     }
 }

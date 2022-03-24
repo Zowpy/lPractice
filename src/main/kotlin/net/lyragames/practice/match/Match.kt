@@ -1,6 +1,8 @@
 package net.lyragames.practice.match
 
+import com.google.common.base.Joiner
 import mkremins.fanciful.FancyMessage
+import net.lyragames.llib.title.TitleBar
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
@@ -11,9 +13,12 @@ import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
+import net.lyragames.practice.match.spectator.MatchSpectator
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.EloUtil
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -42,6 +47,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val blocksPlaced: MutableList<Block> = mutableListOf()
     val droppedItems: MutableList<Item> = mutableListOf()
     val snapshots: MutableList<MatchSnapshot> = mutableListOf()
+    val spectators: MutableList<MatchSpectator> = mutableListOf()
 
     fun start() {
 
@@ -76,6 +82,56 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
     }
 
+    open fun addSpectator(player: Player) {
+        val profile = Profile.getByUUID(player.uniqueId)
+        profile?.state = ProfileState.SPECTATING
+        profile?.spectatingMatch = uuid
+
+        if (!profile?.silent!!) {
+            sendMessage("&a${player.name}&e started spectating!")
+        }else {
+            sendMessage("&7[S] &a${player.name}&e started spectating!", "lpractice.silent")
+        }
+
+        players.forEach {
+            player.showPlayer(it.player)
+        }
+
+        PlayerUtil.reset(player)
+        player.gameMode = GameMode.CREATIVE
+
+        Hotbar.giveHotbar(profile)
+
+        val matchSpectator = MatchSpectator(player.uniqueId, player.name)
+        spectators.add(matchSpectator)
+    }
+
+    open fun removeSpectator(player: Player) {
+        val profile = Profile.getByUUID(player.uniqueId)
+        profile?.state = ProfileState.LOBBY
+        profile?.spectatingMatch = null
+
+        if (!profile?.silent!!) {
+            sendMessage("&a${player.name}&e stopped spectating!")
+        }else {
+            sendMessage("&7[S] &a${player.name}&e stopped spectating!", "lpractice.silent")
+        }
+
+        players.forEach {
+            player.hidePlayer(it.player)
+        }
+
+        PlayerUtil.reset(player)
+
+        spectators.removeIf { it.uuid == player.uniqueId }
+
+        Hotbar.giveHotbar(profile)
+
+        if (Constants.SPAWN != null) {
+            player.teleport(Constants.SPAWN)
+        }
+    }
+
     open fun canHit(player: Player, target: Player): Boolean {
         return true
     }
@@ -92,7 +148,13 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     fun sendMessage(message: String) {
-        players.stream().map { it.player }.forEach{ player -> player?.sendMessage(CC.translate(message)) }
+        players.stream().map { it.player }.forEach { it.sendMessage(CC.translate(message)) }
+        spectators.stream().map { it.player }.forEach { it.sendMessage(CC.translate(message)) }
+    }
+
+    fun sendMessage(message: String, permission: String) {
+        players.stream().map { it.player }.forEach { if (it.hasPermission(permission)) it.sendMessage(CC.translate(message)) }
+        spectators.stream().map { it.player }.forEach { if (it.hasPermission(permission)) it.sendMessage(CC.translate(message)) }
     }
 
     open fun handleDeath(player: MatchPlayer) {
@@ -106,6 +168,15 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
             sendMessage("&c${player.name} &ehas been killed by &c" + matchPlayer?.name + "&e!")
+        }
+
+        var loserProfile: Profile? = Profile.getByUUID(player.uuid)
+
+        if (loserProfile == null) {
+            val newProfile = Profile(player.uuid, player.name)
+            newProfile.load()
+
+            loserProfile = newProfile
         }
 
         for (matchPlayer in players) {
@@ -156,7 +227,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
                 if (ranked) {
                     kitStatistic.rankedWins++
-                    kitStatistic.elo =+ 13
+                    kitStatistic.elo =+ EloUtil.getNewRating(kitStatistic.elo, loserProfile.getKitStatistic(kit.name)?.elo!!, true)
 
                     if (kitStatistic.elo >= kitStatistic.peakELO) {
                         kitStatistic.peakELO = kitStatistic.elo
@@ -196,10 +267,14 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             MatchSnapshot.snapshots.add(snapshot)
         }
 
-        getOpponent(player.uuid)?.let { endMessage(it, player) }
+        getOpponent(player.uuid)?.let {
+            endMessage(it, player)
+            sendTitleBar(it)
+        }
 
         matches.remove(this)
         reset()
+        arena.free = true
     }
 
     fun handleQuit(matchPlayer: MatchPlayer) {
@@ -222,10 +297,32 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             .text("${loser.name} \n")
             .command("/matchsnapshot ${loser.uuid}")
             .then()
-            .text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
 
-        players.stream().filter { !it.offline }
-            .forEach { fancyMessage.send(it.player) }
+        if (spectators.isNotEmpty()) {
+            fancyMessage.text("\n${CC.GREEN}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
+                .then().text("${Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name })}\n")
+                .then().text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+        }else {
+            fancyMessage.text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+        }
+
+        for (player in players) {
+            if (player.offline) continue
+
+            fancyMessage.send(player.player)
+        }
+
+        for (spectator in spectators) {
+            if (spectator.player == null) continue
+
+            fancyMessage.send(spectator.player)
+        }
+    }
+
+    fun sendTitleBar(winner: MatchPlayer) {
+        val titleBar = TitleBar("${CC.GREEN}${winner.name}${CC.YELLOW} won!", false)
+
+        players.forEach { if (it.player != null) titleBar.sendPacket(it.player) }
     }
 
     fun reset() {

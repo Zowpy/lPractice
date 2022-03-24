@@ -31,6 +31,7 @@ class Profile(val uuid: UUID, val name: String) {
 
     var match: UUID? = null
     var ffa: UUID? = null
+    var spectatingMatch: UUID? = null
 
     var queuePlayer: QueuePlayer? = null
 
@@ -45,6 +46,8 @@ class Profile(val uuid: UUID, val name: String) {
     var kitEditorData: KitEditorData? = KitEditorData()
     var settings: Settings = Settings()
 
+    var silent = false
+
     var state = ProfileState.LOBBY
 
     val player: Player
@@ -56,6 +59,7 @@ class Profile(val uuid: UUID, val name: String) {
             .append("kitsStatistics", kitStatistics.stream().map { kitStatistic -> PracticePlugin.GSON.toJson(kitStatistic) }.collect(Collectors.toList()))
             .append("globalStatistics", PracticePlugin.GSON.toJson(globalStatistic))
             .append("settings", PracticePlugin.GSON.toJson(settings))
+            .append("silent", silent)
     }
 
     fun save() {
@@ -104,6 +108,8 @@ class Profile(val uuid: UUID, val name: String) {
         kitStatistics = document.getList("kitsStatistics", String::class.java).stream().map { s -> PracticePlugin.GSON.fromJson(s, KitStatistic::class.java) }.collect(Collectors.toList())
         globalStatistic = PracticePlugin.GSON.fromJson(document.getString("globalStatistics"), GlobalStatistics::class.java)
         settings = PracticePlugin.GSON.fromJson(document.getString("settings"), Settings::class.java)
+
+        silent = document.getBoolean("silent")
 
         for (kit in Kit.kits) {
             var found = false

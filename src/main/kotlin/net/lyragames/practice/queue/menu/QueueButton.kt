@@ -48,7 +48,7 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
                 return
             }
 
-            val queuePlayer = QueuePlayer(player.uniqueId, player.name, queue)
+            val queuePlayer = QueuePlayer(player.uniqueId, player.name, queue, profile?.settings?.pingRestriction!!)
             queuePlayer.elo = profile?.getKitStatistic(queue.kit.name)?.elo!!
 
             profile.queuePlayer = queuePlayer
@@ -56,7 +56,12 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
 
             queue.queuePlayers.add(queuePlayer)
 
-            player.sendMessage("${CC.YELLOW}You have been added to the queue!")
+            player.sendMessage(" ")
+            player.sendMessage("${CC.YELLOW}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"}")
+            player.sendMessage("${CC.YELLOW} ⚫ Ping Range: ${CC.GREEN}[${if (profile.settings.pingRestriction == 0) "Unrestricted" else profile.settings.pingRestriction}]")
+            player.sendMessage("${CC.GRAY}${CC.ITALIC} Searching for match...")
+            player.sendMessage(" ")
+
             Hotbar.giveHotbar(profile)
             player.closeInventory()
         }

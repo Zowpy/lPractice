@@ -1,4 +1,4 @@
-package net.lyragames.practice.profile
+package net.lyragames.practice.utils
 
 
 /**
@@ -6,11 +6,8 @@ package net.lyragames.practice.profile
  * Redistribution of this Project is not allowed
  *
  * @author Zowpy
- * Created: 2/16/2022
+ * Created: 3/23/2022
  * Project: lPractice
  */
 
-enum class ProfileState {
-
-    LOBBY, QUEUE, MATCH, EVENT, SPECTATING, FFA
-}
+class KFactor(val startIndex: Int, val endIndex: Int, val value: Double)

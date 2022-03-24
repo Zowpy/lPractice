@@ -9,6 +9,7 @@ import net.lyragames.practice.kit.editor.KitEditorSelectKitMenu
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.manager.QueueManager
+import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.ffa.menu.FFAChoosingMenu
 import net.lyragames.practice.party.duel.procedure.PartyDuelProcedure
 import net.lyragames.practice.party.duel.procedure.menu.PartyDuelSelectPartyMenu
@@ -94,6 +95,13 @@ object Hotbar {
                 ItemBuilder(Material.NETHER_STAR).name("&eCreate Party").build(), true
             ) { player.chat("/party create") }.itemStack)
 
+            player.inventory.setItem(7, createCustomItem(
+                player,
+                ItemBuilder(Material.EYE_OF_ENDER).name("&eHost Events").build()
+            ) { it.isCancelled = true
+                player.chat("/event host")
+            }.itemStack)
+
             player.inventory.setItem(8, createCustomItem(
                 player,
                 ItemBuilder(Material.BOOK).name("&eEdit Kit").addFlags(ItemFlag.HIDE_ATTRIBUTES).build()
@@ -129,6 +137,21 @@ object Hotbar {
             ) {
                 EventManager.event?.removePlayer(player)
                 Bukkit.broadcastMessage("${CC.GREEN}${player.name}${CC.YELLOW} has left the event. ${CC.GRAY}(${EventManager.event?.players?.size}/${EventManager.event?.requiredPlayers})")
+            }.itemStack)
+        }else if (profile.state == ProfileState.SPECTATING) {
+
+            player.inventory.setItem(8, createCustomItem(
+                player,
+                ItemBuilder(XMaterial.RED_DYE.parseItem()).name("&cLeave Spectating").build(),
+                true
+            ) {
+                profile.state = ProfileState.LOBBY
+
+                if (profile.spectatingMatch != null) {
+                    val match = Match.getByUUID(profile.spectatingMatch!!)
+
+                    match?.removeSpectator(player)
+                }
             }.itemStack)
         }
     }

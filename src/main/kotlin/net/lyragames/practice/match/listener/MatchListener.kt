@@ -13,6 +13,7 @@ import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.ThrownPotion
@@ -38,6 +39,11 @@ object MatchListener : Listener {
     fun onPlace(event: BlockPlaceEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
+
+        if (profile?.state == ProfileState.SPECTATING) {
+            event.isCancelled = true
+            return
+        }
 
         if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
             if (player.gameMode != GameMode.CREATIVE) {
@@ -89,6 +95,11 @@ object MatchListener : Listener {
     fun onBreak(event: BlockBreakEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
+
+        if (profile?.state == ProfileState.SPECTATING) {
+            event.isCancelled = true
+            return
+        }
 
         if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
             if (player.gameMode != GameMode.CREATIVE) {
@@ -434,6 +445,7 @@ object MatchListener : Listener {
 
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
+                        event.damage = 0.0
                         player.health = 0.0
                         match.handleDeath(matchPlayer)
                     }
@@ -460,6 +472,7 @@ object MatchListener : Listener {
 
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
+                        event.damage = 0.0
                         match.handleDeath(matchPlayer)
                         event.isCancelled = true
                     }
@@ -582,6 +595,16 @@ object MatchListener : Listener {
                 val match = Match.getByUUID(profile.match!!)
 
                 match?.handleQuit(match.getMatchPlayer(player.uniqueId)!!)
+            }
+        }
+
+        if (profile?.state == ProfileState.SPECTATING) {
+
+            if (profile.spectatingMatch != null) {
+
+                val match = Match.getByUUID(profile.spectatingMatch!!)
+
+                match?.removeSpectator(player)
             }
         }
 

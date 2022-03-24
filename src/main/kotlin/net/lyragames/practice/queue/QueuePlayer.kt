@@ -14,7 +14,7 @@ import java.util.*
  * Project: lPractice
  */
 
-class QueuePlayer(var uuid: UUID, var name: String, val queue: Queue) {
+class QueuePlayer(var uuid: UUID, var name: String, val queue: Queue, val pingFactor: Int) {
 
     var elo = 0
     val started = System.currentTimeMillis()

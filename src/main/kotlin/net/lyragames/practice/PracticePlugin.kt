@@ -98,6 +98,8 @@ class PracticePlugin : LyraPlugin() {
             .register(PartyCommand)
             .register(EventMapCommand)
             .register(EventCommand)
+            .register(SpectateCommand)
+            .register(SettingsCommand)
 
         QueueTask
         EventAnnounceTask

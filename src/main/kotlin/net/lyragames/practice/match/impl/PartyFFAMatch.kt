@@ -1,5 +1,6 @@
 package net.lyragames.practice.match.impl
 
+import com.google.common.base.Joiner
 import mkremins.fanciful.FancyMessage
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
@@ -178,9 +179,24 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
             i++
         }
 
-        fancyMessage.text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+        if (spectators.isNotEmpty()) {
+            fancyMessage.text("\n${CC.GREEN}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
+                .then().text("${Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name })}\n")
+                .then().text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+        }else {
+            fancyMessage.text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+        }
 
-        players.stream().filter { !it.offline }
-            .forEach { fancyMessage.send(it.player) }
+        for (player in players) {
+            if (player.offline) continue
+
+            fancyMessage.send(player.player)
+        }
+
+        for (spectator in spectators) {
+            if (spectator.player == null) continue
+
+            fancyMessage.send(spectator.player)
+        }
     }
 }

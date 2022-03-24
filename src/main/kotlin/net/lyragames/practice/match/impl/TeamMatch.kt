@@ -129,7 +129,6 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
     }
 
     override fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
-
         val losingTeam = teams.stream().filter { team -> !team.players.stream().anyMatch { !it.dead } }.findAny().orElse(null)
         val winningTeam = teams.stream().filter { it.uuid != losingTeam.uuid }.findAny().orElse(null)
 
@@ -138,10 +137,6 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
             .then()
             .text("${CC.GREEN}Winner: ")
             .then()
-
-           // .then()
-            //.text("${CC.RED}Loser: ")
-            //.then()
 
         var wi = 1
         for (matchPlayer in winningTeam.players) {
@@ -172,10 +167,25 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
             i++
         }
 
-        fancyMessage.text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+        if (spectators.isNotEmpty()) {
+            fancyMessage.text("\n${CC.GREEN}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
+                .then().text("${Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name })}\n")
+                .then().text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+        }else {
+            fancyMessage.text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+        }
 
-        players.stream().filter { !it.offline }
-            .forEach { fancyMessage.send(it.player) }
+        for (player in players) {
+            if (player.offline) continue
+
+            fancyMessage.send(player.player)
+        }
+
+        for (spectator in spectators) {
+            if (spectator.player == null) continue
+
+            fancyMessage.send(spectator.player)
+        }
     }
 
     override fun canHit(player: Player, target: Player): Boolean {
