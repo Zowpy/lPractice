@@ -65,6 +65,11 @@ object DuelCommand {
         val profile = Profile.getByUUID(player.uniqueId)
         val profile1 = Profile.getByUUID(target.uniqueId)
 
+        if (profile?.state != ProfileState.LOBBY || profile1?.state != ProfileState.LOBBY) {
+            player.sendMessage("${CC.RED}You can't do this right now!")
+            return
+        }
+
         if (profile?.party == null) {
             player.sendMessage("${CC.RED}You are not in a party!")
             return

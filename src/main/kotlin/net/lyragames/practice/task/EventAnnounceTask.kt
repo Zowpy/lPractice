@@ -22,6 +22,17 @@ object EventAnnounceTask: BukkitRunnable() {
         val event = EventManager.event ?: return
         if (event.state != EventState.ANNOUNCING) return
 
+        if (event.players.isEmpty()) {
+            Bukkit.broadcastMessage("${CC.RED}Stopped event as no one joined!")
+            event.players.stream().forEach {
+                Profile.getByUUID(it.uuid)?.state = ProfileState.LOBBY
+            }
+            event.players.clear()
+
+            EventManager.event = null
+            return
+        }
+
         if (event.requiredPlayers == event.players.size) {
             event.startRound()
             return

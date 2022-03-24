@@ -50,9 +50,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
 
         if (profile.state == ProfileState.MATCH) {
 
-            val match = profile.match?.let { Match.getByUUID(it) }
-
-            if (match == null) return mutableListOf()
+            val match = profile.match?.let { Match.getByUUID(it) } ?: return mutableListOf()
 
             if (match.getMatchType() == MatchType.TEAM) {
                 return configFile.getStringList("scoreboard.match").stream()
@@ -60,8 +58,8 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                         .replace("<queuing>", QueueManager.inQueue().toString()))
                         .replace("<in_match>", Match.inMatch().toString())
                         .replace("<opponent>", (match as TeamMatch).getOpponentString(player.uniqueId)!!)
-                        .replace("<kit>", (match as TeamMatch).kit.name)
-                        .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - match.started)) }.collect(Collectors.toList())
+                        .replace("<kit>", match.kit.name)
+                        .replace("<time>", match.getTime()) }.collect(Collectors.toList())
             }
 
             if (match.kit.kitData.boxing) {
@@ -77,7 +75,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                         .replace("<hits>", matchPlayer?.hits.toString())
                         .replace("<opponent-hits>", match.getOpponent(player.uniqueId)?.hits.toString())
                         .replace("<combo>", if (matchPlayer?.combo == 0 && matchPlayer.comboed == 0) "" else if (matchPlayer?.combo == 0) "${CC.RED}(-${matchPlayer.comboed})" else "${CC.GREEN}(+${matchPlayer?.combo})")
-                        .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - match.started)) }.collect(Collectors.toList())
+                        .replace("<time>", match.getTime()) }.collect(Collectors.toList())
             }
 
             return configFile.getStringList("scoreboard.match").stream()
@@ -86,15 +84,13 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                     .replace("<in_match>", Match.inMatch().toString())
                     .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
                     .replace("<kit>", match.kit.name)
-                    .replace("<time>", TimeUtil.millisToTimer(System.currentTimeMillis() - match.started)) }.collect(Collectors.toList())
+                    .replace("<time>", match.getTime()) }.collect(Collectors.toList())
 
         }
 
         if (profile.state == ProfileState.QUEUE) {
 
-            val queuePlayer = profile.queuePlayer
-
-            if (queuePlayer == null) return mutableListOf()
+            val queuePlayer = profile.queuePlayer ?: return mutableListOf()
 
             return configFile.getStringList("scoreboard.queue").stream()
                 .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
@@ -136,6 +132,30 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                     .replace("<playing1>", if (event.playingPlayers.isEmpty()) "N/A" else event.playingPlayers[0].player.name)
                     .replace("<playing2>", if (event.playingPlayers.isEmpty()) "N/A" else event.playingPlayers[1].player.name)) }
                 .collect(Collectors.toList())
+        }
+
+        if (profile.state == ProfileState.SPECTATING) {
+
+            val match = Match.getByUUID(profile.spectatingMatch!!) ?: return configFile.getStringList("scoreboard.lobby").stream()
+                .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                    .replace("<queuing>", QueueManager.inQueue().toString()))
+                    .replace("<in_match>", Match.inMatch().toString()) }.collect(Collectors.toList())
+
+            if (match.getMatchType() == MatchType.TEAM) {
+                val randPlayer = (match as TeamMatch).players[0]
+
+                return configFile.getStringList("scoreboard.spectate").stream()
+                    .map { CC.translate(it.replace("<kit>", match.kit.name)
+                        .replace("<time>", match.getTime())
+                        .replace("<team1>", match.getPlayerString(randPlayer.uuid)!!)
+                        .replace("<team2>", match.getOpponentString(randPlayer.uuid)!!)) }.collect(Collectors.toList())
+            }
+
+            return configFile.getStringList("scoreboard.spectate").stream()
+                .map { CC.translate(it.replace("<kit>", match.kit.name)
+                    .replace("<time>", match.getTime())
+                    .replace("<team1>", match.players[0].name)
+                    .replace("<team2>", match.players[1].name)) }.collect(Collectors.toList())
         }
 
         return mutableListOf()

@@ -375,7 +375,6 @@ object MatchListener : Listener {
 
                 if (event.finalDamage >= player.health) {
                     eventPlayer?.dead = true
-                    event.damage = 0.0
                     currentEvent.endRound(eventPlayer1)
                 }
 
@@ -395,7 +394,6 @@ object MatchListener : Listener {
                 val ffaPlayer1 = ffa?.getFFAPlayer(profile1.uuid)
 
                 if (event.finalDamage >= player.health) {
-                    event.damage = 0.0
                     ffa?.handleDeath(ffaPlayer!!, ffaPlayer1!!)
                 }
 
@@ -445,7 +443,6 @@ object MatchListener : Listener {
 
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
-                        event.damage = 0.0
                         player.health = 0.0
                         match.handleDeath(matchPlayer)
                     }
@@ -472,7 +469,6 @@ object MatchListener : Listener {
 
                 if (event.finalDamage >= player.health) {
                     if (matchPlayer != null) {
-                        event.damage = 0.0
                         match.handleDeath(matchPlayer)
                         event.isCancelled = true
                     }
@@ -483,7 +479,14 @@ object MatchListener : Listener {
 
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
+        event.deathMessage = null
         event.keepInventory = true
+        event.entity.spigot().respawn()
+    }
+
+    @EventHandler
+    fun onRespawn(event: PlayerRespawnEvent) {
+        event.respawnLocation = event.player.location
     }
 
     @EventHandler

@@ -4,10 +4,12 @@ import com.google.common.base.Joiner
 import mkremins.fanciful.FancyMessage
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
+import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.Match
+import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
@@ -15,6 +17,7 @@ import net.lyragames.practice.match.team.Team
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.*
@@ -60,48 +63,51 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
 
         if (losingTeam != null) {
             //ending
-            for (matchPlayer in players) {
-                if (matchPlayer.offline) continue
+            matchState = MatchState.ENDING
+            Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
+                for (matchPlayer in players) {
+                    if (matchPlayer.offline) continue
 
-                val bukkitPlayer = matchPlayer.player
-                val profile = Profile.getByUUID(matchPlayer.uuid)
+                    val bukkitPlayer = matchPlayer.player
+                    val profile = Profile.getByUUID(matchPlayer.uuid)
 
-                val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
-                snapshot.potionsThrown = matchPlayer.potionsThrown
-                snapshot.potionsMissed = matchPlayer.potionsMissed
-                snapshot.longestCombo = matchPlayer.longestCombo
-                snapshot.totalHits = matchPlayer.hits
+                    val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
+                    snapshot.potionsThrown = matchPlayer.potionsThrown
+                    snapshot.potionsMissed = matchPlayer.potionsMissed
+                    snapshot.longestCombo = matchPlayer.longestCombo
+                    snapshot.totalHits = matchPlayer.hits
 
-                snapshots.add(snapshot)
+                    snapshots.add(snapshot)
 
-                PlayerUtil.reset(bukkitPlayer)
-                profile?.match = null
+                    PlayerUtil.reset(bukkitPlayer)
+                    profile?.match = null
 
-                profile?.state = ProfileState.LOBBY
+                    profile?.state = ProfileState.LOBBY
 
-                if (Constants.SPAWN != null) {
-                    bukkitPlayer.teleport(Constants.SPAWN)
+                    if (Constants.SPAWN != null) {
+                        bukkitPlayer.teleport(Constants.SPAWN)
+                    }
+
+                    Hotbar.giveHotbar(profile!!)
+
+                    players.stream().map { it.player }
+                        .forEach {
+                            bukkitPlayer.hidePlayer(it)
+                            it.hidePlayer(bukkitPlayer)
+                        }
                 }
 
-                Hotbar.giveHotbar(profile!!)
+                for (snapshot in snapshots) {
+                    snapshot.createdAt = System.currentTimeMillis()
+                    MatchSnapshot.snapshots.add(snapshot)
+                }
 
-                players.stream().map { it.player }
-                    .forEach {
-                        bukkitPlayer.hidePlayer(it)
-                        it.hidePlayer(bukkitPlayer)
-                    }
-            }
-
-            for (snapshot in snapshots) {
-                snapshot.createdAt = System.currentTimeMillis()
-                MatchSnapshot.snapshots.add(snapshot)
-            }
-
-            endMessage(player, player)
+                endMessage(player, player)
 
 
-            matches.remove(this)
-            reset()
+                matches.remove(this)
+                reset()
+            }, 20 * 2L)
         }else {
             //not ending
             val bukkitPlayer = player.player
@@ -143,7 +149,7 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
             if (wi < winningTeam.players.size) {
                 fancyMessage.text("${matchPlayer.name}${CC.GRAY}, ")
             }else {
-                fancyMessage.text("${matchPlayer.name}${CC.GRAY}.\n")
+                fancyMessage.text("${matchPlayer.name}\n")
             }
 
             fancyMessage.command("/matchsnapshot ${matchPlayer.uuid.toString()}")
@@ -159,7 +165,7 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
             if (i < losingTeam.players.size) {
                 fancyMessage.text("${matchPlayer.name}${CC.GRAY}, ")
             }else {
-                fancyMessage.text("${matchPlayer.name}${CC.GRAY}.\n")
+                fancyMessage.text("${matchPlayer.name}\n")
             }
 
             fancyMessage.command("/matchsnapshot ${matchPlayer.uuid.toString()}")
@@ -185,6 +191,7 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
             if (spectator.player == null) continue
 
             fancyMessage.send(spectator.player)
+            forceRemoveSpectator(spectator.player)
         }
     }
 
@@ -231,5 +238,11 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
         val opponentTeam = teams.stream().filter { it.uuid != team.uuid }.findFirst().orElse(null)
 
         return Joiner.on(", ").join(opponentTeam.players.stream().map { it.name }.collect(Collectors.toList()))
+    }
+
+    fun getPlayerString(uuid: UUID): String? {
+        val team = teams.stream().filter { team -> team.players.stream().anyMatch { it.uuid == uuid } }.findFirst().orElse(null)
+
+        return Joiner.on(", ").join(team.players.stream().map { it.name }.collect(Collectors.toList()))
     }
 }

@@ -6,6 +6,7 @@ import net.lyragames.llib.title.TitleBar
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
+import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
@@ -18,6 +19,7 @@ import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.utils.EloUtil
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -39,10 +41,10 @@ import java.util.stream.Collectors
 
 open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
-    val uuid: UUID = UUID.randomUUID()
+    val uuid = UUID.randomUUID()
     var friendly = false
     var matchState = MatchState.STARTING
-    val started = System.currentTimeMillis()
+    private var started = 0L
     val players: MutableList<MatchPlayer> = mutableListOf()
     val blocksPlaced: MutableList<Block> = mutableListOf()
     val droppedItems: MutableList<Item> = mutableListOf()
@@ -70,6 +72,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             ) {
                 player.sendMessage(CC.GREEN + "Match started!")
                 matchState = MatchState.FIGHTING
+                started = System.currentTimeMillis()
             }
         }
     }
@@ -132,6 +135,26 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
     }
 
+    open fun forceRemoveSpectator(player: Player) {
+        val profile = Profile.getByUUID(player.uniqueId)
+        profile?.state = ProfileState.LOBBY
+        profile?.spectatingMatch = null
+
+        players.forEach {
+            player.hidePlayer(it.player)
+        }
+
+        PlayerUtil.reset(player)
+
+        spectators.removeIf { it.uuid == player.uniqueId }
+
+        Hotbar.giveHotbar(profile!!)
+
+        if (Constants.SPAWN != null) {
+            player.teleport(Constants.SPAWN)
+        }
+    }
+
     open fun canHit(player: Player, target: Player): Boolean {
         return true
     }
@@ -170,111 +193,115 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             sendMessage("&c${player.name} &ehas been killed by &c" + matchPlayer?.name + "&e!")
         }
 
-        var loserProfile: Profile? = Profile.getByUUID(player.uuid)
+        matchState = MatchState.ENDING
+        Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
+            var loserProfile: Profile? = Profile.getByUUID(player.uuid)
 
-        if (loserProfile == null) {
-            val newProfile = Profile(player.uuid, player.name)
-            newProfile.load()
+            if (loserProfile == null) {
+                val newProfile = Profile(player.uuid, player.name)
+                newProfile.load()
 
-            loserProfile = newProfile
-        }
-
-        for (matchPlayer in players) {
-            if (matchPlayer.offline) continue
-            val winner = matchPlayer.uuid != player.uuid
-
-            val bukkitPlayer = matchPlayer.player
-            val profile = Profile.getByUUID(matchPlayer.uuid)
-
-            val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
-            snapshot.potionsThrown = matchPlayer.potionsThrown
-            snapshot.potionsMissed = matchPlayer.potionsMissed
-            snapshot.longestCombo = matchPlayer.longestCombo
-            snapshot.totalHits = matchPlayer.hits
-            snapshot.opponent = getOpponent(bukkitPlayer.uniqueId)?.uuid
-
-            snapshots.add(snapshot)
-
-            PlayerUtil.reset(bukkitPlayer)
-            profile?.match = null
-            profile?.state = ProfileState.LOBBY
-
-            if (Constants.SPAWN != null) {
-                bukkitPlayer.teleport(Constants.SPAWN)
+                loserProfile = newProfile
             }
 
-            Hotbar.giveHotbar(profile!!)
+            for (matchPlayer in players) {
+                if (matchPlayer.offline) continue
+                val winner = matchPlayer.uuid != player.uuid
 
-            players.stream().map { it.player }
-                .forEach {
-                    bukkitPlayer.hidePlayer(it)
-                    it.hidePlayer(bukkitPlayer)
+                val bukkitPlayer = matchPlayer.player
+                val profile = Profile.getByUUID(matchPlayer.uuid)
+
+                val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
+                snapshot.potionsThrown = matchPlayer.potionsThrown
+                snapshot.potionsMissed = matchPlayer.potionsMissed
+                snapshot.longestCombo = matchPlayer.longestCombo
+                snapshot.totalHits = matchPlayer.hits
+                snapshot.opponent = getOpponent(bukkitPlayer.uniqueId)?.uuid
+
+                snapshots.add(snapshot)
+
+                PlayerUtil.reset(bukkitPlayer)
+                profile?.match = null
+                profile?.state = ProfileState.LOBBY
+
+                if (Constants.SPAWN != null) {
+                    bukkitPlayer.teleport(Constants.SPAWN)
                 }
 
-            if (winner && !friendly) {
-                val globalStatistics = profile.globalStatistic
+                Hotbar.giveHotbar(profile!!)
 
-                globalStatistics.wins++
-                globalStatistics.streak++
-
-                if (globalStatistics.streak >= globalStatistics.bestStreak) {
-                    globalStatistics.bestStreak = globalStatistics.streak
-                }
-
-                val kitStatistic = profile.getKitStatistic(kit.name)!!
-
-                kitStatistic.wins++
-
-                if (ranked) {
-                    kitStatistic.rankedWins++
-                    kitStatistic.elo =+ EloUtil.getNewRating(kitStatistic.elo, loserProfile.getKitStatistic(kit.name)?.elo!!, true)
-
-                    if (kitStatistic.elo >= kitStatistic.peakELO) {
-                        kitStatistic.peakELO = kitStatistic.elo
+                players.stream().map { it.player }
+                    .forEach {
+                        bukkitPlayer.hidePlayer(it)
+                        it.hidePlayer(bukkitPlayer)
                     }
-                }
 
-                kitStatistic.currentStreak++
-
-                if (kitStatistic.currentStreak >= kitStatistic.bestStreak) {
-                    kitStatistic.bestStreak = kitStatistic.currentStreak
-                }
-
-                profile.save()
-            }else {
-                if (!friendly) {
+                if (winner && !friendly) {
                     val globalStatistics = profile.globalStatistic
 
-                    globalStatistics.losses++
-                    globalStatistics.streak = 0
+                    globalStatistics.wins++
+                    globalStatistics.streak++
+
+                    if (globalStatistics.streak >= globalStatistics.bestStreak) {
+                        globalStatistics.bestStreak = globalStatistics.streak
+                    }
 
                     val kitStatistic = profile.getKitStatistic(kit.name)!!
 
-                    kitStatistic.currentStreak = 0
+                    kitStatistic.wins++
 
                     if (ranked) {
                         kitStatistic.rankedWins++
-                        kitStatistic.elo = -13
+                        val elo = loserProfile.getKitStatistic(kit.name)?.elo
+                        loserProfile.getKitStatistic(kit.name)?.elo = loserProfile.getKitStatistic(kit.name)?.elo?.plus(elo?.let { EloUtil.getNewRating(it, kitStatistic.elo, false) }!!)!!
+                        kitStatistic.elo =+ EloUtil.getNewRating(kitStatistic.elo, loserProfile.getKitStatistic(kit.name)?.elo!!, true)
+
+                        if (kitStatistic.elo >= kitStatistic.peakELO) {
+                            kitStatistic.peakELO = kitStatistic.elo
+                        }
+                    }
+
+                    kitStatistic.currentStreak++
+
+                    if (kitStatistic.currentStreak >= kitStatistic.bestStreak) {
+                        kitStatistic.bestStreak = kitStatistic.currentStreak
                     }
 
                     profile.save()
+                }else {
+                    if (!friendly) {
+                        val globalStatistics = profile.globalStatistic
+
+                        globalStatistics.losses++
+                        globalStatistics.streak = 0
+
+                        val kitStatistic = profile.getKitStatistic(kit.name)!!
+
+                        kitStatistic.currentStreak = 0
+
+                        if (ranked) {
+                            kitStatistic.rankedWins++
+                        }
+
+                        profile.save()
+                    }
                 }
             }
-        }
 
-        for (snapshot in snapshots) {
-            snapshot.createdAt = System.currentTimeMillis()
-            MatchSnapshot.snapshots.add(snapshot)
-        }
+            for (snapshot in snapshots) {
+                snapshot.createdAt = System.currentTimeMillis()
+                MatchSnapshot.snapshots.add(snapshot)
+            }
 
-        getOpponent(player.uuid)?.let {
-            endMessage(it, player)
-            sendTitleBar(it)
-        }
+            getOpponent(player.uuid)?.let {
+                endMessage(it, player)
+                sendTitleBar(it)
+            }
 
-        matches.remove(this)
-        reset()
-        arena.free = true
+            matches.remove(this)
+            reset()
+            arena.free = true
+        }, 20 * 2L)
     }
 
     fun handleQuit(matchPlayer: MatchPlayer) {
@@ -316,6 +343,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             if (spectator.player == null) continue
 
             fancyMessage.send(spectator.player)
+            forceRemoveSpectator(spectator.player)
         }
     }
 
@@ -323,6 +351,18 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         val titleBar = TitleBar("${CC.GREEN}${winner.name}${CC.YELLOW} won!", false)
 
         players.forEach { if (it.player != null) titleBar.sendPacket(it.player) }
+    }
+
+    fun getTime(): String {
+        if (matchState == MatchState.STARTING) {
+            return "${CC.GREEN}Starting"
+        }
+
+        if (matchState == MatchState.ENDING) {
+            return "${CC.RED}Ending"
+        }
+
+        return TimeUtil.millisToTimer(System.currentTimeMillis() - started)
     }
 
     fun reset() {

@@ -26,7 +26,7 @@ import java.util.stream.Collectors
 open class Event(val host: UUID, val eventMap: EventMap) {
 
     val players: MutableList<EventPlayer> = mutableListOf()
-    val round = 1
+    var round = 1
 
     var state = EventState.ANNOUNCING
     var type = EventType.SUMO
@@ -38,11 +38,11 @@ open class Event(val host: UUID, val eventMap: EventMap) {
     var playingPlayers: MutableList<EventPlayer> = mutableListOf()
 
     fun getRemainingRounds(): Int {
-        return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed == 1 }.count().toInt()
+        return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed <= 1 }.count().toInt() / 2
     }
 
     fun getNextPlayers(): MutableList<EventPlayer> {
-        return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed == 1 }
+        return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed <= 1 }
             .collect(Collectors.toList()).subList(0, 2)
     }
 

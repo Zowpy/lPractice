@@ -100,6 +100,7 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
         if (getRemainingRounds() == 0) {
             end(winner)
         }else {
+            round++
             startRound()
         }
     }

@@ -82,6 +82,7 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         if (getRemainingRounds() == 0) {
             end(winner)
         }else {
+            round++
             startRound()
         }
     }
