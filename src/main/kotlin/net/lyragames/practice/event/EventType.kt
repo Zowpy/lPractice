@@ -12,5 +12,5 @@ package net.lyragames.practice.event
 
 enum class EventType(val eventName: String) {
 
-    SUMO("Sumo"), BRACKETS("Brackets")
+    SUMO("Sumo"), BRACKETS("Brackets"), TNT_RUN("TNT Run"), UNKNOWN("Unknown")
 }

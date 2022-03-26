@@ -12,5 +12,5 @@ package net.lyragames.practice.event.map.type
 
 enum class EventMapType(val eventName: String) {
 
-    SUMO("Sumo"), BRACKETS("Brackets")
+    SUMO("Sumo"), BRACKETS("Brackets"), TNT_TAG("TNT Tag")
 }

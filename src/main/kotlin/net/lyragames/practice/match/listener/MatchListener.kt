@@ -1,8 +1,11 @@
 package net.lyragames.practice.match.listener
 
+import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.BracketsEvent
+import net.lyragames.practice.event.impl.TNTRunEvent
+import net.lyragames.practice.event.map.impl.TNTRunMap
 import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.FFAManager
@@ -11,9 +14,9 @@ import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.ThrownPotion
@@ -23,7 +26,6 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.player.*
-
 
 /**
  * This Project is property of Zowpy © 2022
@@ -355,6 +357,11 @@ object MatchListener : Listener {
                     return
                 }
 
+                if (currentEvent.type == EventType.TNT_RUN) {
+                    event.isCancelled = true
+                    return
+                }
+
                 if (currentEvent.type == EventType.SUMO) {
                     event.damage = 0.0
                 }
@@ -647,17 +654,20 @@ object MatchListener : Listener {
             } else if (profile?.state == ProfileState.EVENT) {
 
                 val currentEvent = EventManager.event ?: return
+                if (currentEvent.state != EventState.FIGHTING) return
 
-                if (currentEvent.type != EventType.SUMO) return
+                if (currentEvent.type == EventType.SUMO) {
 
-                val eventPlayer = currentEvent.getPlayer(player.uniqueId)
+                    val eventPlayer = currentEvent.getPlayer(player.uniqueId)
 
-                if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == player.uniqueId }) return
+                    if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == player.uniqueId }) return
 
-                eventPlayer?.dead = true
+                    eventPlayer?.dead = true
 
-                currentEvent.endRound(currentEvent.getOpponent(eventPlayer!!))
+                    currentEvent.endRound(currentEvent.getOpponent(eventPlayer!!))
+                }
             }
         }
+
     }
 }

@@ -1,7 +1,11 @@
 package net.lyragames.practice.event
 
 import net.lyragames.llib.utils.CC
+import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.constants.Constants
+import net.lyragames.practice.event.impl.BracketsEvent
+import net.lyragames.practice.event.impl.SumoEvent
+import net.lyragames.practice.event.impl.TNTRunEvent
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.player.EventPlayer
 import net.lyragames.practice.profile.Profile
@@ -29,7 +33,22 @@ open class Event(val host: UUID, val eventMap: EventMap) {
     var round = 1
 
     var state = EventState.ANNOUNCING
-    var type = EventType.SUMO
+    val type: EventType
+      get() {
+          if (this is SumoEvent) {
+              return EventType.SUMO
+          }
+
+          if (this is BracketsEvent) {
+              return EventType.BRACKETS
+          }
+
+          if (this is TNTRunEvent) {
+              return EventType.TNT_RUN
+          }
+
+          return EventType.UNKNOWN
+      }
     var requiredPlayers = 32
 
     var created = System.currentTimeMillis()
@@ -95,6 +114,26 @@ open class Event(val host: UUID, val eventMap: EventMap) {
             player.teleport(Constants.SPAWN)
         }
 
+        PlayerUtil.reset(player)
+
+        profile?.state = ProfileState.LOBBY
+        Hotbar.giveHotbar(profile!!)
+    }
+
+    open fun forceRemove(player: Player) {
+        val profile = Profile.getByUUID(player.uniqueId)
+
+        players.forEach {
+            it.player.hidePlayer(player)
+            player.hidePlayer(it.player)
+        }
+
+        if (Constants.SPAWN != null) {
+            player.teleport(Constants.SPAWN)
+        }
+
+        PlayerUtil.reset(player)
+
         profile?.state = ProfileState.LOBBY
         Hotbar.giveHotbar(profile!!)
     }
@@ -108,6 +147,11 @@ open class Event(val host: UUID, val eventMap: EventMap) {
             .forEach {
                 it.player.sendMessage(CC.translate(message))
             }
+    }
+
+    fun getAlivePlayers(): MutableList<EventPlayer> {
+        return players.stream().filter { !it.dead && !it.offline }
+            .collect(Collectors.toList())
     }
 
     fun getPlayer(uuid: UUID): EventPlayer? {

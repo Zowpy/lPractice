@@ -153,6 +153,22 @@ object QueueTask: BukkitRunnable() {
                         Match.matches.add(match)
 
                         match.start()
+
+                        for (uuid in profile?.followers!!) {
+                            val playerProfile = Profile.getByUUID(uuid)
+
+                            playerProfile?.silent = true
+                            match.addSpectator(playerProfile?.player!!)
+                            playerProfile.player.teleport(firstPlayer.location)
+                        }
+
+                        for (uuid in profile1?.followers!!) {
+                            val playerProfile = Profile.getByUUID(uuid)
+
+                            playerProfile?.silent = true
+                            match.addSpectator(playerProfile?.player!!)
+                            playerProfile.player.teleport(secondPlayer.location)
+                        }
                     }
                 }
             }

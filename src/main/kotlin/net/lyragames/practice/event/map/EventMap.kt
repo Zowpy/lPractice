@@ -15,15 +15,15 @@ import org.bukkit.Location
  * Project: lPractice
  */
 
-class EventMap(val name: String) {
+open class EventMap(val name: String) {
 
-    var l1: Location? = null
+    open var l1: Location? = null
     var l2: Location? = null
     var spawn: Location? = null
 
-    var type = EventMapType.SUMO
+    open var type = EventMapType.SUMO
 
-    fun save() {
+    open fun save() {
         val configFile = PracticePlugin.instance.eventsFile
         val section = configFile.createSection("maps.${name}")
 

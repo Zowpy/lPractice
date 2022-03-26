@@ -34,10 +34,6 @@ import java.util.*
 
 class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, eventMap) {
 
-    init {
-        type = EventType.BRACKETS
-    }
-
     val blocksPlaced: MutableList<Block> = mutableListOf()
 
     override fun startRound() {
@@ -108,15 +104,7 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
     override fun end(winner: EventPlayer?) {
         Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "N/A"} won the event!")
         players.forEach { player ->
-            val profile = Profile.getByUUID(player.uuid)
-
-            players.forEach {
-                it.player.hidePlayer(player.player)
-                player.player.hidePlayer(it.player)
-            }
-
-            profile?.state = ProfileState.LOBBY
-            Hotbar.giveHotbar(profile!!)
+            forceRemove(player.player)
         }
         EventManager.event = null
     }

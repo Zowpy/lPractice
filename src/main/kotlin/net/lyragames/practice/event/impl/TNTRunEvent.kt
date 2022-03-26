@@ -6,14 +6,17 @@ import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.Event
 import net.lyragames.practice.event.EventState
+import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.map.EventMap
+import net.lyragames.practice.event.map.impl.TNTRunMap
 import net.lyragames.practice.event.player.EventPlayer
 import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.profile.Profile
-import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.block.Block
 import java.util.*
 
 
@@ -22,30 +25,23 @@ import java.util.*
  * Redistribution of this Project is not allowed
  *
  * @author Zowpy
- * Created: 3/16/2022
+ * Created: 3/26/2022
  * Project: lPractice
  */
 
-class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
+class TNTRunEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
+
+    val removedBlocks: MutableMap<Block, Material> = mutableMapOf()
 
     override fun startRound() {
+        eventMap as TNTRunMap
         state = EventState.STARTING
 
-        playingPlayers = getNextPlayers()
-
-        for ((i, eventPlayer) in playingPlayers.withIndex()) {
-            eventPlayer.roundsPlayed++
+        for (eventPlayer in players) {
             eventPlayer.state = EventPlayerState.FIGHTING
 
             PlayerUtil.reset(eventPlayer.player)
-
-            if (i == 0) {
-                eventPlayer.player.teleport(eventMap.l1)
-            }else {
-                eventPlayer.player.teleport(eventMap.l2)
-            }
-
-            PlayerUtil.denyMovement(eventPlayer.player)
+            eventPlayer.player.teleport(eventMap.spawn)
         }
 
         for (eventPlayer in players) {
@@ -54,15 +50,11 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             Countdown(
                 PracticePlugin.instance,
                 eventPlayer.player,
-                "&aRound $round starting in <seconds> seconds!",
+                "&aGame starting in <seconds> seconds!",
                 6
             ) {
-                eventPlayer.player.sendMessage(CC.GREEN + "Round started!")
+                eventPlayer.player.sendMessage("${CC.GREEN}Game started!")
                 state = EventState.FIGHTING
-
-                if (playingPlayers.contains(eventPlayer)) {
-                    PlayerUtil.allowMovement(eventPlayer.player)
-                }
             }
         }
 
@@ -74,17 +66,11 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         for (eventPlayer in playingPlayers) {
             eventPlayer.state = EventPlayerState.LOBBY
 
-            eventPlayer.player.teleport(eventMap.spawn)
             Hotbar.giveHotbar(Profile.getByUUID(eventPlayer.uuid)!!)
             PlayerUtil.reset(eventPlayer.player)
         }
 
-        if (getRemainingRounds() == 0) {
-            end(winner)
-        }else {
-            round++
-            startRound()
-        }
+        end(winner)
     }
 
     override fun end(winner: EventPlayer?) {
@@ -92,6 +78,14 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         players.forEach {
             forceRemove(it.player)
         }
+
+        reset()
         EventManager.event = null
+    }
+
+    fun reset() {
+        for (entry in removedBlocks) {
+            entry.key.type = entry.value
+        }
     }
 }

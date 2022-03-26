@@ -45,8 +45,11 @@ class Profile(val uuid: UUID, val name: String) {
 
     var kitEditorData: KitEditorData? = KitEditorData()
     var settings: Settings = Settings()
+    
+    val followers: MutableList<UUID> = mutableListOf()
 
     var silent = false
+    var following = false
 
     var state = ProfileState.LOBBY
 

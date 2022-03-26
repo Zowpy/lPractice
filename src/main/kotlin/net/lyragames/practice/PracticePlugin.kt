@@ -15,10 +15,7 @@ import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
 import net.lyragames.practice.command.*
-import net.lyragames.practice.command.admin.ArenaCommand
-import net.lyragames.practice.command.admin.EventMapCommand
-import net.lyragames.practice.command.admin.KitCommand
-import net.lyragames.practice.command.admin.SetSpawnCommand
+import net.lyragames.practice.command.admin.*
 import net.lyragames.practice.database.Mongo
 import net.lyragames.practice.database.MongoCredentials
 import net.lyragames.practice.event.map.EventMap
@@ -38,6 +35,7 @@ import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
 import net.lyragames.practice.task.EventAnnounceTask
+import net.lyragames.practice.task.TNTEventBlockRemovalTask
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
@@ -100,9 +98,11 @@ class PracticePlugin : LyraPlugin() {
             .register(EventCommand)
             .register(SpectateCommand)
             .register(SettingsCommand)
+            .register(FollowCommand)
 
         QueueTask
         EventAnnounceTask
+        TNTEventBlockRemovalTask
 
         if (scoreboardFile.getBoolean("scoreboard.enabled")) {
             Assemble(this, ScoreboardAdapter(scoreboardFile))
