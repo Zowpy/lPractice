@@ -21,6 +21,16 @@ import org.bukkit.entity.Player
 
 object KitCommand {
 
+    @Permission("lpractice.command.kit.help")
+    @Command(value = ["kit help", "kit"], description = "kit help message")
+    fun help(@Sender player: Player) {
+        player.sendMessage("${CC.PRIMARY}Kit Commands:")
+        player.sendMessage("${CC.SECONDARY}/kit create <name>")
+        player.sendMessage("${CC.SECONDARY}/kit delete <kit>")
+        player.sendMessage("${CC.SECONDARY}/kit content <kit>")
+        player.sendMessage("${CC.SECONDARY}/kit edit <kit>")
+    }
+
     @Permission("lpractice.command.kit.create")
     @Command(value = ["kit create"], description = "create a new kit")
     fun create(@Sender player: Player, name: String) {

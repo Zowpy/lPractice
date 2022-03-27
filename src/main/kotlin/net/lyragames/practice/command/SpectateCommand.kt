@@ -19,6 +19,11 @@ object SpectateCommand {
             return
         }
 
+        if (!profile.settings.spectators && !player.hasPermission("lpractice.bypass.spectate")) {
+            player.sendMessage("${CC.SECONDARY}${target.name}${CC.PRIMARY}'s spectating is off.")
+            return
+        }
+
         val match = Match.getByUUID(profile.match!!)
 
         if (match == null) {

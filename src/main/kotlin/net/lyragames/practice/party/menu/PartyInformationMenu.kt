@@ -43,9 +43,9 @@ class PartyInformationMenu(private val party: Party): Menu() {
         toReturn[10] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.NETHER_STAR).name("&eParty Leader")
+                return ItemBuilder(Material.NETHER_STAR).name("${CC.PRIMARY}Party Leader")
                     .lore(listOf(
-                        "&eLeader: &a${Bukkit.getPlayer(party.leader).name}"
+                        "${CC.PRIMARY}Leader: ${CC.SECONDARY}${Bukkit.getPlayer(party.leader).name}"
                     )).build()
             }
         }
@@ -53,7 +53,7 @@ class PartyInformationMenu(private val party: Party): Menu() {
         toReturn[13] = object : Button() {
 
             override fun getButtonItem(player: Player?): ItemStack {
-                return ItemBuilder(Material.HOPPER).name("&ePrivacy")
+                return ItemBuilder(Material.HOPPER).name("${CC.PRIMARY}Privacy")
                     .lore(listOf(
                         if (party.partyType == PartyType.PRIVATE) "&a⚫ &ePrivate" else "&7⚫ &ePrivate",
                         if (party.partyType == PartyType.PRIVATE) "&7⚫ &ePublic" else "&a⚫ &ePublic"
@@ -84,9 +84,9 @@ class PartyInformationMenu(private val party: Party): Menu() {
         toReturn[16] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.BOOK).name("&ePlayers")
+                return ItemBuilder(Material.BOOK).name("${CC.PRIMARY}Players")
                     .lore(listOf(
-                        "&ePlayers in party: &6${Joiner.on("&7, &6").join(party.players.stream()
+                        "${CC.PRIMARY}Players in party: ${CC.SECONDARY}${Joiner.on("&7, ${CC.SECONDARY}").join(party.players.stream()
                             .map { Bukkit.getPlayer(it).name }.collect(Collectors.toList()))}"
                     )).build()
             }

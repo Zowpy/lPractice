@@ -13,7 +13,7 @@ object SetSpawnCommand {
     @Command(value = ["setspawn"])
     fun setspawn(@Sender player: Player) {
         Constants.SPAWN = player.location
-        PracticePlugin.instance.settingsFile.config.set("spawn", LocationUtil.serialize(player.location))
+        PracticePlugin.instance.settingsFile.config.set("SPAWN", LocationUtil.serialize(player.location))
         PracticePlugin.instance.settingsFile.save()
 
         player.sendMessage("${CC.GREEN}Successfully set spawn!")

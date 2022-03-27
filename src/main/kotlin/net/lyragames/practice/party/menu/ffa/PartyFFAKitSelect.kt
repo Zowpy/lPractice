@@ -40,7 +40,7 @@ class PartyFFAKitSelect(private val party: Party): Menu() {
             toReturn[toReturn.size] = object : Button() {
 
                 override fun getButtonItem(p0: Player?): ItemStack {
-                    return ItemBuilder(kit.displayItem).name("${CC.YELLOW}${kit.name}").build()
+                    return ItemBuilder(kit.displayItem).name("${CC.PRIMARY}${kit.name}").build()
                 }
 
                 override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {

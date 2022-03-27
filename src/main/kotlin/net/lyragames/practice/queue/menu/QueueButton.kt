@@ -30,12 +30,12 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
         return ItemBuilder(queue.kit.displayItem)
             .name(CC.BOLD + CC.YELLOW + queue.kit.name).addFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS)
             .lore(arrayListOf(
-                CC.YELLOW + "Playing: ${CC.GREEN}${Match.matches.stream().filter { 
+                "${CC.PRIMARY}Playing: ${CC.SECONDARY}${Match.matches.stream().filter { 
                     it!!.kit.name.equals(queue.kit.name, false) && it.ranked == ranked
                 }.count() * 2}",
-                CC.YELLOW + "Queuing: ${CC.GREEN}${queue.queuePlayers.size}",
+                "${CC.PRIMARY}Queuing: ${CC.GREEN}${queue.queuePlayers.size}",
                 "",
-                CC.YELLOW + "Click to play!"
+                "${CC.PRIMARY}Click to play!"
             )).build()
     }
 
@@ -49,7 +49,7 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
             }
 
             val queuePlayer = QueuePlayer(player.uniqueId, player.name, queue, profile?.settings?.pingRestriction!!)
-            queuePlayer.elo = profile?.getKitStatistic(queue.kit.name)?.elo!!
+            queuePlayer.elo = profile.getKitStatistic(queue.kit.name)?.elo!!
 
             profile.queuePlayer = queuePlayer
             profile.state = ProfileState.QUEUE
@@ -57,8 +57,8 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
             queue.queuePlayers.add(queuePlayer)
 
             player.sendMessage(" ")
-            player.sendMessage("${CC.YELLOW}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"}")
-            player.sendMessage("${CC.YELLOW} ⚫ Ping Range: ${CC.GREEN}[${if (profile.settings.pingRestriction == 0) "Unrestricted" else profile.settings.pingRestriction}]")
+            player.sendMessage("${CC.PRIMARY}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"}")
+            player.sendMessage("${CC.PRIMARY} ⚫ Ping Range: ${CC.SECONDARY}[${if (profile.settings.pingRestriction == 0) "Unrestricted" else profile.settings.pingRestriction}]")
             player.sendMessage("${CC.GRAY}${CC.ITALIC} Searching for match...")
             player.sendMessage(" ")
 

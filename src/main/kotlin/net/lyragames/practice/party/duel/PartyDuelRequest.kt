@@ -38,11 +38,11 @@ class PartyDuelRequest(val partyUUID: UUID, val issuer: UUID) {
         party?.duelRequests?.add(this)
 
         FancyMessage()
-            .text("${CC.PINK}${sender.name}${CC.GREEN}${CC.YELLOW}'s party has sent your party a duel request with kit ${CC.PINK}${kit?.name}${CC.YELLOW} on")
+            .text("${CC.SECONDARY}${sender.name}${CC.PRIMARY}'s party has sent your party a duel request with kit ${CC.SECONDARY}${kit?.name}${CC.PRIMARY} on")
             .then()
-            .text("${CC.YELLOW} arena ${CC.PINK}${arena?.name}${CC.YELLOW}.")
+            .text(" arena ${CC.SECONDARY}${arena?.name}${CC.PRIMARY}.")
             .then()
-            .text("${CC.GREEN} [Click to accept]")
+            .text("${CC.SECONDARY} [Click to accept]")
             .command("/partyduel accept ${sender.name}")
             .send(leader)
     }

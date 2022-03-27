@@ -28,7 +28,6 @@ object LeaveCommand {
         ffa?.players?.removeIf { it.uuid == player.uniqueId }
 
         PlayerUtil.reset(player)
-        //spawn later
 
         if (Constants.SPAWN != null) {
             player.teleport(Constants.SPAWN)

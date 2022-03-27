@@ -41,8 +41,8 @@ class FFAChoosingMenu: Menu() {
             toReturn[toReturn.size] = object : Button() {
 
                 override fun getButtonItem(p0: Player?): ItemStack {
-                    return ItemBuilder(kit.displayItem).name("${CC.YELLOW}${kit.name}")
-                        .lore("&eCurrently playing: ${CC.PINK}${ffa?.players?.size}")
+                    return ItemBuilder(kit.displayItem).name("${CC.PRIMARY}${kit.name}")
+                        .lore("${CC.PRIMARY}Currently playing: ${CC.SECONDARY}${ffa?.players?.size}")
                         .build()
                 }
 

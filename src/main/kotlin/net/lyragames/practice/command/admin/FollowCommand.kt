@@ -26,6 +26,6 @@ object FollowCommand {
         profile?.followers?.add(player.uniqueId)
         profile1?.following = true
 
-        player.sendMessage("${CC.GREEN}Started following ${CC.YELLOW}${target.name}")
+        player.sendMessage("${CC.PRIMARY}Started following ${CC.SECONDARY}${target.name}")
     }
 }

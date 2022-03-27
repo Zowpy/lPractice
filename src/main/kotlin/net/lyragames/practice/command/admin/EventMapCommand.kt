@@ -18,14 +18,14 @@ object EventMapCommand {
     @Permission("lpractice.command.eventmap.help")
     @Command(value = ["eventmap", "eventmap help"], description = "eventmap help commands")
     fun help(@Sender sender: CommandSender) {
-        sender.sendMessage("${CC.GOLD}EventMap Commands:")
-        sender.sendMessage("${CC.YELLOW}/eventmap create <name>")
-        sender.sendMessage("${CC.YELLOW}/eventmap delete <name>")
-        sender.sendMessage("${CC.YELLOW}/eventmap spawn <name>")
-        sender.sendMessage("${CC.YELLOW}/eventmap pos1 <name>")
-        sender.sendMessage("${CC.YELLOW}/eventmap pos2 <name>")
-        sender.sendMessage("${CC.YELLOW}/eventmap deadzone <name> <deadzone>")
-        sender.sendMessage("${CC.YELLOW}/eventmap type <name> <type> - you can choose from Sumo & Brackets")
+        sender.sendMessage("${CC.PRIMARY}EventMap Commands:")
+        sender.sendMessage("${CC.SECONDARY}/eventmap create <name>")
+        sender.sendMessage("${CC.SECONDARY}/eventmap delete <name>")
+        sender.sendMessage("${CC.SECONDARY}/eventmap spawn <name>")
+        sender.sendMessage("${CC.SECONDARY}/eventmap pos1 <name>")
+        sender.sendMessage("${CC.SECONDARY}/eventmap pos2 <name>")
+        sender.sendMessage("${CC.SECONDARY}/eventmap deadzone <name> <deadzone>")
+        sender.sendMessage("${CC.SECONDARY}/eventmap type <name> <type> - you can choose from Sumo & Brackets")
     }
 
     @Command(value = ["eventmap create"], description = "create a new event map")
@@ -40,7 +40,7 @@ object EventMapCommand {
         arena.save()
         EventMapManager.maps.add(arena)
 
-        player.sendMessage(CC.YELLOW + "Successfully created " + CC.GOLD + "'$name'!")
+        player.sendMessage(CC.PRIMARY + "Successfully created " + CC.SECONDARY + "'$name'!")
     }
 
     @Command(value = ["eventmap delete"], description = "delete an event map")
@@ -49,7 +49,7 @@ object EventMapCommand {
         arena.delete()
         EventMapManager.maps.remove(arena)
 
-        player.sendMessage(CC.YELLOW + "Successfully deleted " + CC.GOLD + "'${arena.name}'!")
+        player.sendMessage(CC.PRIMARY + "Successfully deleted " + CC.SECONDARY + "'${arena.name}'!")
     }
 
     @Command(value = ["eventmap spawn"], description = "set an event map's spawn point")
@@ -58,7 +58,7 @@ object EventMapCommand {
         arena.spawn = player.location
         arena.save()
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " spawn point!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " spawn point!")
     }
 
     @Command(value = ["eventmap deadzone"], description = "set an event map's deadzone")
@@ -71,7 +71,7 @@ object EventMapCommand {
         (arena as TNTRunMap).deadzone = deadzone
         arena.save()
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " deadzone!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " deadzone!")
     }
 
     @Command(value = ["eventmap pos1", "eventmap position1", "eventmap l1", "eventmap location1"], description = "set an event map's first location")
@@ -86,7 +86,7 @@ object EventMapCommand {
         arena.l1 = player.location
         arena.save()
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " location 1!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 1!")
     }
 
     @Command(value = ["eventmap pos2", "eventmap position2", "eventmap l2", "eventmap location2"], description = "set an event map's second location")
@@ -101,7 +101,7 @@ object EventMapCommand {
         arena.l2 = player.location
         arena.save()
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " location 2!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 2!")
     }
 
     @Command(value = ["eventmap type"], description = "set an event map's type")
@@ -119,6 +119,6 @@ object EventMapCommand {
             newArena.save()
         }
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " type!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " type!")
     }
 }

@@ -29,7 +29,7 @@ class QueuePlayer(var uuid: UUID, var name: String, val queue: Queue, val pingFa
             if (ticked >= 50) {
                 ticked = 0
                 if (queue.ranked) {
-                    Bukkit.getPlayer(uuid)?.sendMessage("${CC.YELLOW}Searching in ELO range ${CC.GREEN}[${getMinRange()} -> ${getMaxRange()}]${CC.YELLOW}...")
+                    Bukkit.getPlayer(uuid)?.sendMessage("${CC.PRIMARY}Searching in ELO range ${CC.SECONDARY}[${getMinRange()} -> ${getMaxRange()}]${CC.PRIMARY}...")
                 }
             }
         }

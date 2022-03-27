@@ -6,6 +6,6 @@ import org.bukkit.Location
 
 object Constants {
 
-    var SPAWN: Location? = LocationUtil.deserialize(PracticePlugin.instance.settingsFile.getString("spawn"))
+    var SPAWN: Location? = LocationUtil.deserialize(PracticePlugin.instance.settingsFile.getString("SPAWN"))
     var FFA_SPAWN: Location? = LocationUtil.deserialize(PracticePlugin.instance.ffaFile.getString("spawn-location"))
 }

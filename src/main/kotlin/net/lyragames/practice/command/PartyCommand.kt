@@ -80,7 +80,7 @@ object PartyCommand {
             party?.players?.remove(player.uniqueId)
             profile.party = null
             Hotbar.giveHotbar(profile)
-            party?.sendMessage("${CC.YELLOW}${player.name}${CC.GREEN} left the party!")
+            party?.sendMessage("${CC.SECONDARY}${player.name}${CC.PRIMARY} left the party!")
         }
     }
 
@@ -114,16 +114,14 @@ object PartyCommand {
         profile1?.partyInvites?.add(partyInvite)
 
         FancyMessage()
-            .color(ChatColor.YELLOW)
-            .text("You have been invited to ${CC.GREEN}${player.name}'s ${CC.YELLOW}party!")
+            .text("${CC.PRIMARY}You have been invited to ${CC.SECONDARY}${player.name}'s ${CC.PRIMARY}party!")
             .then()
-            .color(ChatColor.GREEN)
-            .text(" [Click to join]")
+            .text(" ${CC.SECONDARY}[Click to join]")
             .command("/party join ${player.name}") //${profile.party?.toString()}")
             .tooltip("Click to join the party!")
             .send(target)
 
-        player.sendMessage("${CC.GREEN}Successfully invited ${CC.YELLOW}${target.name}${CC.GREEN}!")
+        player.sendMessage("${CC.PRIMARY}Successfully invited ${CC.SECONDARY}${target.name}${CC.PRIMARY}!")
     }
 
     @Command(value = ["party join", "p join"], description = "join a person's party")
@@ -180,6 +178,6 @@ object PartyCommand {
 
         Hotbar.giveHotbar(profile!!)
 
-        party.sendMessage("${CC.YELLOW}${player.name}${CC.GREEN} joined the party!")
+        party.sendMessage("${CC.SECONDARY}${player.name}${CC.PRIMARY} joined the party!")
     }
 }

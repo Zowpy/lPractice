@@ -19,7 +19,7 @@ import org.bukkit.entity.Player
 class QueueMenu(val ranked: Boolean): Menu() {
 
     override fun getTitle(player: Player?): String {
-        return if (ranked) "Ranked" else "Unranked"
+        return if (ranked) "Ranked Queue" else "Unranked Queue"
     }
 
     override fun isAutoUpdate(): Boolean {

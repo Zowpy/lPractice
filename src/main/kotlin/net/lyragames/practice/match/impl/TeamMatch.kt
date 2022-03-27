@@ -52,11 +52,11 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
         player.dead = true
 
         if (player.lastDamager == null) {
-            sendMessage("&c" + player.name + " &ehas died from natural causes!")
+            sendMessage("&c" + player.name + " ${CC.PRIMARY}has died from natural causes!")
         }else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c" + player.name + " &ehas been killed by &c" + matchPlayer?.name + "&e!")
+            sendMessage("&c" + player.name + " ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
         }
 
         val losingTeam = teams.stream().filter { team -> !team.players.stream().anyMatch { !it.dead } }.findAny().orElse(null)

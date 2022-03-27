@@ -22,6 +22,18 @@ import org.bukkit.entity.Player
 
 object ArenaCommand {
 
+    @Permission("lpractice.command.arena.help")
+    @Command(value = ["arena", "arena help"], description = "arena help message")
+    fun help(@Sender player: Player) {
+        player.sendMessage("${CC.PRIMARY}Arena Commands:")
+        player.sendMessage("${CC.SECONDARY}/arena create <name>")
+        player.sendMessage("${CC.SECONDARY}/arena delete <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena pos1 <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena pos2 <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena min <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena max <arena>")
+    }
+
     @Command(value = ["arena create"], description = "create a new arena")
     @Permission("lpractice.command.arena.create")
     fun create(@Sender player: Player, name: String) {
@@ -34,7 +46,7 @@ object ArenaCommand {
         arena.save()
         Arena.arenas.add(arena)
 
-        player.sendMessage(CC.YELLOW + "Successfully created " + CC.GOLD + "'$name'!")
+        player.sendMessage(CC.PRIMARY + "Successfully created " + CC.SECONDARY + "'$name'!")
     }
 
     @Command(value = ["arena delete"], description = "delete an arena")
@@ -43,7 +55,7 @@ object ArenaCommand {
         arena.delete()
         Arena.arenas.remove(arena)
 
-        player.sendMessage(CC.YELLOW + "Successfully deleted ${CC.GOLD}'${arena.name}'!")
+        player.sendMessage(CC.PRIMARY + "Successfully deleted ${CC.SECONDARY}'${arena.name}'!")
     }
 
     @Command(value = ["arena pos1", "arena position1", "arena l1", "arena location1"], description = "set an arena's first location")
@@ -52,7 +64,7 @@ object ArenaCommand {
         arena.l1 = player.location
         arena.save()
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " location 1!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 1!")
     }
 
     @Command(value = ["arena pos2", "arena position2", "arena l2", "arena location2"], description = "set an arena's second location")
@@ -61,7 +73,7 @@ object ArenaCommand {
         arena.l2 = player.location
         arena.save()
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " location 2!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 2!")
     }
 
     @Command(value = ["arena min", "arena minimum"], description = "set an arena's min location")
@@ -70,7 +82,7 @@ object ArenaCommand {
         arena.min = player.location
         arena.save()
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " min location!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " min location!")
 
         if (arena.max != null) {
             arena.bounds = Cuboid(arena.min, arena.max)
@@ -83,7 +95,7 @@ object ArenaCommand {
         arena.max = player.location
         arena.save()
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + arena.name + CC.YELLOW + " max location!")
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " max location!")
 
         if (arena.min != null) {
             arena.bounds = Cuboid(arena.min, arena.max)

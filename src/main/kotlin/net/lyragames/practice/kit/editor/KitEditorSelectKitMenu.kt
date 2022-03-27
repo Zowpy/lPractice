@@ -1,6 +1,7 @@
 package net.lyragames.practice.kit.editor
 
 import lombok.AllArgsConstructor
+import net.lyragames.llib.utils.CC
 import net.lyragames.menu.Button
 import net.lyragames.menu.ItemBuilder
 import net.lyragames.menu.Menu
@@ -23,15 +24,15 @@ import org.bukkit.inventory.ItemStack
 class KitEditorSelectKitMenu: Menu() {
 
     override fun getTitle(player: Player?): String {
-        return "&eSelect a kit"
+        return "Select a kit"
     }
 
     override fun getButtons(player: Player?): Map<Int, Button> {
         val buttons: MutableMap<Int, Button> = mutableMapOf()
         Kit.kits.forEach { kit ->
-            //if (kit.isEnabled()) {
+            if (kit.kitData.enabled) {
                 buttons[buttons.size] = KitDisplayButton(kit)
-           //}
+           }
         }
         return buttons
     }
@@ -40,7 +41,7 @@ class KitEditorSelectKitMenu: Menu() {
 
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(kit.displayItem)
-                .name("&e" + kit.name)
+                .name("${CC.PRIMARY}${kit.name}")
                 .build()
         }
 

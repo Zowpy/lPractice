@@ -9,6 +9,7 @@ import me.vaperion.blade.command.bindings.impl.DefaultBindings
 import me.vaperion.blade.command.container.impl.BukkitCommandContainer
 import net.lyragames.llib.LyraPlugin
 import net.lyragames.llib.item.ItemListener
+import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
@@ -36,6 +37,7 @@ import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
 import net.lyragames.practice.task.EventAnnounceTask
 import net.lyragames.practice.task.TNTEventBlockRemovalTask
+import org.bukkit.ChatColor
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
@@ -68,6 +70,9 @@ class PracticePlugin : LyraPlugin() {
         loadMongo()
         cleanupWorld()
 
+        CC.PRIMARY = ChatColor.valueOf(settingsFile.getString("COLOR.PRIMARY")).toString()
+        CC.SECONDARY = ChatColor.valueOf(settingsFile.getString("COLOR.SECONDARY")).toString()
+
         ArenaManager.load()
         logger.info("Successfully loaded ${if (Arena.arenas.size == 1) "1 arena!" else "${Arena.arenas.size} arenas!"}")
 
@@ -77,7 +82,7 @@ class PracticePlugin : LyraPlugin() {
         QueueManager.load()
 
         EventMapManager.load()
-        logger.info("Successfully loaded ${if (EventMapManager.maps.size == 1) "1 event map!" else "${EventMapManager.maps.size} arenas!"}")
+        logger.info("Successfully loaded ${if (EventMapManager.maps.size == 1) "1 event map!" else "${EventMapManager.maps.size} event maps!"}")
 
         MenuAPI(this)
 

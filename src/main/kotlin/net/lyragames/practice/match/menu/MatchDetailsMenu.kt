@@ -1,9 +1,6 @@
 package net.lyragames.practice.match.menu
 
-import net.lyragames.llib.utils.InventoryUtil
-import net.lyragames.llib.utils.ItemBuilder
-import net.lyragames.llib.utils.PotionUtil
-import net.lyragames.llib.utils.TimeUtil
+import net.lyragames.llib.utils.*
 import net.lyragames.menu.Button
 import net.lyragames.menu.Menu
 import net.lyragames.menu.buttons.DisplayButton
@@ -31,7 +28,7 @@ import java.util.function.Consumer
 class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
     override fun getTitle(player: Player?): String {
-        return "&6Inventory of " + snapshot.username
+        return "Inventory of ${snapshot.username}"
     }
 
     override fun getButtons(player: Player?): Map<Int, Button> {
@@ -70,8 +67,8 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
             val snapshot = MatchSnapshot.getByUuid(opponent)
             return if (snapshot != null) {
                 ItemBuilder(Material.LEVER)
-                    .name("&6Opponent's Inventory")
-                    .lore("&eSwitch to &a" + snapshot.username + "&e's inventory")
+                    .name("${CC.PRIMARY}Opponent's Inventory")
+                    .lore("${CC.PRIMARY}Switch to ${CC.SECONDARY}${snapshot.username}${CC.PRIMARY}'s inventory")
                     .build()
             } else {
                 ItemStack(Material.AIR)
@@ -91,7 +88,7 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
         override fun getButtonItem(player: Player): ItemStack {
             return ItemBuilder(Material.MELON)
-                .name("&6Health: &a" + health + "/10 &4" + StringEscapeUtils.unescapeJava("\u2764"))
+                .name("${CC.PRIMARY}Health: ${CC.SECONDARY}${health}/10 &4" + StringEscapeUtils.unescapeJava("\u2764"))
                 .amount((if (health == 0) 1 else health))
                 .build()
         }
@@ -101,7 +98,7 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
         override fun getButtonItem(player: Player): ItemStack {
             return ItemBuilder(Material.COOKED_BEEF)
-                .name("&6Hunger: &a$hunger/20")
+                .name("${CC.PRIMARY}Hunger: ${CC.PRIMARY}$hunger/20")
                 .amount((if (hunger == 0) 1 else hunger))
                 .build()
         }
@@ -110,9 +107,9 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
     private class EffectsButton(private val effects: Collection<PotionEffect?>) : Button() {
 
         override fun getButtonItem(player: Player): ItemStack {
-            val builder: ItemBuilder = ItemBuilder(Material.POTION).name("&6&lPotion Effects")
+            val builder: ItemBuilder = ItemBuilder(Material.POTION).name("${CC.PRIMARY}Potion Effects")
             if (effects.isEmpty()) {
-                builder.lore("&eNo potion effects")
+                builder.lore("${CC.PRIMARY}No potion effects")
             } else {
                 val lore: MutableList<String> = ArrayList()
                 effects.forEach(Consumer { effect ->
@@ -121,7 +118,7 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
                     val duration =
                         " (" + (effect?.duration?.div(20))?.times(1000)
                             ?.let { TimeUtil.millisToTimer(it.toLong()).toString() } + ")"
-                    lore.add("&a$name&e$duration")
+                    lore.add("${CC.SECONDARY}$name${CC.PRIMARY}$duration")
                 })
                 builder.lore(lore)
             }
@@ -135,8 +132,8 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
             return ItemBuilder(Material.POTION)
                 .durability(16421)
                 .amount(if (potions == 0) 1 else potions)
-                .name("&6Potions")
-                .lore("&a" + name + " &ehad &a" + potions + " &epotion" + (if (potions == 1) "" else "s") + " left.")
+                .name("${CC.PRIMARY}Potions")
+                .lore("${CC.SECONDARY}$name${CC.PRIMARY} had ${CC.SECONDARY} $potions ${CC.PRIMARY}potion ${(if (potions == 1) "" else "s")} left.")
                 .build()
         }
     }
@@ -145,15 +142,15 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
         override fun getButtonItem(player: Player): ItemStack {
             return ItemBuilder(Material.PAPER)
-                .name("&6Statistics")
+                .name("${CC.PRIMARY}Statistics")
                 .lore(
                     listOf(
-                        "&aTotal Hits: &e" + snapshot.totalHits,
-                        "&aLongest Combo: &e" + snapshot.longestCombo,
-                        "&aPotion Grade: ${PotionGradeUtil.getGrade(snapshot.getPotionAccuracy())}",
-                        "&aPotions Thrown: &e" + snapshot.potionsThrown,
-                        "&aPotions Missed: &e" + snapshot.potionsMissed,
-                        "&aPotion Accuracy: &e" + snapshot.getPotionAccuracy() + "%"
+                        "${CC.PRIMARY}Total Hits: ${CC.SECONDARY}${snapshot.totalHits}",
+                        "${CC.PRIMARY}Longest Combo: ${CC.SECONDARY}${snapshot.longestCombo}",
+                        "${CC.PRIMARY}Potion Grade: ${PotionGradeUtil.getGrade(snapshot.getPotionAccuracy())}",
+                        "${CC.PRIMARY}Potions Thrown: ${CC.SECONDARY}${snapshot.potionsThrown}",
+                        "${CC.PRIMARY}Potions Missed: ${CC.SECONDARY}${snapshot.potionsMissed}",
+                        "${CC.PRIMARY}Potion Accuracy: ${CC.SECONDARY}${snapshot.getPotionAccuracy()}%"
                     )
                 )
                 .build()

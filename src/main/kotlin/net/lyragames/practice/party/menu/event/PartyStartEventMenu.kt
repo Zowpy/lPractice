@@ -40,7 +40,7 @@ class PartyStartEventMenu: Menu() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.GOLD_AXE)
-                    .name("&eFFA")
+                    .name("${CC.PRIMARY}FFA")
                     .build()
             }
 
@@ -67,7 +67,7 @@ class PartyStartEventMenu: Menu() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.DIAMOND_AXE)
-                    .name("&eSplit")
+                    .name("${CC.PRIMARY}Split")
                     .build()
             }
 

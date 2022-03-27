@@ -44,7 +44,6 @@ class PartyPlayersMenu(private val party: Party): PaginatedMenu() {
                         return ItemBuilder(Material.IRON_SWORD)
                             .name("&e${it.name}")
                             .lore(listOf(
-                                "&eName: &a${it.name}",
                                 "",
                                 "&e&o(( left click to kick player ))",
                                 "&e&o(( right click to ban player ))"
@@ -70,13 +69,13 @@ class PartyPlayersMenu(private val party: Party): PaginatedMenu() {
 
                             profile?.party = null
                             Hotbar.giveHotbar(profile!!)
-                            party.sendMessage("&e${it.name}&a has been banned from the party!")
+                            party.sendMessage("${CC.SECONDARY}${it.name}${CC.PRIMARY} has been banned from the party!")
                         }else if (clickType.isLeftClick) {
                             party.players.remove(it.uniqueId)
 
                             profile?.party = null
                             Hotbar.giveHotbar(profile!!)
-                            party.sendMessage("&e${it.name}&a has been kicked from the party!")
+                            party.sendMessage("${CC.SECONDARY}${it.name}${CC.PRIMARY} has been kicked from the party!")
                         }
 
                         player.closeInventory()

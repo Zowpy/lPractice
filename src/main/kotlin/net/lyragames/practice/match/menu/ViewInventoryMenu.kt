@@ -63,7 +63,7 @@ class ViewInventoryMenu(private val target: Player) : Menu() {
 
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.MELON)
-                .name("&e&lHealth: &d" + health + "/10 " + StringEscapeUtils.unescapeJava("\u2764"))
+                .name("${CC.PRIMARY}Health: ${CC.SECONDARY}" + health + "/10 " + StringEscapeUtils.unescapeJava("\u2764"))
                 .amount(if (health == 0) 1 else health)
                 .build()
         }
@@ -74,7 +74,7 @@ class ViewInventoryMenu(private val target: Player) : Menu() {
 
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.COOKED_BEEF)
-                .name("&e&lHunger: &d$hunger/20")
+                .name("${CC.PRIMARY}Hunger: ${CC.SECONDARY}$hunger/20")
                 .amount(if (hunger == 0) 1 else hunger)
                 .build()
         }
@@ -84,16 +84,16 @@ class ViewInventoryMenu(private val target: Player) : Menu() {
     private class EffectsButton(private val effects: Collection<PotionEffect>) : Button() {
 
         override fun getButtonItem(player: Player?): ItemStack {
-            val builder: ItemBuilder = ItemBuilder(Material.POTION).name("&e&lPotion Effects")
+            val builder: ItemBuilder = ItemBuilder(Material.POTION).name("${CC.PRIMARY}Potion Effects")
             if (effects.isEmpty()) {
-                builder.lore(CC.GRAY + "No effects")
+                builder.lore(CC.PRIMARY + "No effects")
             } else {
                 val lore: MutableList<String> = ArrayList()
                 effects.forEach(Consumer { effect: PotionEffect ->
                     val name = PotionUtil.getName(effect.type) + " " + (effect.amplifier + 1)
                     val duration =
                         " (" + TimeUtil.millisToTimer((effect.duration / 20 * 1000).toLong()).toString() + ")"
-                    lore.add(CC.PINK + name + CC.GRAY + duration)
+                    lore.add(CC.PRIMARY + name + CC.SECONDARY + duration)
                 })
                 builder.lore(lore)
             }

@@ -46,7 +46,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
         toReturn[0] = object: Button() {
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.COBBLESTONE)
-                    .name(CC.YELLOW + "Enabled")
+                    .name("${CC.PRIMARY}Enabled")
                     .lore(listOf(
                         if (kit.kitData.enabled) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!kit.kitData.enabled) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -93,7 +93,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.COBBLESTONE)
-                    .name(CC.YELLOW + "Build")
+                    .name("${CC.PRIMARY}Build")
                     .lore(listOf(
                         if (kit.kitData.build) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!kit.kitData.build) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -115,7 +115,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.FENCE)
-                    .name(CC.YELLOW + "HCF")
+                    .name("${CC.PRIMARY}HCF")
                     .lore(listOf(
                         if (kit.kitData.hcf) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!kit.kitData.hcf) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -137,7 +137,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.RAW_FISH)
                     .durability(3)
-                    .name(CC.YELLOW + "Combo")
+                    .name("${CC.PRIMARY}Combo")
                     .lore(listOf(
                         if (kit.kitData.combo) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!kit.kitData.combo) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -158,7 +158,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.DIAMOND_SWORD)
-                    .name(CC.YELLOW + "Ranked")
+                    .name("${CC.PRIMARY}Ranked")
                     .lore(listOf(
                         if (kit.kitData.ranked) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!kit.kitData.ranked) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -186,7 +186,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.LEASH)
-                    .name(CC.YELLOW + "Sumo")
+                    .name("${CC.PRIMARY}Sumo")
                     .lore(listOf(
                         if (kit.kitData.sumo) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!kit.kitData.sumo) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -209,7 +209,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.DIAMOND_CHESTPLATE)
-                    .name(CC.YELLOW + "Boxing")
+                    .name("${CC.PRIMARY}Boxing")
                     .lore(listOf(
                         if (kit.kitData.boxing) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!kit.kitData.boxing) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"

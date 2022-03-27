@@ -36,11 +36,11 @@ class DuelRequest(var uuid: UUID, var target: UUID, var kit: Kit, var arena: Are
         profile?.duelRequests?.add(this)
 
         FancyMessage()
-            .text("${CC.PINK}${sender.name}${CC.GREEN} (${PlayerUtil.getPing(sender)} ms)${CC.YELLOW} has sent you a duel request with kit ${CC.PINK}${kit.name}${CC.YELLOW} on")
+            .text("${CC.SECONDARY}${sender.name}${CC.GREEN} (${PlayerUtil.getPing(sender)} ms)${CC.PRIMARY} has sent you a duel request with kit ${CC.SECONDARY}${kit.name}${CC.PRIMARY} on")
             .then()
-            .text("${CC.YELLOW} arena ${CC.PINK}${arena.name}${CC.YELLOW}.")
+            .text("${CC.PRIMARY} arena ${CC.SECONDARY}${arena.name}${CC.PRIMARY}.")
             .then()
-            .text("${CC.GREEN} [Click to accept]")
+            .text("${CC.SECONDARY} [Click to accept]")
             .command("/duel accept ${sender.name}")
             .send(player)
     }

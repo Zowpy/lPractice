@@ -1,6 +1,7 @@
 package net.lyragames.practice.party.duel.procedure.menu
 
 import com.google.common.base.Joiner
+import net.lyragames.llib.utils.CC
 import net.lyragames.menu.Button
 import net.lyragames.menu.ItemBuilder
 import net.lyragames.menu.pagination.PaginatedMenu
@@ -42,10 +43,10 @@ class PartyDuelSelectPartyMenu: PaginatedMenu() {
 
                 override fun getButtonItem(p0: Player?): ItemStack {
                     return ItemBuilder(Material.NETHER_STAR)
-                        .name(Bukkit.getPlayer(party.leader).name)
+                        .name("${CC.PRIMARY}${Bukkit.getPlayer(party.leader).name}")
                         .lore(listOf(
-                            "&eMember Count: &5${party.players.size}",
-                            "&eMembers: &5${Joiner.on("&7, &5").join(party.players.stream().map { Bukkit.getPlayer(it).name }.collect(
+                            "${CC.PRIMARY}Member Count: ${CC.SECONDARY}${party.players.size}",
+                            "${CC.PRIMARY}Members: ${CC.SECONDARY}${Joiner.on("&7, ${CC.SECONDARY}").join(party.players.stream().map { Bukkit.getPlayer(it).name }.collect(
                                 Collectors.toList()))}"
                         )).build()
                 }

@@ -45,7 +45,7 @@ class DuelSelectArenaMenu: PaginatedMenu() {
 
                 override fun getButtonItem(p0: Player?): ItemStack {
                     return ItemBuilder(Material.PAPER)
-                        .name("&e${arena.name}")
+                        .name("${CC.PRIMARY}${arena.name}")
                         .build()
                 }
 

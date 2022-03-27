@@ -39,7 +39,7 @@ object KitEditorListener: Listener {
             }
             val previousName = profile.kitEditorData?.selectedKit?.name
             val newName = CC.translate(event.message)
-            event.player.sendMessage(CC.GREEN + "Successfully changed kit loadout name from ${CC.GOLD}${previousName}${CC.GREEN} to ${CC.GOLD}${newName}")
+            event.player.sendMessage("${CC.PRIMARY}Successfully changed kit loadout name from ${CC.SECONDARY}${previousName}${CC.PRIMARY} to ${CC.SECONDARY}${newName}")
             val selectedKit = profile.kitEditorData?.kit
             profile.kitEditorData?.kit = null
             profile.kitEditorData?.selectedKit?.name = newName
@@ -72,6 +72,14 @@ object KitEditorListener: Listener {
                 if (eventPlayer?.state == EventPlayerState.FIGHTING) {
                     return
                 }
+
+                val clicked = event.clickedInventory
+
+                if (clicked != null && clicked == player.inventory) {
+                    event.isCancelled = true
+                }
+
+                return
             }
 
             if (profile?.state != ProfileState.MATCH && profile?.state != ProfileState.FFA && player.gameMode == GameMode.SURVIVAL) {

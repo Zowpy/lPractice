@@ -44,7 +44,7 @@ class DuelSelectKitMenu: Menu() {
             toReturn[toReturn.size] = object : Button() {
                 override fun getButtonItem(p0: Player?): ItemStack {
                     return ItemBuilder(kit.displayItem)
-                        .name("${CC.YELLOW}${kit.name}")
+                        .name("${CC.PRIMARY}${kit.name}")
                         .addFlags(ItemFlag.HIDE_ATTRIBUTES)
                         .build()
                 }
@@ -83,7 +83,6 @@ class DuelSelectKitMenu: Menu() {
                             duelProcedure.create().send()
 
                             player.sendMessage("${CC.GREEN}Successfully sent duel request!")
-
                         }
 
                     }

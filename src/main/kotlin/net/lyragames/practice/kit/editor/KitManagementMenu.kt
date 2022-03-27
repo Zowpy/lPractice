@@ -34,7 +34,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
     }
 
     override fun getTitle(player: Player?): String {
-        return "&eViewing " + kit.name + " kits"
+        return "Viewing " + kit.name + " kits"
     }
 
     override fun getButtons(player: Player): Map<Int, Button> {
@@ -72,7 +72,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
                     listOf(
                         "&cClick to delete this kit.",
                         "&cYou will &lNOT &cbe able to",
-                        "&crecover this KitLoadout."
+                        "&crecover this Kit Loadout."
                     )
                 )
                 .build()
@@ -90,7 +90,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
     private class CreateKitButton(private val index: Int) : Button() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.IRON_SWORD)
-                .name("&a&lCreate Kit")
+                .name("${CC.PRIMARY}Create Kit")
                 .build()
         }
 
@@ -98,7 +98,6 @@ class KitManagementMenu(val kit: Kit): Menu() {
             val profile = Profile.getByUUID(player.uniqueId)
             val kit = profile?.kitEditorData?.kit
 
-            // TODO: this shouldn't be null but sometimes it is?
             if (kit == null) {
                 player.closeInventory()
                 return
@@ -117,8 +116,8 @@ class KitManagementMenu(val kit: Kit): Menu() {
     private class RenameKitButton(private val kit: Kit, private val kitLoadout: EditedKit) : Button() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.SIGN)
-                .name("&eRename")
-                .lore(CC.translate("&eClick to rename this kit."))
+                .name("${CC.PRIMARY}Rename")
+                .lore(CC.translate("${CC.PRIMARY}Click to rename this kit."))
                 .build()
         }
 
@@ -138,8 +137,8 @@ class KitManagementMenu(val kit: Kit): Menu() {
 
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.BOOK)
-                .name("&aLoad/Edit")
-                .lore(CC.translate("&eClick to edit this kit."))
+                .name("${CC.PRIMARY}Load/Edit")
+                .lore(CC.translate("${CC.PRIMARY}Click to edit this kit."))
                 .build()
         }
 
@@ -170,7 +169,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
     private class KitDisplayButton(private val kitLoadout: EditedKit) : Button() {
         override fun getButtonItem(player: Player?): ItemStack {
             return ItemBuilder(Material.BOOK)
-                .name("&a" + kitLoadout.name)
+                .name("${CC.PRIMARY}${kitLoadout.name}")
                 .build()
         }
     }

@@ -46,7 +46,7 @@ class PartyDuelKitSelectMenu: Menu() {
             toReturn[toReturn.size] = object : Button() {
                 override fun getButtonItem(p0: Player?): ItemStack {
                     return ItemBuilder(kit.displayItem)
-                        .name("${CC.YELLOW}${kit.name}")
+                        .name("${CC.PRIMARY}${kit.name}")
                         .addFlags(ItemFlag.HIDE_ATTRIBUTES)
                         .build()
                 }

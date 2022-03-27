@@ -29,6 +29,11 @@ object DuelCommand {
             return
         }
 
+        if (!profile.settings.duels && !player.hasPermission("lpractice.bypass.duels")) {
+            player.sendMessage("${CC.SECONDARY}${target.name}${CC.PRIMARY}'s duels are off.")
+            return
+        }
+
         val duelProcedure = DuelProcedure(player.uniqueId, target.uniqueId)
         DuelProcedure.duelProcedures.add(duelProcedure)
 

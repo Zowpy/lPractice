@@ -34,7 +34,7 @@ class SettingsMenu: Menu() {
         toReturn[0] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.PAINTING).name("&eScoreboard")
+                return ItemBuilder(Material.PAINTING).name("${CC.PRIMARY}Scoreboard")
                     .lore(listOf(
                         if (settings?.scoreboard!!) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!settings.scoreboard) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -54,7 +54,7 @@ class SettingsMenu: Menu() {
         toReturn[1] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.DIAMOND_SWORD).name("&eDuels")
+                return ItemBuilder(Material.DIAMOND_SWORD).name("${CC.PRIMARY}Duels")
                     .lore(listOf(
                         if (settings?.duels!!) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!settings.duels) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -74,7 +74,7 @@ class SettingsMenu: Menu() {
         toReturn[2] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.REDSTONE).name("&eSpectators")
+                return ItemBuilder(Material.REDSTONE).name("${CC.PRIMARY}Spectators")
                     .lore(listOf(
                         if (settings?.spectators!!) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!settings.spectators) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -94,9 +94,9 @@ class SettingsMenu: Menu() {
         toReturn[3] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.ENCHANTED_BOOK).name("&ePing Restriction")
+                return ItemBuilder(Material.ENCHANTED_BOOK).name("${CC.PRIMARY}Ping Restriction")
                     .lore(listOf(
-                        "&ePing Restriction: &a${if (settings?.pingRestriction == 0) "Unrestricted" else settings?.pingRestriction}"
+                        "${CC.PRIMARY}Ping Restriction: ${CC.SECONDARY}${if (settings?.pingRestriction == 0) "Unrestricted" else settings?.pingRestriction}"
                     )).build()
             }
 

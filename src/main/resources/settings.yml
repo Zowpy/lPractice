@@ -17,4 +17,8 @@ MONGODB:
     CONNECTION-STRING: ""
 
 
-spawn: ""
+SPAWN: ""
+
+COLOR:
+  PRIMARY: "YELLOW"
+  SECONDARY: "GREEN"
