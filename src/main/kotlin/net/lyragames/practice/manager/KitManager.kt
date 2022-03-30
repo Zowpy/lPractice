@@ -42,6 +42,9 @@ object KitManager {
             kit.kitData.ranked = section.getBoolean("kitData.ranked")
             kit.kitData.sumo = section.getBoolean("kitData.sumo")
             kit.kitData.boxing = section.getBoolean("kitData.boxing")
+            kit.kitData.enabled = section.getBoolean("kitData.enabled")
+            kit.kitData.bedFights = section.getBoolean("kitData.bedFights")
+            kit.kitData.ffa = section.getBoolean("kitData.ffa")
 
             Kit.kits.add(kit)
         }

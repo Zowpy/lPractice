@@ -10,9 +10,12 @@ import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchType
+import net.lyragames.practice.match.impl.BedFightMatch
 import net.lyragames.practice.match.impl.TeamMatch
+import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import org.apache.commons.lang.StringUtils
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.stream.Collectors
@@ -52,12 +55,43 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
 
             val match = profile.match?.let { Match.getByUUID(it) } ?: return mutableListOf()
 
-            if (match.getMatchType() == MatchType.TEAM) {
+            if (match is BedFightMatch) {
+
+                val matchPlayer = match.getMatchPlayer(player.uniqueId) as TeamMatchPlayer
+
+                val team = match.getTeam(matchPlayer.teamUniqueId)
+                val opponentTeam = match.getOpponentTeam(team!!)
+
+                var points = 0
+                var opponentPoints = 0
+
+                for (teamMatchPlayer in team.players) {
+                    points += teamMatchPlayer.points
+                }
+
+                for (teamMatchPlayer in opponentTeam?.players!!) {
+                    opponentPoints += teamMatchPlayer.points
+                }
+
+                val symbol = "⬤"
+
+                return configFile.getStringList("scoreboard.bedfight").stream()
+                    .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                        .replace("<queuing>", QueueManager.inQueue().toString()))
+                        .replace("<in_match>", Match.inMatch().toString())
+                        .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
+                        .replace("<kit>", match.kit.name)
+                        .replace("<time>", match.getTime())
+                        .replace("<points>", "${StringUtils.repeat("${CC.GREEN}$symbol", points)}${StringUtils.repeat("${CC.GRAY}$symbol", 5 - points)}")
+                        .replace("<opponent_points>", "${StringUtils.repeat("${CC.GREEN}$symbol", opponentPoints)}${StringUtils.repeat("${CC.GRAY}$symbol", 5 - opponentPoints)}")}.collect(Collectors.toList())
+            }
+
+            if (match is TeamMatch) {
                 return configFile.getStringList("scoreboard.match").stream()
                     .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
                         .replace("<queuing>", QueueManager.inQueue().toString()))
                         .replace("<in_match>", Match.inMatch().toString())
-                        .replace("<opponent>", (match as TeamMatch).getOpponentString(player.uniqueId)!!)
+                        .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
                         .replace("<kit>", match.kit.name)
                         .replace("<time>", match.getTime()) }.collect(Collectors.toList())
             }

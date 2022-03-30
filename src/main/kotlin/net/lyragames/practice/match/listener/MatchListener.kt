@@ -1,6 +1,9 @@
 package net.lyragames.practice.match.listener
 
+import net.lyragames.llib.utils.CC
+import net.lyragames.llib.utils.Cooldown
 import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.arena.impl.bedwars.BedWarArena
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.BracketsEvent
@@ -12,6 +15,7 @@ import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
+import net.lyragames.practice.match.impl.BedFightMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Bukkit
@@ -85,7 +89,14 @@ object MatchListener : Listener {
                 return
             }
 
-            if (match.kit.kitData.build) {
+            if (match is BedFightMatch) {
+                if (match.getMatchPlayer(player.uniqueId)?.dead!!) {
+                    event.isCancelled = true
+                    return
+                }
+            }
+
+            if (match.kit.kitData.build || match.kit.kitData.bedFights) {
                 match.blocksPlaced.add(event.blockPlaced)
             } else {
                 event.isCancelled = true
@@ -138,6 +149,11 @@ object MatchListener : Listener {
 
             if (match?.matchState != MatchState.FIGHTING) {
                 event.isCancelled = true
+                return
+            }
+
+            if (match.kit.kitData.bedFights && match is BedFightMatch) {
+                match.handleBreak(event)
                 return
             }
 
@@ -227,7 +243,6 @@ object MatchListener : Listener {
 
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
-
             if (match!!.kit.kitData.build && match.blocksPlaced.contains(event.blockClicked)) {
                 match.blocksPlaced.remove(event.blockClicked)
             }else {
@@ -272,6 +287,13 @@ object MatchListener : Listener {
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
 
+            if (match is BedFightMatch) {
+                if (match.getMatchPlayer(player.uniqueId)?.dead!!) {
+                    event.isCancelled = true
+                    return
+                }
+            }
+
             match!!.droppedItems.add(event.itemDrop)
         }else {
             event.isCancelled = true
@@ -313,6 +335,13 @@ object MatchListener : Listener {
 
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
+
+            if (match is BedFightMatch) {
+                if (match.getMatchPlayer(player.uniqueId)?.dead!!) {
+                    event.isCancelled = true
+                    return
+                }
+            }
 
             if (match!!.droppedItems.contains(event.item)) {
                 match.droppedItems.remove(event.item)
@@ -445,6 +474,15 @@ object MatchListener : Listener {
                         }
                     }
 
+                    if (match.kit.kitData.bedFights) {
+                        event.damage = 0.0
+                    }
+
+                    if (match is BedFightMatch && matchPlayer.dead || matchPlayer1.dead) {
+                        event.isCancelled = true
+                        return
+                    }
+
                     matchPlayer.combo = 0
                 }
 
@@ -472,6 +510,12 @@ object MatchListener : Listener {
                 }
 
                 val matchPlayer = match.getMatchPlayer(player.uniqueId)
+
+                if (match is BedFightMatch && matchPlayer?.dead!!) {
+                    event.isCancelled = true
+                    return
+                }
+
                 matchPlayer?.lastDamager = null
 
                 if (event.finalDamage >= player.health) {
@@ -524,7 +568,16 @@ object MatchListener : Listener {
                     event.isCancelled = true
                 } else if (match?.matchState == MatchState.FIGHTING) {
                     if (event.entity is ThrownPotion) {
-                        match.getMatchPlayer(shooter.uniqueId)!!.potionsThrown++
+                        if (profile.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
+                            match.getMatchPlayer(shooter.uniqueId)!!.potionsThrown++
+                            profile.enderPearlCooldown = Cooldown(PracticePlugin.instance, 15) {
+                                shooter.sendMessage("${CC.PRIMARY}You can now use the enderpearl.")
+                                profile.enderPearlCooldown = null
+                            }
+                        }else {
+                            event.isCancelled = true
+                            shooter.sendMessage("${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${profile.enderPearlCooldown?.secondsRemaining}")
+                        }
                     }
                 }
             }
@@ -647,6 +700,12 @@ object MatchListener : Listener {
 
                 if (match?.kit?.kitData?.sumo!!) {
                     if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
+                        match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
+                    }
+                }
+
+                if (match.kit.kitData.bedFights) {
+                    if (event.to.y <= match.arena.deadzone) {
                         match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
                     }
                 }

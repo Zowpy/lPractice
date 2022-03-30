@@ -19,6 +19,18 @@ scoreboard:
     - ""
     - "&7&olyra.gg"
     - "&7&m-------------------"
+  bedfight:
+    - "&7&m-------------------"
+    - "&eOpponent: &a<opponent>"
+    - "&eLadder: &a<kit>"
+    - ""
+    - "&eTime Elapsed: &a<time>"
+    - ""
+    - "Your Points: <points>"
+    - "Opponent Points: <opponent_points>"
+    - ""
+    - "&7&olyra.gg"
+    - "&7&m-------------------"
   boxing:
     - "&7&m-------------------"
     - "&eOpponent: &a<opponent>"

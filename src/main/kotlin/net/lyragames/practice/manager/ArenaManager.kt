@@ -4,8 +4,11 @@ import net.lyragames.llib.utils.Cuboid
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
-import net.lyragames.practice.arena.ArenaType
+import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.arena.impl.StandaloneArena
+import net.lyragames.practice.arena.impl.bedwars.BedWarArena
+import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarArena
+import net.lyragames.practice.kit.Kit
 
 
 /**
@@ -25,8 +28,16 @@ object ArenaManager {
         if (configFile.getConfigurationSection("arenas") == null) return
 
         for (key in configFile.getConfigurationSection("arenas").getKeys(false)) {
-            val arena = StandaloneArena(key)
+            var arena = StandaloneArena(key)
+
             val section = configFile.getConfigurationSection("arenas.$key")
+
+            if (section.getString("type").equals("BEDFIGHT")) {
+                arena = StandaloneBedWarArena(key)
+            }
+
+            arena.deadzone = section.getInt("deadzone")
+            arena.arenaType = ArenaType.valueOf(section.getString("type").uppercase())
 
             if (!section.getString("l1").equals("null", false)) {
                 arena.l1 = LocationUtil.deserialize(section.getString("l1"))
@@ -56,10 +67,25 @@ object ArenaManager {
                 arena.bounds = Cuboid(arena.min, arena.max)
             }
 
+            if (arena is StandaloneBedWarArena) {
+
+                if (!section.getString("bed1").equals("null", false)) {
+                    arena.bed1 = LocationUtil.deserialize(section.getString("bed1"))
+                }
+
+                if (!section.getString("bed2").equals("null", false)) {
+                    arena.bed2 = LocationUtil.deserialize(section.getString("bed2"))
+                }
+            }
+
             if (section.getConfigurationSection("duplicates") != null) {
                 for (duplicateKey in section.getConfigurationSection("duplicates").getKeys(false)) {
-                    val arena1 = Arena(key + duplicateKey)
+                    var arena1 = Arena("$key$duplicateKey")
                     val section1 = section.getConfigurationSection("duplicates.$duplicateKey")
+
+                    if (arena is StandaloneBedWarArena) {
+                        arena1 = BedWarArena("$key$duplicateKey")
+                    }
 
                     arena1.duplicate = true
 
@@ -83,6 +109,16 @@ object ArenaManager {
                         arena1.bounds = Cuboid(arena1.min, arena1.max)
                     }
 
+                    if (arena1 is BedWarArena) {
+                        if (!section1.getString("bed1").equals("null", false)) {
+                            arena1.bed1 = LocationUtil.deserialize(section1.getString("bed1"))
+                        }
+
+                        if (!section1.getString("bed2").equals("null", false)) {
+                            arena1.bed2 = LocationUtil.deserialize(section1.getString("bed2"))
+                        }
+                    }
+
                     arena.duplicates.add(arena1)
                 }
             }
@@ -95,5 +131,23 @@ object ArenaManager {
         return Arena.arenas
             .stream().filter { !it.duplicate && it.isSetup && it.isFree()}
             .findAny().orElse(null)
+    }
+
+    fun getFreeArena(kit: Kit): Arena? {
+     /*   return Arena.arenas
+            .stream().filter { !it.duplicate && it.isSetup && it.isFree() && (kit.kitData.sumo && it.arenaType == ArenaType.SUMO)}
+            .findAny().orElse(null) */
+
+        for (arena in Arena.arenas) {
+            if (arena == null) continue
+            if (arena.duplicate && !arena.isSetup && !arena.isFree()) continue
+
+            if (kit.kitData.sumo && arena.arenaType != ArenaType.SUMO) continue
+            if (kit.kitData.bedFights && arena.arenaType != ArenaType.BEDFIGHT) continue
+
+            return arena
+        }
+
+        return null
     }
 }

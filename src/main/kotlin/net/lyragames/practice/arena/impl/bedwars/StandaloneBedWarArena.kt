@@ -1,4 +1,4 @@
-package net.lyragames.practice.arena.impl
+package net.lyragames.practice.arena.impl.bedwars
 
 import com.sk89q.worldedit.Vector
 import com.sk89q.worldedit.WorldEdit
@@ -19,6 +19,7 @@ import net.lyragames.llib.utils.Cuboid
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.impl.StandaloneArena
 import org.bukkit.Location
 import java.util.concurrent.ThreadLocalRandom
 
@@ -28,13 +29,17 @@ import java.util.concurrent.ThreadLocalRandom
  * Redistribution of this Project is not allowed
  *
  * @author Zowpy
- * Created: 2/15/2022
+ * Created: 3/28/2022
  * Project: lPractice
  */
 
-open class StandaloneArena(name: String) : Arena(name) {
+class StandaloneBedWarArena(name: String) : StandaloneArena(name) {
 
-    open val duplicates: MutableList<Arena> = mutableListOf()
+    var bed1: Location? = null
+    var bed2: Location? = null
+
+    override val isSetup: Boolean
+        get() = l1 != null && l2 != null && min != null && max != null && bed1 != null && bed2 != null
 
     override fun save() {
         val configFile = PracticePlugin.instance.arenasFile
@@ -44,6 +49,8 @@ open class StandaloneArena(name: String) : Arena(name) {
         configSection.set("l2", LocationUtil.serialize(l2))
         configSection.set("min", LocationUtil.serialize(min))
         configSection.set("max", LocationUtil.serialize(max))
+        configSection.set("bed1", LocationUtil.serialize(bed1))
+        configSection.set("bed2", LocationUtil.serialize(bed2))
         configSection.set("deadzone", deadzone)
         configSection.set("type", arenaType.name)
 
@@ -57,6 +64,8 @@ open class StandaloneArena(name: String) : Arena(name) {
                 configSection1.set("l2", LocationUtil.serialize(arena.l2))
                 configSection1.set("min", LocationUtil.serialize(arena.min))
                 configSection1.set("max", LocationUtil.serialize(arena.max))
+                configSection.set("bed1", LocationUtil.serialize((arena as StandaloneBedWarArena).bed1))
+                configSection.set("bed2", LocationUtil.serialize(arena.bed2))
                 configSection1.set("deadzone", arena.deadzone)
 
                 i++
@@ -70,30 +79,40 @@ open class StandaloneArena(name: String) : Arena(name) {
         for (i in 0 until times) {
             val random: Double = ThreadLocalRandom.current().nextDouble(10.0) + 1
             val offsetMultiplier: Double = ThreadLocalRandom.current().nextDouble(10000.0) + 1
-            
+
             val offsetX: Double = random * offsetMultiplier / 10
             val offsetZ: Double = random * offsetMultiplier / 10
-            
+
             val minX: Double = bounds.lowerX + offsetX
             val minZ: Double = bounds.lowerZ + offsetZ
             val maxX: Double = bounds.upperX + offsetX
             val maxZ: Double = bounds.upperZ + offsetZ
-            
+
             val aX: Double = l1!!.x + offsetX
             val aZ: Double = l1!!.z + offsetZ
             val bX: Double = l2!!.x + offsetX
             val bZ: Double = l2!!.z + offsetZ
-            
+
+            val b1X = bed1!!.x + offsetX
+            val b1Z = bed1!!.z + offsetZ
+            val b2X = bed2!!.x + offsetX
+            val b2Z = bed2!!.z + offsetZ
+
             val min = Location(world, minX, bounds.lowerY.toDouble(), minZ)
             val max = Location(world, maxX, bounds.upperY.toDouble(), maxZ)
-            
+
             val a = Location(world, aX, l1!!.y, aZ, l1!!.yaw, l1!!.pitch)
             val b = Location(world, bX, l2!!.y, bZ, l2!!.yaw, l2!!.pitch)
-            
-            val arena = Arena(name + i)
+
+            val b1 = Location(world, b1X, bed1!!.y, b1Z)
+            val b2 = Location(world, b2X, bed1!!.y, b2Z)
+
+            val arena = StandaloneBedWarArena(name + i)
             arena.bounds = Cuboid(min, max)
             arena.l1 = a
             arena.l2 = b
+            arena.bed1 = b1
+            arena.bed2 = b2
             arena.duplicate = true
             arena.deadzone = deadzone
             duplicates.add(arena)
@@ -123,9 +142,5 @@ open class StandaloneArena(name: String) : Arena(name) {
         }
 
         save()
-    }
-
-    override fun isFree(): Boolean {
-        return free || duplicates.stream().anyMatch { it.free && it.isSetup }
     }
 }

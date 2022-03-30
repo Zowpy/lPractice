@@ -33,7 +33,7 @@ import java.util.stream.Collectors
  * Project: lPractice
  */
 
-class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ranked) {
+open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ranked) {
 
     val teams: MutableList<Team> = mutableListOf()
 
@@ -63,6 +63,8 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
 
         if (losingTeam != null) {
             //ending
+            countdowns.forEach { it.cancel() }
+
             matchState = MatchState.ENDING
             Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
                 for (matchPlayer in players) {
@@ -80,6 +82,7 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
                     snapshots.add(snapshot)
 
                     PlayerUtil.reset(bukkitPlayer)
+                    PlayerUtil.allowMovement(bukkitPlayer)
                     profile?.match = null
 
                     profile?.state = ProfileState.LOBBY
@@ -90,8 +93,9 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
 
                     Hotbar.giveHotbar(profile!!)
 
-                    players.stream().map { it.player }
+                    players.stream().filter { !it.offline }.map { it.player }
                         .forEach {
+                            if (it.player == null) return@forEach
                             bukkitPlayer.hidePlayer(it)
                             it.hidePlayer(bukkitPlayer)
                         }
@@ -107,7 +111,7 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
 
                 matches.remove(this)
                 reset()
-            }, 20 * 2L)
+            }, 20L)
         }else {
             //not ending
             val bukkitPlayer = player.player
@@ -208,6 +212,16 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
             .findFirst().orElse(null)
     }
 
+    fun getTeam(uuid: UUID): Team? {
+        return teams.stream().filter { it.uuid == uuid }
+            .findFirst().orElse(null)
+    }
+
+    fun getOpponentTeam(team: Team): Team? {
+        return teams.stream().filter { it.uuid != team.uuid }
+            .findFirst().orElse(null)
+    }
+
     override fun addPlayer(player: Player, location: Location) {
         val team = findTeam()
         val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid!!)
@@ -234,15 +248,15 @@ class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena, ran
     }
 
     override fun getOpponentString(uuid: UUID): String? {
-        val team = teams.stream().filter { team -> team.players.stream().anyMatch { it.uuid == uuid } }.findFirst().orElse(null)
-        val opponentTeam = teams.stream().filter { it.uuid != team.uuid }.findFirst().orElse(null)
+        val team = getTeam((getMatchPlayer(uuid) as TeamMatchPlayer).teamUniqueId)
+        val opponentTeam = getOpponentTeam(team!!)
 
-        return Joiner.on(", ").join(opponentTeam.players.stream().map { it.name }.collect(Collectors.toList()))
+        return Joiner.on(", ").join(opponentTeam!!.players.stream().map { it.name }.collect(Collectors.toList()))
     }
 
     fun getPlayerString(uuid: UUID): String? {
-        val team = teams.stream().filter { team -> team.players.stream().anyMatch { it.uuid == uuid } }.findFirst().orElse(null)
+        val team = getTeam((getMatchPlayer(uuid) as TeamMatchPlayer).teamUniqueId)
 
-        return Joiner.on(", ").join(team.players.stream().map { it.name }.collect(Collectors.toList()))
+        return Joiner.on(", ").join(team!!.players.stream().map { it.name }.collect(Collectors.toList()))
     }
 }

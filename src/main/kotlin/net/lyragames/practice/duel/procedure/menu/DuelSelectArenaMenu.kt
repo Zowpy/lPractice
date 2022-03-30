@@ -5,6 +5,7 @@ import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.menu.Button
 import net.lyragames.menu.pagination.PaginatedMenu
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -35,11 +36,14 @@ class DuelSelectArenaMenu: PaginatedMenu() {
         }
     }
 
-    override fun getAllPagesButtons(p0: Player?): MutableMap<Int, Button> {
+    override fun getAllPagesButtons(player: Player): MutableMap<Int, Button> {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
+
+        val duelProcedure = DuelProcedure.getByUUID(player.uniqueId) ?: return toReturn
 
         for (arena in Arena.arenas) {
             if (!arena.isSetup || arena.duplicate) continue
+            if (duelProcedure.kit?.kitData?.sumo!! && arena.arenaType != ArenaType.SUMO) continue
 
             toReturn[toReturn.size] = object : Button() {
 
@@ -49,16 +53,8 @@ class DuelSelectArenaMenu: PaginatedMenu() {
                         .build()
                 }
 
-                override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                     if (clickType?.isLeftClick!!) {
-
-                        val duelProcedure = DuelProcedure.getByUUID(player?.uniqueId!!)
-
-                        if (duelProcedure == null) {
-                            player.sendMessage("${CC.RED}Something went wrong!")
-                            player.closeInventory()
-                            return
-                        }
 
                         if (!arena.isFree()) {
                             player.sendMessage("${CC.RED}This arena is not free!")

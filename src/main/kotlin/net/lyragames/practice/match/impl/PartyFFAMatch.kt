@@ -43,6 +43,9 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
         var winner: MatchPlayer? = null
 
         if (getAlivePlayers().size <= 1) {
+
+            countdowns.forEach { it.cancel() }
+
             matchState = MatchState.ENDING
             Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
                 for (matchPlayer in players) {
@@ -65,6 +68,7 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
                     snapshots.add(snapshot)
 
                     PlayerUtil.reset(bukkitPlayer)
+                    PlayerUtil.allowMovement(bukkitPlayer)
                     profile?.match = null
 
                     profile?.state = ProfileState.LOBBY
@@ -75,8 +79,9 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
 
                     Hotbar.giveHotbar(profile!!)
 
-                    players.stream().map { it.player }
+                    players.stream().filter { !it.offline }.map { it.player }
                         .forEach {
+                            if (it.player == null) return@forEach
                             bukkitPlayer.hidePlayer(it)
                             it.hidePlayer(bukkitPlayer)
                         }
@@ -91,7 +96,7 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
 
                 matches.remove(this)
                 reset()
-            }, 20 * 2L)
+            }, 20L)
         }else {
             val bukkitPlayer = player.player
 

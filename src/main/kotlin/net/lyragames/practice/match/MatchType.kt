@@ -12,5 +12,5 @@ package net.lyragames.practice.match
 
 enum class MatchType {
 
-    NORMAL, TEAM
+    NORMAL, TEAM, BEDFIGHTS
 }

@@ -18,4 +18,5 @@ class KitData {
     var ffa = false
     var ranked = true
     var boxing = false
+    var bedFights = false
 }

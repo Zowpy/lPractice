@@ -11,6 +11,7 @@ import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.match.impl.BedFightMatch
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
@@ -44,14 +45,15 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val uuid = UUID.randomUUID()
     var friendly = false
     var matchState = MatchState.STARTING
-    private var started = 0L
+    var started = 0L
     val players: MutableList<MatchPlayer> = mutableListOf()
     val blocksPlaced: MutableList<Block> = mutableListOf()
     val droppedItems: MutableList<Item> = mutableListOf()
     val snapshots: MutableList<MatchSnapshot> = mutableListOf()
     val spectators: MutableList<MatchSpectator> = mutableListOf()
+    val countdowns: MutableList<Countdown> = mutableListOf()
 
-    fun start() {
+    open fun start() {
 
         for (matchPlayer in players) {
             if (matchPlayer.offline) continue
@@ -60,11 +62,12 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             val profile = Profile.getByUUID(player.uniqueId)
 
             PlayerUtil.reset(player)
+            PlayerUtil.allowMovement(player)
 
             player.teleport(matchPlayer.spawn)
             profile?.getKitStatistic(kit.name)?.generateBooks(player)
 
-            Countdown(
+            countdowns.add(Countdown(
                 PracticePlugin.instance,
                 player,
                 "&aMatch starting in <seconds> seconds!",
@@ -73,16 +76,20 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 player.sendMessage(CC.GREEN + "Match started!")
                 matchState = MatchState.FIGHTING
                 started = System.currentTimeMillis()
-            }
+            })
         }
     }
 
     open fun getMatchType(): MatchType {
-        return if (this is TeamMatch) {
-            MatchType.TEAM
-        }else {
-            MatchType.NORMAL
+        if (this is TeamMatch) {
+            return MatchType.TEAM
         }
+
+        if (this is BedFightMatch) {
+            return MatchType.BEDFIGHTS
+        }
+
+        return MatchType.NORMAL
     }
 
     open fun addSpectator(player: Player) {
@@ -193,6 +200,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
         }
 
+        countdowns.forEach { it.cancel() }
+
         matchState = MatchState.ENDING
         Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
             var loserProfile: Profile? = Profile.getByUUID(player.uuid)
@@ -221,6 +230,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 snapshots.add(snapshot)
 
                 PlayerUtil.reset(bukkitPlayer)
+                PlayerUtil.allowMovement(bukkitPlayer)
                 profile?.match = null
                 profile?.state = ProfileState.LOBBY
 
@@ -230,8 +240,9 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
                 Hotbar.giveHotbar(profile!!)
 
-                players.stream().map { it.player }
+                players.stream().filter { !it.offline }.map { it.player }
                     .forEach {
+                        if (it.player == null) return@forEach
                         bukkitPlayer.hidePlayer(it)
                         it.hidePlayer(bukkitPlayer)
                     }
@@ -301,10 +312,10 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             matches.remove(this)
             reset()
             arena.free = true
-        }, 20 * 2L)
+        }, 20L)
     }
 
-    fun handleQuit(matchPlayer: MatchPlayer) {
+    open fun handleQuit(matchPlayer: MatchPlayer) {
         matchPlayer.offline = true
 
         handleDeath(matchPlayer)
@@ -350,7 +361,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     fun sendTitleBar(winner: MatchPlayer) {
         val titleBar = TitleBar("${CC.GREEN}${winner.name}${CC.YELLOW} won!", false)
 
-        players.forEach { if (it.player != null) titleBar.sendPacket(it.player) }
+        players.forEach { if (!it.offline) titleBar.sendPacket(it.player) }
     }
 
     fun getTime(): String {

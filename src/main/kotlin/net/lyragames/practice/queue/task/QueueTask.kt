@@ -4,10 +4,12 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarArena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
+import net.lyragames.practice.match.impl.BedFightMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Bukkit
@@ -119,7 +121,7 @@ object QueueTask: BukkitRunnable() {
                             }
                         }
 
-                        val arena = ArenaManager.getFreeArena()
+                        val arena = ArenaManager.getFreeArena(queue.kit)
 
                         if (arena == null) {
                             arrayOf(
@@ -134,7 +136,11 @@ object QueueTask: BukkitRunnable() {
                         queue.queuePlayers.remove(firstQueueProfile)
                         queue.queuePlayers.remove(secondQueueProfile)
 
-                        val match = Match(queue.kit, arena, queue.ranked)
+                        var match = Match(queue.kit, arena, queue.ranked)
+
+                        if (queue.kit.kitData.bedFights) {
+                            match = BedFightMatch(queue.kit, arena, queue.ranked)
+                        }
 
                         val profile = Profile.getByUUID(firstPlayer.uniqueId)
                         val profile1 = Profile.getByUUID(secondPlayer.uniqueId)
@@ -147,6 +153,11 @@ object QueueTask: BukkitRunnable() {
 
                         match.addPlayer(firstPlayer, arena.l1!!)
                         match.addPlayer(secondPlayer, arena.l2!!)
+
+                        if (arena is StandaloneBedWarArena) {
+                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
+                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
+                        }
 
                         generateMessage(firstPlayer, secondPlayer, queue.ranked, arena, queue.kit)
 
@@ -179,23 +190,23 @@ object QueueTask: BukkitRunnable() {
         firstPlayer.sendMessage(" ")
         secondPlayer.sendMessage(" ")
 
-        firstPlayer.sendMessage("${CC.YELLOW}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"} Match")
-        secondPlayer.sendMessage("${CC.YELLOW}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"} Match")
+        firstPlayer.sendMessage("${CC.PRIMARY}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"} Match")
+        secondPlayer.sendMessage("${CC.PRIMARY}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"} Match")
 
-        firstPlayer.sendMessage("${CC.YELLOW} ⚫ Map: ${CC.GREEN}${arena.name}")
-        firstPlayer.sendMessage("${CC.YELLOW} ⚫ Opponent: ${CC.RED}${secondPlayer.name}")
-        firstPlayer.sendMessage("${CC.YELLOW} ⚫ Ping: ${CC.RED}${PlayerUtil.getPing(secondPlayer)}")
+        firstPlayer.sendMessage("${CC.PRIMARY} ⚫ Map: ${CC.SECONDARY}${arena.name}")
+        firstPlayer.sendMessage("${CC.PRIMARY} ⚫ Opponent: ${CC.RED}${secondPlayer.name}")
+        firstPlayer.sendMessage("${CC.PRIMARY} ⚫ Ping: ${CC.SECONDARY}${PlayerUtil.getPing(secondPlayer)} ms")
 
-        secondPlayer.sendMessage("${CC.YELLOW} ⚫ Map: ${CC.GREEN}${arena.name}")
-        secondPlayer.sendMessage("${CC.YELLOW} ⚫ Opponent: ${CC.RED}${firstPlayer.name}")
-        secondPlayer.sendMessage("${CC.YELLOW} ⚫ Ping: ${CC.RED}${PlayerUtil.getPing(firstPlayer)}")
+        secondPlayer.sendMessage("${CC.PRIMARY} ⚫ Map: ${CC.SECONDARY}${arena.name}")
+        secondPlayer.sendMessage("${CC.PRIMARY} ⚫ Opponent: ${CC.RED}${firstPlayer.name}")
+        secondPlayer.sendMessage("${CC.PRIMARY} ⚫ Ping: ${CC.SECONDARY}${PlayerUtil.getPing(firstPlayer)} ms")
 
         if (ranked) {
             val profile = Profile.getByUUID(firstPlayer.uniqueId)
             val profile1 = Profile.getByUUID(secondPlayer.uniqueId)
 
-            secondPlayer.sendMessage("${CC.YELLOW} ⚫ ELO: ${CC.RED}${profile?.getKitStatistic(kit.name)?.elo}")
-            firstPlayer.sendMessage("${CC.YELLOW} ⚫ ELO: ${CC.RED}${profile1?.getKitStatistic(kit.name)?.elo}")
+            secondPlayer.sendMessage("${CC.PRIMARY} ⚫ ELO: ${CC.SECONDARY}${profile?.getKitStatistic(kit.name)?.elo}")
+            firstPlayer.sendMessage("${CC.PRIMARY} ⚫ ELO: ${CC.SECONDARY}${profile1?.getKitStatistic(kit.name)?.elo}")
         }
 
         firstPlayer.sendMessage(" ")

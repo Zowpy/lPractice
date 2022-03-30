@@ -1,4 +1,4 @@
-package net.lyragames.practice.arena
+package net.lyragames.practice.arena.type
 
 enum class ArenaType {
 

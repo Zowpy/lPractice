@@ -7,7 +7,9 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Cuboid
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.StandaloneArena
-import org.bukkit.ChatColor
+import net.lyragames.practice.arena.impl.bedwars.BedWarArena
+import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarArena
+import net.lyragames.practice.arena.type.ArenaType
 import org.bukkit.entity.Player
 
 
@@ -32,6 +34,9 @@ object ArenaCommand {
         player.sendMessage("${CC.SECONDARY}/arena pos2 <arena>")
         player.sendMessage("${CC.SECONDARY}/arena min <arena>")
         player.sendMessage("${CC.SECONDARY}/arena max <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena deadzone <arena> ${CC.GRAY}- set an arena's lowest Y location (Used for bridges, bedfight, etc)")
+        player.sendMessage("${CC.SECONDARY}/arena bed1 <arena> ${CC.GRAY}- only supported for bed fights (stand on bed)")
+        player.sendMessage("${CC.SECONDARY}/arena bed2 <arena> ${CC.GRAY}- only supported for bed fights (stand on bed)")
     }
 
     @Command(value = ["arena create"], description = "create a new arena")
@@ -103,15 +108,78 @@ object ArenaCommand {
     }
 
 
- /*   @Command(value = ["arena deadzone", "arena yval"], description = "set an arena's lowest Y location (Used for sumo, bridges, bedfight, pearlfight, etc")
+    @Command(value = ["arena deadzone", "arena yval"], description = "set an arena's lowest Y location (Used for sumo, bridges, bedfight, pearlfight, etc")
     @Permission("lpractice.command.arena.setup")
     fun deadzone(@Sender player: Player, arena: Arena) {
-
-
-       // arena.deadzone = player.location.y
+        arena.deadzone = player.location.y.toInt()
         arena.save()
 
-        player.sendMessage("${CC.YELLOW}Successfully set${CC.GOLD}" + arena.name + "${CC.YELLOW}'s deadzone location!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s deadzone!")
+    }
 
-    }*/
+    @Command(value = ["arena type"], description = "change an arena type")
+    fun type(@Sender player: Player, arena: Arena, type: ArenaType) {
+        if (type == ArenaType.BEDFIGHT) {
+            val newArena = StandaloneBedWarArena(arena.name)
+            newArena.l1 = arena.l1
+            newArena.l2 = arena.l2
+            newArena.deadzone = arena.deadzone
+            newArena.min = arena.min
+            newArena.max = arena.max
+            newArena.arenaType = type
+
+            if (arena is StandaloneArena) {
+                for (duplicate in arena.duplicates) {
+                    val newDuplicate = BedWarArena(duplicate.name)
+                    newDuplicate.l1 = duplicate.l1
+                    newDuplicate.l2 = duplicate.l2
+                    newDuplicate.min = duplicate.min
+                    newDuplicate.max = duplicate.max
+                    newDuplicate.bed1 = (duplicate as BedWarArena).bed1
+                    newDuplicate.bed2 = duplicate.bed2
+                    newDuplicate.deadzone = duplicate.deadzone
+                    newDuplicate.duplicate = true
+
+                    newDuplicate.bounds = Cuboid(newDuplicate.min, newDuplicate.max)
+                    newDuplicate.arenaType = ArenaType.BEDFIGHT
+
+                    arena.duplicates.removeIf { it.name.equals(duplicate.name, false) }
+                    arena.duplicates.add(newDuplicate)
+                }
+            }
+
+            Arena.arenas.removeIf { it.name.equals(arena.name, false) }
+            Arena.arenas.add(newArena)
+
+            newArena.save()
+        }
+
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s type to ${CC.SECONDARY}${type.name}${CC.PRIMARY}!")
+    }
+
+    @Command(value = ["arena bed1", "arena b1"], description = "set an arena's first bed location")
+    @Permission("lpractice.command.arena.setup")
+    fun bed1(@Sender player: Player, arena: Arena) {
+        if (arena.arenaType != ArenaType.BEDFIGHT) {
+            player.sendMessage("${CC.RED}This command is only supported for Bed Fights arenas!")
+            return
+        }
+        (arena as StandaloneBedWarArena).bed1 = player.location
+        arena.save()
+
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " bed location 1!")
+    }
+
+    @Command(value = ["arena bed2", "arena b2"], description = "set an arena's second bed location")
+    @Permission("lpractice.command.arena.setup")
+    fun bed2(@Sender player: Player, arena: Arena) {
+        if (arena.arenaType != ArenaType.BEDFIGHT) {
+            player.sendMessage("${CC.RED}This command is only supported for Bed Fights arenas!")
+            return
+        }
+        (arena as StandaloneBedWarArena).bed2 = player.location
+        arena.save()
+
+        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " bed location 2!")
+    }
 }

@@ -15,6 +15,8 @@ import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
+import net.lyragames.practice.arena.type.ArenaType
+import net.lyragames.practice.arena.type.ArenaTypeProvider
 import net.lyragames.practice.command.*
 import net.lyragames.practice.command.admin.*
 import net.lyragames.practice.database.Mongo
@@ -89,6 +91,7 @@ class PracticePlugin : LyraPlugin() {
         blade = Blade.of()
             .containerCreator(BukkitCommandContainer.CREATOR).binding(BukkitBindings()).binding(DefaultBindings())
             .bind(Arena::class.java, ArenaProvider).bind(Kit::class.java, KitProvider).bind(EventMap::class.java, EventMapProvider).bind(EventMapType::class.java, EventMapTypeProvider)
+            .bind(ArenaType::class.java, ArenaTypeProvider)
             .build()
 
         blade

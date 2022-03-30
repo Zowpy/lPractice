@@ -45,7 +45,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
         toReturn[0] = object: Button() {
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.COBBLESTONE)
+                return ItemBuilder(Material.ENCHANTED_BOOK)
                     .name("${CC.PRIMARY}Enabled")
                     .lore(listOf(
                         if (kit.kitData.enabled) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
@@ -89,7 +89,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
             }
         }
 
-        toReturn[3] = object: Button() {
+        toReturn[1] = object: Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.COBBLESTONE)
@@ -111,7 +111,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
         }
 
 
-        toReturn[5] = object: Button() {
+        toReturn[2] = object: Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.FENCE)
@@ -132,7 +132,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
             }
         }
 
-        toReturn[11] = object: Button() {
+        toReturn[3] = object: Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.RAW_FISH)
@@ -154,7 +154,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
             }
         }
 
-        toReturn[15] = object: Button() {
+        toReturn[4] = object: Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.DIAMOND_SWORD)
@@ -182,7 +182,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
             }
         }
 
-        toReturn[21] = object: Button() {
+        toReturn[5] = object: Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.LEASH)
@@ -205,7 +205,7 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
 
 
-        toReturn[23] = object: Button() {
+        toReturn[6] = object: Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
                 return ItemBuilder(Material.DIAMOND_CHESTPLATE)
@@ -218,6 +218,27 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.boxing = !kit.kitData.boxing
+                kit.save()
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
+        toReturn[7] = object: Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.BED)
+                    .name("${CC.PRIMARY}Bed Fights")
+                    .lore(listOf(
+                        if (kit.kitData.bedFights) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.bedFights) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.bedFights = !kit.kitData.bedFights
                 kit.save()
             }
 

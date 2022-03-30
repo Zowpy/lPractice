@@ -1,10 +1,9 @@
 package net.lyragames.practice.match.player
 
-import lombok.Data
+import net.lyragames.llib.utils.Countdown
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import org.jetbrains.annotations.Nullable
 import java.util.*
 
 /**
@@ -15,7 +14,7 @@ import java.util.*
  * Created: 12/19/2021
  * Project: Practice
  */
-@Data
+
 open class MatchPlayer(val uuid: UUID, val name: String, val spawn: Location) {
     var dead = false
     var offline = false
@@ -32,4 +31,9 @@ open class MatchPlayer(val uuid: UUID, val name: String, val spawn: Location) {
 
     var potionsThrown = 0
     var potionsMissed = 0
+
+    // bed fights
+    var points = 0
+    var bed: Location? = null
+    var respawnCountdown: Countdown? = null
 }

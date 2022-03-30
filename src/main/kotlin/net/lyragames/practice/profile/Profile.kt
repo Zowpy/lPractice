@@ -2,6 +2,7 @@ package net.lyragames.practice.profile
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
+import net.lyragames.llib.utils.Cooldown
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.duel.DuelRequest
 import net.lyragames.practice.kit.Kit
@@ -52,6 +53,8 @@ class Profile(val uuid: UUID, val name: String) {
     var following = false
 
     var state = ProfileState.LOBBY
+
+    var enderPearlCooldown: Cooldown? = null
 
     val player: Player
         get() = Bukkit.getPlayer(uuid)
