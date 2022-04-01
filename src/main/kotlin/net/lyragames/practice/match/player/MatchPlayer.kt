@@ -15,7 +15,7 @@ import java.util.*
  * Project: Practice
  */
 
-open class MatchPlayer(val uuid: UUID, val name: String, val spawn: Location) {
+open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location) {
     var dead = false
     var offline = false
     val player: Player
@@ -32,7 +32,7 @@ open class MatchPlayer(val uuid: UUID, val name: String, val spawn: Location) {
     var potionsThrown = 0
     var potionsMissed = 0
 
-    // bed fights
+    // bed fights & mlgrush
     var points = 0
     var bed: Location? = null
     var respawnCountdown: Countdown? = null

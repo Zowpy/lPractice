@@ -11,7 +11,7 @@ import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
-import net.lyragames.practice.match.impl.BedFightMatch
+import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
@@ -85,7 +85,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             return MatchType.TEAM
         }
 
-        if (this is BedFightMatch) {
+        if (this is MLGRushMatch) {
             return MatchType.BEDFIGHTS
         }
 

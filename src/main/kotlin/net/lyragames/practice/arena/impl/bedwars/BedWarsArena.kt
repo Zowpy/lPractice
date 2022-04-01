@@ -9,12 +9,15 @@ import org.bukkit.Location
  * Redistribution of this Project is not allowed
  *
  * @author Zowpy
- * Created: 3/28/2022
+ * Created: 3/31/2022
  * Project: lPractice
  */
 
-class BedWarArena(name: String) : Arena(name) {
+class BedWarsArena(name: String) : Arena(name) {
 
-    var bed1: Location? = null
-    var bed2: Location? = null
+    var redBed: Location? = null
+    var blueBed: Location? = null
+
+    var blueSpawn: Location? = null
+    var redSpawn: Location? = null
 }

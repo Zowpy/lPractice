@@ -39,6 +39,7 @@ import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
 import net.lyragames.practice.task.EventAnnounceTask
 import net.lyragames.practice.task.TNTEventBlockRemovalTask
+import net.lyragames.practice.task.TNTTagTask
 import org.bukkit.ChatColor
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
@@ -111,6 +112,7 @@ class PracticePlugin : LyraPlugin() {
         QueueTask
         EventAnnounceTask
         TNTEventBlockRemovalTask
+        TNTTagTask
 
         if (scoreboardFile.getBoolean("scoreboard.enabled")) {
             Assemble(this, ScoreboardAdapter(scoreboardFile))

@@ -1,4 +1,4 @@
-package net.lyragames.practice.arena.impl.bedwars
+package net.lyragames.practice.arena.impl.mlgrush
 
 import com.sk89q.worldedit.Vector
 import com.sk89q.worldedit.WorldEdit
@@ -18,7 +18,6 @@ import com.sk89q.worldedit.world.registry.WorldData
 import net.lyragames.llib.utils.Cuboid
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
-import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.StandaloneArena
 import org.bukkit.Location
 import java.util.concurrent.ThreadLocalRandom
@@ -33,7 +32,7 @@ import java.util.concurrent.ThreadLocalRandom
  * Project: lPractice
  */
 
-class StandaloneBedWarArena(name: String) : StandaloneArena(name) {
+class StandaloneMLGRushArena(name: String) : StandaloneArena(name) {
 
     var bed1: Location? = null
     var bed2: Location? = null
@@ -64,7 +63,7 @@ class StandaloneBedWarArena(name: String) : StandaloneArena(name) {
                 configSection1.set("l2", LocationUtil.serialize(arena.l2))
                 configSection1.set("min", LocationUtil.serialize(arena.min))
                 configSection1.set("max", LocationUtil.serialize(arena.max))
-                configSection.set("bed1", LocationUtil.serialize((arena as StandaloneBedWarArena).bed1))
+                configSection.set("bed1", LocationUtil.serialize((arena as StandaloneMLGRushArena).bed1))
                 configSection.set("bed2", LocationUtil.serialize(arena.bed2))
                 configSection1.set("deadzone", arena.deadzone)
 
@@ -107,7 +106,7 @@ class StandaloneBedWarArena(name: String) : StandaloneArena(name) {
             val b1 = Location(world, b1X, bed1!!.y, b1Z)
             val b2 = Location(world, b2X, bed1!!.y, b2Z)
 
-            val arena = StandaloneBedWarArena(name + i)
+            val arena = StandaloneMLGRushArena(name + i)
             arena.bounds = Cuboid(min, max)
             arena.l1 = a
             arena.l2 = b

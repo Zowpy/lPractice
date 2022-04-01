@@ -43,8 +43,9 @@ object KitManager {
             kit.kitData.sumo = section.getBoolean("kitData.sumo")
             kit.kitData.boxing = section.getBoolean("kitData.boxing")
             kit.kitData.enabled = section.getBoolean("kitData.enabled")
-            kit.kitData.bedFights = section.getBoolean("kitData.bedFights")
+            kit.kitData.mlgRush = section.getBoolean("kitData.mlgRush")
             kit.kitData.ffa = section.getBoolean("kitData.ffa")
+            kit.kitData.bedFights = section.getBoolean("kitData.bedFights")
 
             Kit.kits.add(kit)
         }

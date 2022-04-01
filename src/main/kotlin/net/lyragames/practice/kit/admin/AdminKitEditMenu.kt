@@ -4,7 +4,6 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.menu.Button
 import net.lyragames.menu.Menu
-import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.profile.Profile
@@ -232,13 +231,13 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
                 return ItemBuilder(Material.BED)
                     .name("${CC.PRIMARY}Bed Fights")
                     .lore(listOf(
-                        if (kit.kitData.bedFights) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
-                        if (!kit.kitData.bedFights) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                        if (kit.kitData.mlgRush) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.mlgRush) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
                     )).build()
             }
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
-                kit.kitData.bedFights = !kit.kitData.bedFights
+                kit.kitData.mlgRush = !kit.kitData.mlgRush
                 kit.save()
             }
 

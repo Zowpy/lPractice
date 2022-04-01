@@ -6,6 +6,7 @@ import net.lyragames.menu.Button
 import net.lyragames.menu.Menu
 import net.lyragames.practice.event.impl.SumoEvent
 import net.lyragames.practice.event.impl.TNTRunEvent
+import net.lyragames.practice.event.impl.TNTTagEvent
 import net.lyragames.practice.event.map.type.EventMapType
 import net.lyragames.practice.event.menu.brackets.EventSelectKitMenu
 import net.lyragames.practice.event.procedure.BracketEventProcedure
@@ -39,12 +40,10 @@ class EventHostMenu: Menu() {
     override fun getButtons(player: Player): MutableMap<Int, Button> {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
 
-        // 11, 15
-
-        toReturn[11] = object : Button() {
+        toReturn[10] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.LEASH).name("&eSumo").build()
+                return ItemBuilder(Material.LEASH).name("${CC.PRIMARY}Sumo").build()
             }
 
             override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
@@ -73,10 +72,10 @@ class EventHostMenu: Menu() {
 
         }
 
-        toReturn[13] = object : Button() {
+        toReturn[12] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.TNT).name("&eTNT Run").build()
+                return ItemBuilder(Material.TNT).name("${CC.PRIMARY}TNT Tag").build()
             }
 
             override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
@@ -97,6 +96,37 @@ class EventHostMenu: Menu() {
                     return
                 }
 
+                val event = TNTTagEvent(player.uniqueId, map)
+                EventManager.event = event
+
+                event.addPlayer(player)
+            }
+        }
+
+        toReturn[14] = object : Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.TNT).name("${CC.PRIMARY}TNT Run").build()
+            }
+
+            override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                if (!player.hasPermission("lpractice.event.host")) {
+                    player.sendMessage("${CC.RED}You don't have permissions to host this event!")
+                    return
+                }
+
+                if (EventManager.event != null) {
+                    player.sendMessage("${CC.RED}There is already a running event!")
+                    return
+                }
+
+                val map = EventMapManager.getFreeMap(EventMapType.TNT_RUN)
+
+                if (map == null) {
+                    player.sendMessage("${CC.RED}There are no event maps available!")
+                    return
+                }
+
                 val event = TNTRunEvent(player.uniqueId, map)
                 EventManager.event = event
 
@@ -104,10 +134,10 @@ class EventHostMenu: Menu() {
             }
         }
 
-        toReturn[15] = object : Button() {
+        toReturn[16] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.DIAMOND_SWORD).name("&eBrackets").build()
+                return ItemBuilder(Material.DIAMOND_SWORD).name("${CC.PRIMARY}Brackets").build()
             }
 
             override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {

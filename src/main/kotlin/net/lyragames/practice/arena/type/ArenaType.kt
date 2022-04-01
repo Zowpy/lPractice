@@ -5,6 +5,7 @@ enum class ArenaType {
     NORMAL,
     SUMO,
     BRIDGES,
+    MLGRUSH,
     BEDFIGHT,
     BUILD;
 

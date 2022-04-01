@@ -4,6 +4,7 @@ import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.impl.TNTRunMap
+import net.lyragames.practice.event.map.impl.TNTTagMap
 import net.lyragames.practice.event.map.type.EventMapType
 import java.util.concurrent.ThreadLocalRandom
 
@@ -24,7 +25,7 @@ object EventMapManager {
             val section = configFile.getConfigurationSection("maps.${key}")
             eventMap.type = EventMapType.valueOf(section.getString("type").uppercase())
 
-            if (eventMap.type == EventMapType.TNT_TAG) {
+            if (eventMap.type == EventMapType.TNT_RUN) {
                 eventMap = TNTRunMap(key)
 
                 if (section.getString("spawn") != null) {
@@ -33,6 +34,15 @@ object EventMapManager {
 
                 if (section.getInt("deadzone") != null) {
                     eventMap.deadzone = section.getInt("deadzone")
+                }
+
+                maps.add(eventMap)
+                continue
+            }else if (eventMap.type == EventMapType.TNT_TAG) {
+                eventMap = TNTTagMap(key)
+
+                if (section.getString("spawn") != null) {
+                    eventMap.spawn = LocationUtil.deserialize(section.getString("spawn"))
                 }
 
                 maps.add(eventMap)

@@ -38,10 +38,10 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
     val teams: MutableList<Team> = mutableListOf()
 
     init {
-        val team1 = Team()
+        val team1 = Team("Red")
         team1.spawn = arena.l1
 
-        val team2 = Team()
+        val team2 = Team("Blue")
         team2.spawn = arena.l2
 
         teams.add(team1)

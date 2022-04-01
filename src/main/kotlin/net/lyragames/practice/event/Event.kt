@@ -6,6 +6,7 @@ import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.event.impl.BracketsEvent
 import net.lyragames.practice.event.impl.SumoEvent
 import net.lyragames.practice.event.impl.TNTRunEvent
+import net.lyragames.practice.event.impl.TNTTagEvent
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.player.EventPlayer
 import net.lyragames.practice.profile.Profile
@@ -47,6 +48,10 @@ open class Event(val host: UUID, val eventMap: EventMap) {
               return EventType.TNT_RUN
           }
 
+          if (this is TNTTagEvent) {
+              return EventType.TNT_TAG
+          }
+
           return EventType.UNKNOWN
       }
     var requiredPlayers = 32
@@ -56,11 +61,11 @@ open class Event(val host: UUID, val eventMap: EventMap) {
     val droppedItems: MutableList<Item> = mutableListOf()
     var playingPlayers: MutableList<EventPlayer> = mutableListOf()
 
-    fun getRemainingRounds(): Int {
+    open fun getRemainingRounds(): Int {
         return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed <= 1 }.count().toInt() / 2
     }
 
-    fun getNextPlayers(): MutableList<EventPlayer> {
+    open fun getNextPlayers(): MutableList<EventPlayer> {
         return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed <= 1 }
             .collect(Collectors.toList()).subList(0, 2)
     }

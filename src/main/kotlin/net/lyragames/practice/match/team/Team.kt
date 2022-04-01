@@ -13,9 +13,12 @@ import java.util.*
  * Project: Practice
  */
 
-class Team {
+class Team(val name: String) {
     val uuid = UUID.randomUUID()
     val players: MutableList<TeamMatchPlayer> = mutableListOf()
 
     var spawn: Location? = null
+    var bedLocation: Location? = null
+
+    var broken = false
 }

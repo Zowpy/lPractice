@@ -12,7 +12,7 @@ object EventMapTypeProvider: BladeProvider<EventMapType> {
     }
 
     override fun suggest(context: BladeContext, input: String): MutableList<String> {
-        return EventMapType.values().map { it.eventName }
+        return EventMapType.values().map { it.name }
             .filter { it.startsWith(input) }
             .toMutableList()
     }

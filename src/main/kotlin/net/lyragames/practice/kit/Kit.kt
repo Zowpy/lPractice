@@ -38,6 +38,7 @@ class Kit(val name: String) {
         dataSection.set("boxing", kitData.boxing)
         dataSection.set("ffa", kitData.ffa)
         dataSection.set("enabled", kitData.enabled)
+        dataSection.set("mlgRush", kitData.mlgRush)
         dataSection.set("bedFights", kitData.bedFights)
 
         configFile.save()

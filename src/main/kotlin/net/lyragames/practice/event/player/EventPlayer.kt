@@ -25,4 +25,7 @@ class EventPlayer(val uuid: UUID) {
     var roundsPlayed = 0
 
     var state = EventPlayerState.LOBBY
+
+    // tnt tag
+    var tagged = false
 }

@@ -10,7 +10,7 @@ import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchType
-import net.lyragames.practice.match.impl.BedFightMatch
+import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
@@ -55,7 +55,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
 
             val match = profile.match?.let { Match.getByUUID(it) } ?: return mutableListOf()
 
-            if (match is BedFightMatch) {
+            if (match is MLGRushMatch) {
 
                 val matchPlayer = match.getMatchPlayer(player.uniqueId) as TeamMatchPlayer
 

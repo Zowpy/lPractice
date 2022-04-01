@@ -8,6 +8,7 @@ import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.event.impl.TNTRunEvent
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.impl.TNTRunMap
+import net.lyragames.practice.event.map.impl.TNTTagMap
 import net.lyragames.practice.event.map.type.EventMapType
 import net.lyragames.practice.manager.EventMapManager
 import org.bukkit.command.CommandSender
@@ -64,7 +65,7 @@ object EventMapCommand {
     @Command(value = ["eventmap deadzone"], description = "set an event map's deadzone")
     @Permission("lpractice.command.eventmap.setup")
     fun deadzone(@Sender player: Player, arena: EventMap, deadzone: Int) {
-        if (arena.type != EventMapType.TNT_TAG) {
+        if (arena.type != EventMapType.TNT_RUN) {
             player.sendMessage("${CC.RED}That option is not supported for this map type!")
             return
         }
@@ -78,7 +79,7 @@ object EventMapCommand {
     @Permission("lpractice.command.eventmap.setup")
     fun pos1(@Sender player: Player, arena: EventMap) {
 
-        if (arena.type == EventMapType.TNT_TAG) {
+        if (arena.type == EventMapType.TNT_TAG || arena.type == EventMapType.TNT_RUN) {
             player.sendMessage("${CC.RED}That option is not supported for this map type!")
             return
         }
@@ -93,7 +94,7 @@ object EventMapCommand {
     @Permission("lpractice.command.eventmap.setup")
     fun pos2(@Sender player: Player, arena: EventMap) {
 
-        if (arena.type == EventMapType.TNT_TAG) {
+        if (arena.type == EventMapType.TNT_TAG || arena.type == EventMapType.TNT_RUN) {
             player.sendMessage("${CC.RED}That option is not supported for this map type!")
             return
         }
@@ -109,7 +110,7 @@ object EventMapCommand {
     fun type(@Sender player: Player, arena: EventMap, type: EventMapType) {
         arena.type = type
 
-        if (type == EventMapType.TNT_TAG) {
+        if (type == EventMapType.TNT_RUN) {
             val newArena = TNTRunMap(arena.name)
             newArena.spawn = arena.spawn
 
@@ -117,6 +118,16 @@ object EventMapCommand {
             EventMapManager.maps.add(newArena)
 
             newArena.save()
+        }else if (type == EventMapType.TNT_TAG) {
+            val newArena = TNTTagMap(arena.name)
+            newArena.spawn = arena.spawn
+
+            EventMapManager.maps.removeIf { it.name.equals(arena.name, false) }
+            EventMapManager.maps.add(newArena)
+
+            newArena.save()
+        }else {
+            arena.save()
         }
 
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s type to ${CC.SECONDARY}${type.eventName}${CC.PRIMARY}!")

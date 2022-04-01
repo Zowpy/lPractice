@@ -3,22 +3,18 @@ package net.lyragames.practice.match.listener
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Cooldown
 import net.lyragames.practice.PracticePlugin
-import net.lyragames.practice.arena.impl.bedwars.BedWarArena
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.BracketsEvent
-import net.lyragames.practice.event.impl.TNTRunEvent
-import net.lyragames.practice.event.map.impl.TNTRunMap
 import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
-import net.lyragames.practice.match.impl.BedFightMatch
+import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
-import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
@@ -30,6 +26,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.player.*
+import org.bukkit.inventory.ItemStack
 
 /**
  * This Project is property of Zowpy © 2022
@@ -89,14 +86,14 @@ object MatchListener : Listener {
                 return
             }
 
-            if (match is BedFightMatch) {
+            if (match is MLGRushMatch) {
                 if (match.getMatchPlayer(player.uniqueId)?.dead!!) {
                     event.isCancelled = true
                     return
                 }
             }
 
-            if (match.kit.kitData.build || match.kit.kitData.bedFights) {
+            if (match.kit.kitData.build || match.kit.kitData.mlgRush) {
                 match.blocksPlaced.add(event.blockPlaced)
             } else {
                 event.isCancelled = true
@@ -152,7 +149,7 @@ object MatchListener : Listener {
                 return
             }
 
-            if (match.kit.kitData.bedFights && match is BedFightMatch) {
+            if (match.kit.kitData.mlgRush && match is MLGRushMatch) {
                 match.handleBreak(event)
                 return
             }
@@ -287,7 +284,7 @@ object MatchListener : Listener {
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
 
-            if (match is BedFightMatch) {
+            if (match is MLGRushMatch) {
                 if (match.getMatchPlayer(player.uniqueId)?.dead!!) {
                     event.isCancelled = true
                     return
@@ -336,7 +333,7 @@ object MatchListener : Listener {
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
 
-            if (match is BedFightMatch) {
+            if (match is MLGRushMatch) {
                 if (match.getMatchPlayer(player.uniqueId)?.dead!!) {
                     event.isCancelled = true
                     return
@@ -401,6 +398,31 @@ object MatchListener : Listener {
                 if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == eventPlayer?.uuid }
                     && currentEvent.playingPlayers.stream().noneMatch { it.uuid == eventPlayer1?.uuid }) {
                     event.isCancelled = true
+                    return
+                }
+
+                if (currentEvent.type == EventType.TNT_TAG) {
+
+                    event.damage = 0.0
+
+                    if (eventPlayer1?.tagged!!) {
+
+                        eventPlayer?.tagged = true
+                        eventPlayer?.player?.inventory?.helmet = ItemStack(Material.TNT)
+                        eventPlayer1.player.inventory.helmet = null
+
+                        eventPlayer1.player.inventory.clear()
+                        eventPlayer1.tagged = false
+
+                        for (x in 0 until 35) {
+                            eventPlayer?.player?.inventory?.setItem(x, ItemStack(Material.TNT))
+                        }
+
+                        eventPlayer?.player?.updateInventory()
+
+                        currentEvent.sendMessage("${CC.SECONDARY}${eventPlayer?.player?.name}${CC.PRIMARY} is the tagger!")
+                    }
+
                     return
                 }
 
@@ -474,11 +496,11 @@ object MatchListener : Listener {
                         }
                     }
 
-                    if (match.kit.kitData.bedFights) {
+                    if (match.kit.kitData.mlgRush) {
                         event.damage = 0.0
                     }
 
-                    if (match is BedFightMatch && matchPlayer.dead || matchPlayer1.dead) {
+                    if (match is MLGRushMatch && matchPlayer.dead || matchPlayer1.dead) {
                         event.isCancelled = true
                         return
                     }
@@ -511,7 +533,7 @@ object MatchListener : Listener {
 
                 val matchPlayer = match.getMatchPlayer(player.uniqueId)
 
-                if (match is BedFightMatch && matchPlayer?.dead!!) {
+                if (match is MLGRushMatch && matchPlayer?.dead!!) {
                     event.isCancelled = true
                     return
                 }
@@ -704,9 +726,14 @@ object MatchListener : Listener {
                     }
                 }
 
-                if (match.kit.kitData.bedFights) {
+                if (match.kit.kitData.mlgRush) {
+
                     if (event.to.y <= match.arena.deadzone) {
-                        match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
+                        val matchPlayer = match.getMatchPlayer(player.uniqueId)
+
+                        if (!matchPlayer?.dead!!) {
+                            match.handleDeath(matchPlayer)
+                        }
                     }
                 }
 
