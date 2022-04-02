@@ -30,6 +30,7 @@ class QueueMenu(val ranked: Boolean): Menu() {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
 
         for (queue in QueueManager.queues) {
+            if (!queue.kit.kitData.enabled) continue
             if (ranked != queue.ranked) continue
 
             toReturn[toReturn.size] = QueueButton(queue, ranked)

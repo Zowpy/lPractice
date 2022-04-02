@@ -36,7 +36,7 @@ object ArenaManager {
 
             if (section.getString("type").equals("MLGRUSH", true)) {
                 arena = StandaloneMLGRushArena(key)
-            }else if (section.getString("type").equals("BEDFIGHTS")) {
+            }else if (section.getString("type").equals("BEDFIGHT")) {
                 arena = StandaloneBedWarsArena(key)
             }
 

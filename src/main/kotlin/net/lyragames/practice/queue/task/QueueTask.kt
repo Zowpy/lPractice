@@ -4,11 +4,13 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
+import net.lyragames.practice.match.impl.BedFightMatch
 import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
@@ -140,6 +142,8 @@ object QueueTask: BukkitRunnable() {
 
                         if (queue.kit.kitData.mlgRush) {
                             match = MLGRushMatch(queue.kit, arena, queue.ranked)
+                        }else if (queue.kit.kitData.bedFights) {
+                            match = BedFightMatch(queue.kit, arena, queue.ranked)
                         }
 
                         val profile = Profile.getByUUID(firstPlayer.uniqueId)
@@ -151,12 +155,21 @@ object QueueTask: BukkitRunnable() {
                         profile1?.match = match.uuid
                         profile1?.state = ProfileState.MATCH
 
-                        match.addPlayer(firstPlayer, arena.l1!!)
-                        match.addPlayer(secondPlayer, arena.l2!!)
+                        if (arena is StandaloneBedWarsArena) {
+                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.blueBed
+                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.redBed
 
-                        if (arena is StandaloneMLGRushArena) {
+                            match.addPlayer(firstPlayer, arena.blueSpawn!!)
+                            match.addPlayer(secondPlayer, arena.redSpawn!!)
+                        }else if (arena is StandaloneMLGRushArena) {
                             match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
                             match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
+
+                            match.addPlayer(firstPlayer, arena.l1!!)
+                            match.addPlayer(secondPlayer, arena.l2!!)
+                        }else {
+                            match.addPlayer(firstPlayer, arena.l1!!)
+                            match.addPlayer(secondPlayer, arena.l2!!)
                         }
 
                         generateMessage(firstPlayer, secondPlayer, queue.ranked, arena, queue.kit)

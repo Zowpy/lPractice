@@ -2,6 +2,7 @@ package net.lyragames.practice.match.impl
 
 import com.google.common.base.Joiner
 import mkremins.fanciful.FancyMessage
+import net.lyragames.llib.title.TitleBar
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
@@ -14,12 +15,15 @@ import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
+import net.lyragames.practice.match.team.Team
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.utils.EloUtil
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 
 
@@ -34,7 +38,31 @@ import org.bukkit.event.block.BlockBreakEvent
 
 class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, arena, ranked) {
 
-    private var round = 1
+    init {
+        teams.clear()
+
+        val team1 = Team("Red")
+        team1.spawn = (arena as StandaloneBedWarsArena).redSpawn
+
+        val team2 = Team("Blue")
+        team2.spawn = arena.blueSpawn
+
+        teams.add(team1)
+        teams.add(team2)
+    }
+
+    override fun addPlayer(player: Player, location: Location) {
+        val team = findTeam()
+        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid!!)
+
+        team.players.add(teamMatchPlayer)
+
+        players.stream().map { it.player }.forEach {
+            it.showPlayer(player)
+            player.showPlayer(it)
+        }
+        players.add(teamMatchPlayer)
+    }
 
     override fun start() {
 
@@ -115,6 +143,10 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
                                 event.isCancelled = true
                                 val team = getTeam((matchPlayer as TeamMatchPlayer).teamUniqueId)
 
+                                val titleBar = TitleBar("${CC.RED}Your bed has been destroyed", false)
+
+                                team?.players?.forEach { if (it.player != null) titleBar.sendPacket(it.player) }
+
                                 team?.broken = true
                             }
                         }
@@ -131,14 +163,12 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         if (player.offline) {
             sendMessage("&c${player.name} ${CC.PRIMARY}has disconnected!")
         } else if (player.lastDamager == null && !player.offline) {
-            sendMessage("&c${player.name} ${CC.PRIMARY}has died from natural causes!")
+            sendMessage("&c${player.name} ${CC.PRIMARY}has died from natural causes!${if (team?.broken!!) "${CC.GRAY} (${CC.PRIMARY}FINAL${CC.GRAY})" else ""}")
         } else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
+            sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!${if (team?.broken!!) "${CC.GRAY} (${CC.PRIMARY}FINAL${CC.GRAY})" else ""}")
         }
-
-
 
         player.dead = true
 
@@ -152,7 +182,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
             player.player.teleport(player.spawn.clone().add(0.0, 5.0, 0.0))
 
-            if (team.players.none { it.dead || it.offline }) {
+            if (team.players.none { !it.dead && !it.offline }) {
                 end(getAlivePlayers()[0] as TeamMatchPlayer)
             }
 
@@ -393,8 +423,6 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
     override fun handleQuit(matchPlayer: MatchPlayer) {
         matchPlayer.offline = true
-
-        // handleDeath(matchPlayer)
 
         if (teams.stream().anyMatch { team -> team.players.stream().noneMatch { !it.offline } }) {
             end(players.stream().filter { !it.offline }.findAny().orElse(null) as TeamMatchPlayer)

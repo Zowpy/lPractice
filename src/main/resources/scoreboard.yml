@@ -76,6 +76,15 @@ scoreboard:
     - ""
     - "&7&olyra.gg"
     - "&7&m-------------------"
+  ffa-event:
+    - "&7&m-------------------"
+    - "&eType: &a<type>"
+    - "&eState: &a<state>"
+    - ""
+    - "&eRemaining Players: <remainingPlayers>"
+    - ""
+    - "&7&olyra.gg"
+    - "&7&m-------------------"
   spectate:
     - "&7&m-------------------"
     - "&eLadder: &a<kit>"

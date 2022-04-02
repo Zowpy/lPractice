@@ -35,10 +35,6 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
         return true
     }
 
-    override fun getSize(): Int {
-        return 27
-    }
-
     override fun getButtons(player: Player): MutableMap<Int, Button> {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
 
@@ -56,17 +52,10 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
                 kit.kitData.enabled = !kit.kitData.enabled
                 kit.save()
 
-                if (kit.kitData.enabled) {
-                    val queue = Queue(kit, false)
-                    QueueManager.queues.add(queue)
+                val queue = QueueManager.getByKit(kit)
+                queue?.kit?.kitData?.enabled = kit.kitData.enabled
 
-                    if (kit.kitData.ranked) {
-                        val queue1 = Queue(kit, true)
-                        QueueManager.queues.add(queue1)
-                    }
-                }else {
-                    val queue = QueueManager.getByKit(kit)
-
+                if (!kit.kitData.enabled) {
                     QueueManager.queues.remove(queue)
 
                     queue?.queuePlayers?.stream()?.map { Profile.getByUUID(it.uuid) }
@@ -78,8 +67,6 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
                             it.player.sendMessage("${CC.RED}You have been removed from the queue.")
                         }
-
-
                 }
             }
 
@@ -228,8 +215,8 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
         toReturn[7] = object: Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.BED)
-                    .name("${CC.PRIMARY}Bed Fights")
+                return ItemBuilder(Material.STICK)
+                    .name("${CC.PRIMARY}MLGRush")
                     .lore(listOf(
                         if (kit.kitData.mlgRush) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!kit.kitData.mlgRush) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
@@ -238,6 +225,27 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.mlgRush = !kit.kitData.mlgRush
+                kit.save()
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
+        toReturn[8] = object: Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.BED)
+                    .name("${CC.PRIMARY}Bed Fights")
+                    .lore(listOf(
+                        if (kit.kitData.bedFights) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.bedFights) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.bedFights = !kit.kitData.bedFights
                 kit.save()
             }
 

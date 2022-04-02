@@ -206,7 +206,7 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
         return teamMatchPlayer.teamUniqueId != teamMatchPlayer1.teamUniqueId
     }
 
-    private fun findTeam(): Team? {
+    fun findTeam(): Team? {
         //return teams[ThreadLocalRandom.current().nextInt(teams.size)]
         return teams.stream().sorted { o1, o2 -> o1.players.size - o2.players.size }
             .findFirst().orElse(null)

@@ -4,10 +4,13 @@ import me.vaperion.blade.command.annotation.Command
 import me.vaperion.blade.command.annotation.Permission
 import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
+import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.admin.AdminKitEditMenu
+import net.lyragames.practice.profile.Profile
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
+import java.util.*
 
 
 /**
@@ -58,6 +61,13 @@ object KitCommand {
         kit.content = player.inventory.contents
         kit.armorContent = player.inventory.armorContents
         kit.save()
+
+        for (document in PracticePlugin.instance.practiceMongo.profiles.find()) {
+            val profile = Profile(UUID.fromString(document.getString("uuid")), document.getString("name"))
+            profile.load(document)
+
+            profile.getKitStatistic(kit.name)?.editedKits?.clear()
+        }
 
         player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + kit.name + "'s " + CC.YELLOW + "item contents!")
     }

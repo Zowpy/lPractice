@@ -5,6 +5,7 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.llib.utils.TimeUtil
+import net.lyragames.practice.event.EventType
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
@@ -158,7 +159,13 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                         .replace("<queuing>", QueueManager.inQueue().toString()))
                         .replace("<in_match>", Match.inMatch().toString()) }.collect(Collectors.toList())
 
-
+            if (event.type == EventType.TNT_TAG || event.type == EventType.TNT_RUN) {
+                return configFile.getStringList("scoreboard.ffa-event").stream()
+                    .map { CC.translate(it.replace("<state>", event.state.stateName)
+                        .replace("<type>", event.type.eventName)
+                        .replace("<remainingPlayers>", event.getAlivePlayers().size.toString())) }
+                    .collect(Collectors.toList())
+            }
 
             return configFile.getStringList("scoreboard.event").stream()
                 .map { CC.translate(it.replace("<state>", event.state.stateName)
