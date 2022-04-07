@@ -23,7 +23,7 @@ import org.bukkit.scheduler.BukkitRunnable
 object TNTEventBlockRemovalTask: BukkitRunnable() {
 
     init {
-        this.runTaskTimerAsynchronously(PracticePlugin.instance, 20L, 8L)
+        this.runTaskTimerAsynchronously(PracticePlugin.instance, 20L, 7L)
     }
 
     override fun run() {

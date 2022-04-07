@@ -112,6 +112,8 @@ class StandaloneMLGRushArena(name: String) : StandaloneArena(name) {
             arena.l2 = b
             arena.bed1 = b1
             arena.bed2 = b2
+            arena.min = min
+            arena.max = max
             arena.duplicate = true
             arena.deadzone = deadzone
             duplicates.add(arena)

@@ -30,10 +30,7 @@ import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.KitProvider
 import net.lyragames.practice.kit.editor.listener.KitEditorListener
 import net.lyragames.practice.kit.serializer.EditKitSerializer
-import net.lyragames.practice.manager.ArenaManager
-import net.lyragames.practice.manager.EventMapManager
-import net.lyragames.practice.manager.KitManager
-import net.lyragames.practice.manager.QueueManager
+import net.lyragames.practice.manager.*
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
@@ -86,6 +83,8 @@ class PracticePlugin : LyraPlugin() {
 
         EventMapManager.load()
         logger.info("Successfully loaded ${if (EventMapManager.maps.size == 1) "1 event map!" else "${EventMapManager.maps.size} event maps!"}")
+
+        FFAManager.load()
 
         MenuAPI(this)
 

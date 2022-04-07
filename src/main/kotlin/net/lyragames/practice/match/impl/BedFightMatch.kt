@@ -147,6 +147,8 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
                                 team?.players?.forEach { if (it.player != null) titleBar.sendPacket(it.player) }
 
+                                sendMessage("${CC.SECONDARY}${player.name}${CC.PRIMARY} has broke ${CC.SECONDARY}${team?.name}${CC.PRIMARY}'s bed!")
+
                                 team?.broken = true
                             }
                         }

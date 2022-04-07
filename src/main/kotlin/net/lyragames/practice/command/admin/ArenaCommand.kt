@@ -282,4 +282,11 @@ object ArenaCommand {
 
         player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 2!")
     }
+
+    @Command(value = ["arena dupe", "arena duplicate"], description = "duplicate an arenas")
+    @Permission("lpractice.command.arena.setup")
+    fun duplicate(@Sender player: Player, arena: Arena, times: Int) {
+        arena.duplicate(player.world, times)
+        player.sendMessage("${CC.GREEN}Successfully duplicated arena!")
+    }
 }

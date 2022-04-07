@@ -5,6 +5,7 @@ import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.menu.Button
 import net.lyragames.menu.pagination.PaginatedMenu
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import net.lyragames.practice.party.duel.procedure.PartyDuelProcedure
 import org.bukkit.Material
@@ -36,11 +37,18 @@ class PartyDuelArenaSelectMenu: PaginatedMenu() {
         }
     }
 
-    override fun getAllPagesButtons(p0: Player?): MutableMap<Int, Button> {
+    override fun getAllPagesButtons(player: Player?): MutableMap<Int, Button> {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
+
+        val duelProcedure = PartyDuelProcedure.getByUUID(player?.uniqueId!!)
+
+        val kit = duelProcedure?.kit
 
         for (arena in Arena.arenas) {
             if (!arena.isSetup || arena.duplicate) continue
+            if (kit?.kitData?.sumo!! && arena.arenaType != ArenaType.SUMO) continue
+            if (kit.kitData.mlgRush && arena.arenaType != ArenaType.MLGRUSH) continue
+            if (kit.kitData.bedFights && arena.arenaType != ArenaType.BEDFIGHT) continue
 
             toReturn[toReturn.size] = object : Button() {
 
@@ -50,10 +58,8 @@ class PartyDuelArenaSelectMenu: PaginatedMenu() {
                         .build()
                 }
 
-                override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                     if (clickType?.isLeftClick!!) {
-
-                        val duelProcedure = PartyDuelProcedure.getByUUID(player?.uniqueId!!)
 
                         if (duelProcedure == null) {
                             player.sendMessage("${CC.RED}Something went wrong!")

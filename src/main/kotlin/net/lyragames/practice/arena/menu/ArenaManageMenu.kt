@@ -40,7 +40,9 @@ class ArenaManageMenu(private val arena: Arena): Menu() {
             }
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
-                TODO("implement this soon!")
+                if (clickType?.isLeftClick!!) {
+
+                }
             }
         }
 

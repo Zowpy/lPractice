@@ -94,6 +94,8 @@ open class StandaloneArena(name: String) : Arena(name) {
             arena.bounds = Cuboid(min, max)
             arena.l1 = a
             arena.l2 = b
+            arena.min = min
+            arena.max = max
             arena.duplicate = true
             arena.deadzone = deadzone
             duplicates.add(arena)
@@ -127,5 +129,9 @@ open class StandaloneArena(name: String) : Arena(name) {
 
     override fun isFree(): Boolean {
         return free || duplicates.stream().anyMatch { it.free && it.isSetup }
+    }
+
+    fun getFreeDuplicate(): Arena? {
+        return duplicates.stream().filter { it.free && it.isSetup }.findAny().orElse(null)
     }
 }

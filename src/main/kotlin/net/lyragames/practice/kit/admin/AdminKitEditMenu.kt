@@ -5,7 +5,9 @@ import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.menu.Button
 import net.lyragames.menu.Menu
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
+import net.lyragames.practice.match.ffa.FFA
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
@@ -28,7 +30,7 @@ import org.bukkit.inventory.ItemStack
 class AdminKitEditMenu(private val kit: Kit): Menu() {
 
     override fun getTitle(player: Player): String {
-        return "&6Editing ${kit.name}"
+        return "${CC.PRIMARY}Editing ${kit.name}"
     }
 
     override fun isUpdateAfterClick(): Boolean {
@@ -52,21 +54,34 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
                 kit.kitData.enabled = !kit.kitData.enabled
                 kit.save()
 
-                val queue = QueueManager.getByKit(kit)
-                queue?.kit?.kitData?.enabled = kit.kitData.enabled
-
                 if (!kit.kitData.enabled) {
-                    QueueManager.queues.remove(queue)
+                    QueueManager.queues.filter { it.kit.name.equals(kit.name, false) }
+                        .forEach { queue ->
+                            queue.queuePlayers.stream().map { Profile.getByUUID(it.uuid) }
+                                ?.forEach {
+                                    it?.state = ProfileState.LOBBY
+                                    it?.queuePlayer = null
 
-                    queue?.queuePlayers?.stream()?.map { Profile.getByUUID(it.uuid) }
-                        ?.forEach {
-                            it?.state = ProfileState.LOBBY
-                            it?.queuePlayer = null
+                                    Hotbar.giveHotbar(it!!)
 
-                            Hotbar.giveHotbar(it!!)
-
-                            it.player.sendMessage("${CC.RED}You have been removed from the queue.")
+                                    it.player.sendMessage("${CC.RED}You have been removed from the queue.")
+                                }
+                            queue.kit.kitData.enabled = false
                         }
+                }else {
+                    if (QueueManager.queues.none { it.kit.name.equals(kit.name, false) }) {
+                        val queue = Queue(kit, false)
+                        QueueManager.queues.add(queue)
+
+                        if (kit.kitData.ranked) {
+                            val rankedQueue = Queue(kit, true)
+                            QueueManager.queues.add(rankedQueue)
+                        }
+                    }else {
+                        QueueManager.queues.filter { it.kit.name.equals(kit.name, false) }.forEach {
+                            it.kit.kitData.enabled = true
+                        }
+                    }
                 }
             }
 
@@ -246,6 +261,76 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.bedFights = !kit.kitData.bedFights
+                kit.save()
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
+        toReturn[9] = object: Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.GOLD_SWORD)
+                    .name("${CC.PRIMARY}FFA")
+                    .lore(listOf(
+                        if (kit.kitData.ffa) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.ffa) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.ffa = !kit.kitData.ffa
+                kit.save()
+
+                if (kit.kitData.ffa) {
+                    if (FFAManager.getByKit(kit) == null) {
+                        val ffa = FFA(kit)
+                        FFAManager.ffaMatches.add(ffa)
+                    }
+                }
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
+        toReturn[10] = object: Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.COOKED_BEEF)
+                    .name("${CC.PRIMARY}Hunger")
+                    .lore(listOf(
+                        if (kit.kitData.hunger) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.hunger) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.hunger = !kit.kitData.hunger
+                kit.save()
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
+        toReturn[11] = object: Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.BONE)
+                    .name("${CC.PRIMARY}Regeneration")
+                    .lore(listOf(
+                        if (kit.kitData.regeneration) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.regeneration) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.regeneration = !kit.kitData.regeneration
                 kit.save()
             }
 

@@ -4,7 +4,9 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
+import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaManager
@@ -156,18 +158,30 @@ object QueueTask: BukkitRunnable() {
                         profile1?.state = ProfileState.MATCH
 
                         if (arena is StandaloneBedWarsArena) {
-                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.blueBed
-                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.redBed
-
                             match.addPlayer(firstPlayer, arena.blueSpawn!!)
                             match.addPlayer(secondPlayer, arena.redSpawn!!)
-                        }else if (arena is StandaloneMLGRushArena) {
-                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
-                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
 
+                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.blueBed
+                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.redBed
+                        }else if (arena is BedWarsArena) {
+                            match.addPlayer(firstPlayer, arena.blueSpawn!!)
+                            match.addPlayer(secondPlayer, arena.redSpawn!!)
+
+                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.blueBed
+                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.redBed
+                        } else if (arena is StandaloneMLGRushArena) {
                             match.addPlayer(firstPlayer, arena.l1!!)
                             match.addPlayer(secondPlayer, arena.l2!!)
-                        }else {
+
+                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
+                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
+                        }else if (arena is MLGRushArena) {
+                            match.addPlayer(firstPlayer, arena.l1!!)
+                            match.addPlayer(secondPlayer, arena.l2!!)
+
+                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
+                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
+                        } else {
                             match.addPlayer(firstPlayer, arena.l1!!)
                             match.addPlayer(secondPlayer, arena.l2!!)
                         }
@@ -187,6 +201,8 @@ object QueueTask: BukkitRunnable() {
                         }
 
                         for (uuid in profile1?.followers!!) {
+                            if (firstPlayer.uniqueId == uuid || secondPlayer.uniqueId == uuid) continue
+
                             val playerProfile = Profile.getByUUID(uuid)
 
                             playerProfile?.silent = true

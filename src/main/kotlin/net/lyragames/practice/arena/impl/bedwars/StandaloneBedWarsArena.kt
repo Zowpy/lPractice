@@ -115,6 +115,8 @@ class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
             arena.l2 = b
             arena.redBed = b1
             arena.blueBed = b2
+            arena.min = min
+            arena.max = max
             arena.duplicate = true
             arena.deadzone = deadzone
             duplicates.add(arena)

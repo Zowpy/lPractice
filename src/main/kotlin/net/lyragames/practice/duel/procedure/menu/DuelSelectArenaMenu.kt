@@ -44,6 +44,8 @@ class DuelSelectArenaMenu: PaginatedMenu() {
         for (arena in Arena.arenas) {
             if (!arena.isSetup || arena.duplicate) continue
             if (duelProcedure.kit?.kitData?.sumo!! && arena.arenaType != ArenaType.SUMO) continue
+            if (duelProcedure.kit?.kitData?.mlgRush!! && arena.arenaType != ArenaType.MLGRUSH) continue
+            if (duelProcedure.kit?.kitData?.bedFights!! && arena.arenaType != ArenaType.BEDFIGHT) continue
 
             toReturn[toReturn.size] = object : Button() {
 

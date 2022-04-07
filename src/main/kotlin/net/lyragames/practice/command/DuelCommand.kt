@@ -3,10 +3,16 @@ package net.lyragames.practice.command
 import me.vaperion.blade.command.annotation.Command
 import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
+import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
+import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
+import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
+import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import net.lyragames.practice.duel.procedure.menu.DuelSelectKitMenu
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.match.Match
+import net.lyragames.practice.match.impl.BedFightMatch
+import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
@@ -50,9 +56,45 @@ object DuelCommand {
             return
         }
 
-        val match = Match(duelRequest.kit, duelRequest.arena, false)
-        match.addPlayer(player, duelRequest.arena.l1!!)
-        match.addPlayer(target, duelRequest.arena.l2!!)
+        val arena = duelRequest.arena
+        var match = Match(duelRequest.kit, arena, false)
+
+        if (duelRequest.kit.kitData.mlgRush) {
+            match = MLGRushMatch(duelRequest.kit, duelRequest.arena, false)
+        }else if (duelRequest.kit.kitData.bedFights) {
+            match = BedFightMatch(duelRequest.kit, duelRequest.arena, false)
+        }
+
+        if (arena is StandaloneBedWarsArena) {
+            match.addPlayer(player, arena.blueSpawn!!)
+            match.addPlayer(target, arena.redSpawn!!)
+
+            match.getMatchPlayer(player.uniqueId)?.bed = arena.blueBed
+            match.getMatchPlayer(target.uniqueId)?.bed = arena.redBed
+        } else if (arena is BedWarsArena) {
+            match.addPlayer(player, arena.blueSpawn!!)
+            match.addPlayer(target, arena.redSpawn!!)
+
+            match.getMatchPlayer(player.uniqueId)?.bed = arena.blueBed
+            match.getMatchPlayer(target.uniqueId)?.bed = arena.redBed
+        } else if (arena is StandaloneMLGRushArena) {
+            match.addPlayer(player, arena.l1!!)
+            match.addPlayer(target, arena.l2!!)
+
+            match.getMatchPlayer(player.uniqueId)?.bed = arena.bed1
+            match.getMatchPlayer(target.uniqueId)?.bed = arena.bed2
+        }else if (arena is MLGRushArena) {
+            match.addPlayer(player, arena.l1!!)
+            match.addPlayer(target, arena.l2!!)
+
+            match.getMatchPlayer(player.uniqueId)?.bed = arena.bed1
+            match.getMatchPlayer(target.uniqueId)?.bed = arena.bed2
+        }else {
+            match.addPlayer(player, arena.l1!!)
+            match.addPlayer(target, arena.l2!!)
+        }
+
+        profile.duelRequests.remove(duelRequest)
 
         profile.match = match.uuid
         profile.state = ProfileState.MATCH

@@ -1,8 +1,11 @@
 package net.lyragames.practice.match.listener
 
+import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Cooldown
+import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.BracketsEvent
@@ -18,16 +21,18 @@ import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
-import org.bukkit.entity.ThrownPotion
+import org.bukkit.entity.*
+import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDamageEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
+import javax.xml.transform.Result
+import kotlin.math.abs
 
 /**
  * This Project is property of Zowpy © 2022
@@ -53,6 +58,11 @@ object MatchListener : Listener {
             if (player.gameMode != GameMode.CREATIVE) {
                 event.isCancelled = true
             }
+            return
+        }
+
+        if (profile?.state == ProfileState.FFA) {
+            event.isCancelled = true
             return
         }
 
@@ -119,6 +129,11 @@ object MatchListener : Listener {
             return
         }
 
+        if (profile?.state == ProfileState.FFA) {
+            event.isCancelled = true
+            return
+        }
+
         if (profile?.state == ProfileState.EVENT) {
             val currentEvent = EventManager.event
             val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
@@ -178,6 +193,11 @@ object MatchListener : Listener {
             return
         }
 
+        if (profile?.state == ProfileState.FFA) {
+            event.isCancelled = true
+            return
+        }
+
         if (profile?.state == ProfileState.EVENT) {
             val currentEvent = EventManager.event
             val eventPlayer = currentEvent?.getPlayer(player.uniqueId)
@@ -217,6 +237,11 @@ object MatchListener : Listener {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
+            event.isCancelled = true
+            return
+        }
+
+        if (profile?.state == ProfileState.FFA) {
             event.isCancelled = true
             return
         }
@@ -265,6 +290,7 @@ object MatchListener : Listener {
         }
 
         if (profile?.state == ProfileState.FFA) {
+            event.isCancelled = true
             return
         }
 
@@ -313,6 +339,7 @@ object MatchListener : Listener {
         }
 
         if (profile?.state == ProfileState.FFA) {
+            event.isCancelled = true
             return
         }
 
@@ -561,8 +588,62 @@ object MatchListener : Listener {
     }
 
     @EventHandler
+    fun onSpawn(event: EntitySpawnEvent) {
+        if (event.entity.type == EntityType.PLAYER) return
+
+        event.isCancelled = true
+        event.entity.remove()
+    }
+
+    @EventHandler
     fun onRespawn(event: PlayerRespawnEvent) {
-        event.respawnLocation = event.player.location
+        if (Constants.SPAWN != null) {
+            event.respawnLocation = Constants.SPAWN
+        }else {
+            event.respawnLocation = event.player.location
+        }
+    }
+
+    @EventHandler
+    fun onHunger(event: FoodLevelChangeEvent) {
+        val profile = Profile.getByUUID(event.entity.uniqueId)
+
+        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.SPECTATING || profile?.state == ProfileState.QUEUE) {
+            event.isCancelled = true
+        }
+
+        if (profile?.state == ProfileState.MATCH) {
+            val match = Match.getByUUID(profile.match!!) ?: return
+
+            if (!match.kit.kitData.hunger) {
+                event.isCancelled = true
+            }
+
+            return
+        }
+
+        if (profile?.state == ProfileState.FFA) {
+            val ffaMatch = FFAManager.getByUUID(profile.ffa!!) ?: return
+
+            if (!ffaMatch.kit.kitData.hunger) {
+                event.isCancelled = true
+            }
+
+            return
+        }
+
+        if (profile?.state == ProfileState.EVENT && EventManager.event != null) {
+            val currentEvent = EventManager.event
+
+            if (currentEvent?.type != EventType.BRACKETS) {
+                event.isCancelled = true
+                return
+            }
+
+            if (!(currentEvent as BracketsEvent).kit.kitData.hunger) {
+                event.isCancelled = true
+            }
+        }
     }
 
     @EventHandler
@@ -572,7 +653,6 @@ object MatchListener : Listener {
             if (event.cause == EntityDamageEvent.DamageCause.FALL) {
                 event.isCancelled = true
             }
-
         }
     }
 
@@ -593,16 +673,35 @@ object MatchListener : Listener {
                     event.isCancelled = true
                 } else if (match?.matchState == MatchState.FIGHTING) {
                     if (event.entity is ThrownPotion) {
-                        if (profile.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
-                            match.getMatchPlayer(shooter.uniqueId)!!.potionsThrown++
-                            profile.enderPearlCooldown = Cooldown(PracticePlugin.instance, 15) {
-                                shooter.sendMessage("${CC.PRIMARY}You can now use the enderpearl.")
-                                profile.enderPearlCooldown = null
-                            }
-                        }else {
-                            event.isCancelled = true
-                            shooter.sendMessage("${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${profile.enderPearlCooldown?.secondsRemaining}")
+                        match.getMatchPlayer(shooter.uniqueId)!!.potionsThrown++
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    fun onInteract(event: PlayerInteractEvent) {
+        val player = event.player
+        val profile = Profile.getByUUID(player.uniqueId)
+
+        if (event.action.name.contains("RIGHT")) {
+            if (profile?.state != ProfileState.SPECTATING && profile?.state != ProfileState.QUEUE && profile?.state != ProfileState.LOBBY) {
+                if (player.itemInHand != null && player.itemInHand.type == Material.ENDER_PEARL) {
+                    if (profile!!.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
+                        event.setUseItemInHand(Event.Result.ALLOW)
+                        profile.enderPearlCooldown = Cooldown(PracticePlugin.instance, 15) {
+                            player.sendMessage("${CC.PRIMARY}You can now use the enderpearl.")
+                            profile.enderPearlCooldown = null
                         }
+                    } else {
+                        event.isCancelled = true
+                        event.setUseItemInHand(Event.Result.DENY)
+                        player.sendMessage("${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${
+                            profile.enderPearlCooldown?.startedAt?.plus(
+                                profile.enderPearlCooldown!!.seconds.times(1000).toLong().minus(System.currentTimeMillis())
+                            )?.let { TimeUtil.millisToSeconds(it) }
+                        }")
                     }
                 }
             }
@@ -709,6 +808,7 @@ object MatchListener : Listener {
             currentEvent.endRound(currentEvent.getOpponent(eventPlayer!!))
         }
 
+        CustomItemStack.getCustomItemStacks().removeIf { it.uuid == player.uniqueId }
         Profile.profiles.remove(profile)
     }
 
@@ -716,18 +816,12 @@ object MatchListener : Listener {
     fun onMove(event: PlayerMoveEvent) {
         val player = event.player
 
-        if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
-            val profile = Profile.getByUUID(player.uniqueId)
+        val profile = Profile.getByUUID(player.uniqueId)
 
-            if (profile?.match != null) {
+        if (profile?.match != null) {
+            val match = Match.getByUUID(profile.match!!)
 
-                val match = Match.getByUUID(profile.match!!)
-
-                if (match?.kit?.kitData?.sumo!!) {
-                    if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
-                        match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
-                    }
-                }
+            if (match != null) {
 
                 if (match.kit.kitData.mlgRush || match.kit.kitData.bedFights) {
 
@@ -739,6 +833,22 @@ object MatchListener : Listener {
                         }
                     }
                 }
+            }
+        }
+
+        if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
+
+            if (profile?.match != null) {
+
+                val match = Match.getByUUID(profile.match!!)
+
+                if (match?.kit?.kitData?.sumo!!) {
+                    if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
+                        match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
+                    }
+                }
+
+
 
             } else if (profile?.state == ProfileState.EVENT) {
 
@@ -758,5 +868,10 @@ object MatchListener : Listener {
             }
         }
 
+    }
+
+    @EventHandler
+    fun onBlockDamage(event: BlockDamageEvent) {
+        event.isCancelled = true
     }
 }

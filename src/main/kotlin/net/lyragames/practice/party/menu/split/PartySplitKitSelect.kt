@@ -51,7 +51,7 @@ class PartySplitKitSelect(private val party: Party): Menu() {
                             return
                         }
 
-                        val arena = ArenaManager.getFreeArena()
+                        val arena = ArenaManager.getFreeArena(kit)
 
                         if (arena == null) {
                             player.sendMessage("${CC.RED}There is no free arenas!")

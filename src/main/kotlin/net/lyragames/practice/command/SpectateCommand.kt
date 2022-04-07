@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 
 object SpectateCommand {
 
-    @Command(value = ["spectate", "s"], description = "spectate a player's match")
+    @Command(value = ["spectate", "s", "spec"], description = "spectate a player's match")
     fun spectate(@Sender player: Player, target: Player) {
         val profile = Profile.getByUUID(target.uniqueId)
 

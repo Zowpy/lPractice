@@ -40,6 +40,8 @@ class Kit(val name: String) {
         dataSection.set("enabled", kitData.enabled)
         dataSection.set("mlgRush", kitData.mlgRush)
         dataSection.set("bedFights", kitData.bedFights)
+        dataSection.set("hunger", kitData.hunger)
+        dataSection.set("regeneration", kitData.regeneration)
 
         configFile.save()
     }

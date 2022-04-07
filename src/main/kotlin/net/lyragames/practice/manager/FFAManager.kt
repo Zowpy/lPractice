@@ -8,6 +8,15 @@ object FFAManager {
 
     val ffaMatches: MutableList<FFA> = mutableListOf()
 
+    fun load() {
+        for (kit in Kit.kits) {
+            if (!kit.kitData.ffa) continue
+
+            val ffa = FFA(kit)
+            ffaMatches.add(ffa)
+        }
+    }
+
     fun getByUUID(uuid: UUID): FFA? {
         return ffaMatches.stream().filter { it.uuid == uuid }
             .findFirst().orElse(null)

@@ -171,12 +171,6 @@ object ArenaManager {
         }
     }
 
-    fun getFreeArena(): Arena? {
-        return Arena.arenas
-            .stream().filter { !it.duplicate && it.isSetup && it.isFree()}
-            .findAny().orElse(null)
-    }
-
     fun getFreeArena(kit: Kit): Arena? {
      /*   return Arena.arenas
             .stream().filter { !it.duplicate && it.isSetup && it.isFree() && (kit.kitData.sumo && it.arenaType == ArenaType.SUMO)}
@@ -184,7 +178,9 @@ object ArenaManager {
 
         for (arena in Arena.arenas) {
             if (arena == null) continue
-            if (arena.duplicate && !arena.isSetup && !arena.isFree()) continue
+
+            if (!arena.isSetup) continue
+            if (kit.kitData.build && !arena.isFree()) continue
 
             if (kit.kitData.sumo && arena.arenaType != ArenaType.SUMO) continue
             if (kit.kitData.mlgRush && arena.arenaType != ArenaType.MLGRUSH) continue
