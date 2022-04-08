@@ -2,6 +2,7 @@ package net.lyragames.practice.match.impl
 
 import com.google.common.base.Joiner
 import mkremins.fanciful.FancyMessage
+import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Cooldown
 import net.lyragames.llib.utils.Countdown
@@ -50,6 +51,9 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
             PlayerUtil.denyMovement(player)
 
             player.teleport(matchPlayer.spawn)
+
+            CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
+
             profile?.getKitStatistic(kit.name)?.generateBooks(player)
 
             countdowns.add(Countdown(
@@ -232,6 +236,8 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
                 if (Constants.SPAWN != null) {
                     bukkitPlayer.teleport(Constants.SPAWN)
                 }
+
+                CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
                 Hotbar.giveHotbar(profile!!)
 

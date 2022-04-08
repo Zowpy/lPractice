@@ -25,6 +25,7 @@ import org.bukkit.entity.*
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDamageEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -684,6 +685,9 @@ object MatchListener : Listener {
     fun onInteract(event: PlayerInteractEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
+
+        if (event.action == Action.PHYSICAL && event.clickedBlock.type == Material.SOIL)
+            event.isCancelled = true
 
         if (event.action.name.contains("RIGHT")) {
             if (profile?.state != ProfileState.SPECTATING && profile?.state != ProfileState.QUEUE && profile?.state != ProfileState.LOBBY) {

@@ -85,10 +85,10 @@ class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
             val offsetX: Double = random * offsetMultiplier / 10
             val offsetZ: Double = random * offsetMultiplier / 10
 
-            val minX: Double = bounds.lowerX + offsetX
-            val minZ: Double = bounds.lowerZ + offsetZ
-            val maxX: Double = bounds.upperX + offsetX
-            val maxZ: Double = bounds.upperZ + offsetZ
+            val minX: Double = min!!.x + offsetX
+            val minZ: Double = min!!.z + offsetZ
+            val maxX: Double = max!!.x + offsetX
+            val maxZ: Double = max!!.z + offsetZ
 
             val aX: Double = redSpawn!!.x + offsetX
             val aZ: Double = redSpawn!!.z + offsetZ

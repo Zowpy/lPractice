@@ -58,6 +58,7 @@ class KitStatistic constructor(val kit: String) {
                 .name(CC.RED + "Default").build()
         )
         customItemStack.isRightClick = true
+        customItemStack.isRemoveOnClick = true
         customItemStack.clicked = Consumer { event: PlayerInteractEvent ->
             val player1 = event.player
             player1.inventory.contents = kit?.content
@@ -74,6 +75,7 @@ class KitStatistic constructor(val kit: String) {
                     .name(CC.RED + editedKit.name).build()
             )
             item.isRightClick = true
+            item.isRemoveOnClick = true
             item.clicked = Consumer { event: PlayerInteractEvent ->
                 val player1 = event.player
                 player1.inventory.contents = editedKit.content

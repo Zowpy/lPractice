@@ -44,7 +44,11 @@ class KitManagementMenu(val kit: Kit): Menu() {
         var startPos = -1
         for (i in 0..3) {
             startPos += 2
-            val kitLoadout: EditedKit? = kitLoadouts?.get(i)
+            var kitLoadout: EditedKit? = null
+
+            if (kitLoadouts?.size!! > i) {
+                kitLoadout = kitLoadouts[i]
+            }
 
             buttons[startPos] = if (kitLoadout == null) CreateKitButton(i) else KitDisplayButton(kitLoadout)
             buttons[startPos + 18] = LoadKitButton(i)

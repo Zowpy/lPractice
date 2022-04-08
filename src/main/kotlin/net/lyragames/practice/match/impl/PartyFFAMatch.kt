@@ -2,6 +2,7 @@ package net.lyragames.practice.match.impl
 
 import com.google.common.base.Joiner
 import mkremins.fanciful.FancyMessage
+import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
@@ -76,6 +77,8 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
                     if (Constants.SPAWN != null) {
                         bukkitPlayer.teleport(Constants.SPAWN)
                     }
+
+                    CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
                     Hotbar.giveHotbar(profile!!)
 

@@ -2,6 +2,7 @@ package net.lyragames.practice.match
 
 import com.google.common.base.Joiner
 import mkremins.fanciful.FancyMessage
+import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.title.TitleBar
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Countdown
@@ -60,6 +61,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
             val player = matchPlayer.player
             val profile = Profile.getByUUID(player.uniqueId)
+
+            CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
             PlayerUtil.reset(player)
             PlayerUtil.allowMovement(player)
@@ -237,6 +240,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 if (Constants.SPAWN != null) {
                     bukkitPlayer.teleport(Constants.SPAWN)
                 }
+
+                CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
                 Hotbar.giveHotbar(profile!!)
 
