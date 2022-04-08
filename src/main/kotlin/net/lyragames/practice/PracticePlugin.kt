@@ -11,6 +11,7 @@ import net.lyragames.llib.LyraPlugin
 import net.lyragames.llib.item.ItemListener
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ConfigFile
+import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.arena.Arena
@@ -38,6 +39,7 @@ import net.lyragames.practice.task.EventAnnounceTask
 import net.lyragames.practice.task.TNTEventBlockRemovalTask
 import net.lyragames.practice.task.TNTTagTask
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
@@ -69,6 +71,7 @@ class PracticePlugin : LyraPlugin() {
 
         loadMongo()
         cleanupWorld()
+        InventoryUtil.removeCrafting(Material.WORKBENCH)
 
         CC.PRIMARY = ChatColor.valueOf(settingsFile.getString("COLOR.PRIMARY")).toString()
         CC.SECONDARY = ChatColor.valueOf(settingsFile.getString("COLOR.SECONDARY")).toString()

@@ -5,6 +5,7 @@ import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.profile.Profile
+import org.bukkit.entity.Item
 import java.util.*
 
 
@@ -22,13 +23,14 @@ class FFA(val kit: Kit) {
     val uuid: UUID = UUID.randomUUID()
 
     val players: MutableList<FFAPlayer> = mutableListOf()
+    val droppedItems: MutableList<Item> = mutableListOf()
 
     fun handleDeath(ffaPlayer: FFAPlayer, killer: FFAPlayer) {
         ffaPlayer.death++
+        ffaPlayer.killStreak = 0
 
-        if (killer.kills++ > killer.killStreak) {
-            killer.killStreak = killer.kills
-        }
+        killer.kills++
+        killer.killStreak++
 
         setup(ffaPlayer)
     }

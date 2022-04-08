@@ -84,8 +84,8 @@ open class StandaloneArena(name: String) : Arena(name) {
             val bX: Double = l2!!.x + offsetX
             val bZ: Double = l2!!.z + offsetZ
             
-            val min = Location(world, minX, bounds.lowerY.toDouble(), minZ)
-            val max = Location(world, maxX, bounds.upperY.toDouble(), maxZ)
+            val min = Location(world, minX, min!!.y, minZ)
+            val max = Location(world, maxX, max!!.y, maxZ)
             
             val a = Location(world, aX, l1!!.y, aZ, l1!!.yaw, l1!!.pitch)
             val b = Location(world, bX, l2!!.y, bZ, l2!!.yaw, l2!!.pitch)
@@ -118,7 +118,7 @@ open class StandaloneArena(name: String) : Arena(name) {
                 .to(to)
                 .build()
             try {
-                Operations.completeLegacy(operation)
+                Operations.complete(operation)
             } catch (e: WorldEditException) {
                 e.printStackTrace()
             }

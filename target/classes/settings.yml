@@ -1,0 +1,24 @@
+#
+# lPractice made by LyraGames
+#
+
+MONGODB:
+  URI-MODE: false
+  NORMAL:
+    HOST: "127.0.0.1"
+    PORT: 27017
+    DATABASE: "lpractice"
+    AUTH:
+      ENABLED: false
+      USERNAME: "user"
+      PASSWORD: "pass"
+      AUTH-DATABASE: "admin"
+  URI:
+    CONNECTION-STRING: ""
+
+
+SPAWN: ""
+
+COLOR:
+  PRIMARY: "YELLOW"
+  SECONDARY: "GREEN"

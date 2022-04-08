@@ -291,7 +291,10 @@ object MatchListener : Listener {
         }
 
         if (profile?.state == ProfileState.FFA) {
-            event.isCancelled = true
+            val ffa = FFAManager.getByUUID(profile.ffa!!) ?: return
+
+            ffa.droppedItems.add(event.itemDrop)
+
             return
         }
 
@@ -340,7 +343,14 @@ object MatchListener : Listener {
         }
 
         if (profile?.state == ProfileState.FFA) {
-            event.isCancelled = true
+            val ffa = FFAManager.getByUUID(profile.ffa!!) ?: return
+
+            if (ffa.droppedItems.contains(event.item)) {
+                ffa.droppedItems.remove(event.item)
+            }else {
+                event.isCancelled = true
+            }
+
             return
         }
 
@@ -690,6 +700,14 @@ object MatchListener : Listener {
             event.isCancelled = true
 
         if (event.action.name.contains("RIGHT")) {
+
+            if (event.hasBlock()) {
+                if (event.clickedBlock.type == Material.CHEST || event.clickedBlock.type == Material.FURNACE
+                    || event.clickedBlock.type.name.contains("DOOR")) {
+                    event.isCancelled = true
+                }
+            }
+
             if (profile?.state != ProfileState.SPECTATING && profile?.state != ProfileState.QUEUE && profile?.state != ProfileState.LOBBY) {
                 if (player.itemInHand != null && player.itemInHand.type == Material.ENDER_PEARL) {
                     if (profile!!.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
@@ -701,11 +719,11 @@ object MatchListener : Listener {
                     } else {
                         event.isCancelled = true
                         event.setUseItemInHand(Event.Result.DENY)
-                        player.sendMessage("${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${
-                            profile.enderPearlCooldown?.startedAt?.plus(
-                                profile.enderPearlCooldown!!.seconds.times(1000).toLong().minus(System.currentTimeMillis())
-                            )?.let { TimeUtil.millisToSeconds(it) }
-                        }")
+                        player.sendMessage("${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${profile.enderPearlCooldown?.timeRemaining?.let {
+                            TimeUtil.millisToSeconds(
+                                it
+                            )
+                        }}")
                     }
                 }
             }
