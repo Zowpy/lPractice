@@ -7,8 +7,10 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.admin.AdminKitEditMenu
+import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.profile.Profile
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -32,6 +34,7 @@ object KitCommand {
         player.sendMessage("${CC.SECONDARY}/kit delete <kit>")
         player.sendMessage("${CC.SECONDARY}/kit content <kit>")
         player.sendMessage("${CC.SECONDARY}/kit edit <kit>")
+        player.sendMessage("${CC.SECONDARY}/kit icon <kit> ${CC.GRAY}- hold item in hand")
     }
 
     @Permission("lpractice.command.kit.create")
@@ -46,7 +49,7 @@ object KitCommand {
         kit.save()
         Kit.kits.add(kit)
 
-        player.sendMessage(CC.YELLOW + "Successfully created ${CC.GOLD}${kit.name}!")
+        player.sendMessage("${CC.PRIMARY}Successfully created ${CC.SECONDARY}${kit.name}${CC.PRIMARY}!")
     }
 
     @Permission("lpractice.command.kit.content")
@@ -69,7 +72,25 @@ object KitCommand {
             profile.getKitStatistic(kit.name)?.editedKits?.clear()
         }
 
-        player.sendMessage(CC.YELLOW + "Successfully set " + CC.GOLD + kit.name + "'s " + CC.YELLOW + "item contents!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${kit.name}${CC.PRIMARY}'s item contents!")
+    }
+
+    @Permission("lpractice.command.kit.displayitem")
+    @Command(value = ["kit icon", "kit displayitem"])
+    fun displayItem(@Sender player: Player, kit: Kit) {
+        if (player.itemInHand == null || player.itemInHand.type == Material.AIR) {
+            player.sendMessage("${CC.RED}You are not holding an item!")
+            return
+        }
+
+        kit.displayItem = player.itemInHand.type
+        kit.save()
+
+        QueueManager.queues.filter { it.kit.name.equals(kit.name, false) }.forEach {
+            it.kit.displayItem = player.itemInHand.type
+        }
+
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${kit.name}${CC.PRIMARY}'s display item!")
     }
 
     @Permission("lpractice.command.kit.edit")

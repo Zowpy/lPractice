@@ -20,6 +20,7 @@ import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.arena.type.ArenaTypeProvider
 import net.lyragames.practice.command.*
 import net.lyragames.practice.command.admin.*
+import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.database.Mongo
 import net.lyragames.practice.database.MongoCredentials
 import net.lyragames.practice.event.map.EventMap
@@ -35,6 +36,7 @@ import net.lyragames.practice.manager.*
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
+import net.lyragames.practice.task.EnderPearlCooldownTask
 import net.lyragames.practice.task.EventAnnounceTask
 import net.lyragames.practice.task.TNTEventBlockRemovalTask
 import net.lyragames.practice.task.TNTTagTask
@@ -110,11 +112,15 @@ class PracticePlugin : LyraPlugin() {
             .register(SpectateCommand)
             .register(SettingsCommand)
             .register(FollowCommand)
+            .register(FFACommand)
+
+        Constants.load()
 
         QueueTask
         EventAnnounceTask
         TNTEventBlockRemovalTask
         TNTTagTask
+        EnderPearlCooldownTask
 
         if (scoreboardFile.getBoolean("scoreboard.enabled")) {
             Assemble(this, ScoreboardAdapter(scoreboardFile))

@@ -154,7 +154,11 @@ class KitManagementMenu(val kit: Kit): Menu() {
                 player.closeInventory()
                 return
             }
-            val kit: EditedKit = profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it)?.editedKits?.get(index) } ?: EditedKit("Kit " + (index + 1))
+            var kit: EditedKit = EditedKit("Kit " + (index + 1))
+
+            if (profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it) }?.editedKits?.size!! > index) {
+                kit = profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it) }?.editedKits?.get(index)!!
+            }
 
             if (kit.content == null || kit.armorContent == null) {
                 kit.content = profile.kitEditorData?.kit?.content

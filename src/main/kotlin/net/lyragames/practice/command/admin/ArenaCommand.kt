@@ -62,7 +62,7 @@ object ArenaCommand {
         arena.save()
         Arena.arenas.add(arena)
 
-        player.sendMessage(CC.PRIMARY + "Successfully created " + CC.SECONDARY + "'$name'!")
+        player.sendMessage("${CC.PRIMARY}Successfully created ${CC.SECONDARY}$name${CC.PRIMARY}!")
     }
 
     @Command(value = ["arena delete"], description = "delete an arena")
@@ -71,7 +71,7 @@ object ArenaCommand {
         arena.delete()
         Arena.arenas.remove(arena)
 
-        player.sendMessage(CC.PRIMARY + "Successfully deleted ${CC.SECONDARY}'${arena.name}'!")
+        player.sendMessage("${CC.PRIMARY}Successfully deleted ${CC.SECONDARY}${arena.name}${CC.PRIMARY}!")
     }
 
     @Command(value = ["arena pos1", "arena position1", "arena l1", "arena location1"], description = "set an arena's first location")
@@ -80,7 +80,7 @@ object ArenaCommand {
         arena.l1 = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 1!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s location 1!")
     }
 
     @Command(value = ["arena pos2", "arena position2", "arena l2", "arena location2"], description = "set an arena's second location")
@@ -89,7 +89,7 @@ object ArenaCommand {
         arena.l2 = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 2!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s location 2!")
     }
 
     @Command(value = ["arena min", "arena minimum"], description = "set an arena's min location")
@@ -98,7 +98,7 @@ object ArenaCommand {
         arena.min = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " min location!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s min location!")
 
         if (arena.max != null) {
             arena.bounds = Cuboid(arena.min, arena.max)
@@ -111,7 +111,7 @@ object ArenaCommand {
         arena.max = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " max location!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s max location!")
 
         if (arena.min != null) {
             arena.bounds = Cuboid(arena.min, arena.max)
@@ -205,26 +205,26 @@ object ArenaCommand {
     @Permission("lpractice.command.arena.setup")
     fun bed1(@Sender player: Player, arena: Arena) {
         if (arena.arenaType != ArenaType.MLGRUSH) {
-            player.sendMessage("${CC.RED}This command is only supported for Bed Fights arenas!")
+            player.sendMessage("${CC.RED}This command is only supported for MLGRush arenas!")
             return
         }
         (arena as StandaloneMLGRushArena).bed1 = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " bed location 1!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s bed location 1!")
     }
 
     @Command(value = ["arena bed2", "arena b2"], description = "set an arena's second bed location")
     @Permission("lpractice.command.arena.setup")
     fun bed2(@Sender player: Player, arena: Arena) {
         if (arena.arenaType != ArenaType.MLGRUSH) {
-            player.sendMessage("${CC.RED}This command is only supported for Bed Fights arenas!")
+            player.sendMessage("${CC.RED}This command is only supported for MLGRush arenas!")
             return
         }
         (arena as StandaloneMLGRushArena).bed2 = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " bed location 2!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s bed location 2!")
     }
 
     @Command(value = ["arena redBed", "arena rb"], description = "set an arena's red bed")
@@ -237,7 +237,7 @@ object ArenaCommand {
         (arena as StandaloneBedWarsArena).redBed = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " red bed location!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red bed location!")
     }
 
     @Command(value = ["arena blueBed", "arena bb"], description = "set an arena's blue bed")
@@ -250,7 +250,7 @@ object ArenaCommand {
         (arena as StandaloneBedWarsArena).blueBed = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " blue bed location!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue bed location!")
     }
 
     @Command(value = ["arena redspawn"], description = "set an arena's red location")
@@ -265,7 +265,7 @@ object ArenaCommand {
         (arena as StandaloneBedWarsArena).redSpawn = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 1!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red location!")
     }
 
     @Command(value = ["arena bluespawn"], description = "set an arena's second location")
@@ -280,13 +280,6 @@ object ArenaCommand {
         (arena as StandaloneBedWarsArena).blueSpawn = player.location
         arena.save()
 
-        player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 2!")
-    }
-
-    @Command(value = ["arena dupe", "arena duplicate"], description = "duplicate an arenas")
-    @Permission("lpractice.command.arena.setup")
-    fun duplicate(@Sender player: Player, arena: Arena, times: Int) {
-        arena.duplicate(player.world, times)
-        player.sendMessage("${CC.GREEN}Successfully duplicated arena!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue location!")
     }
 }

@@ -87,6 +87,38 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                         .replace("<opponent_points>", "${StringUtils.repeat("${CC.GREEN}$symbol", opponentPoints)}${StringUtils.repeat("${CC.GRAY}$symbol", 5 - opponentPoints)}")}.collect(Collectors.toList())
             }
 
+            if (match.kit.kitData.boxing) {
+
+                val matchPlayer = match.getMatchPlayer(player.uniqueId)
+
+                if (match is TeamMatch) {
+
+                    val team = match.getTeam((matchPlayer as TeamMatchPlayer).teamUniqueId)
+
+                    return configFile.getStringList("scoreboard.boxing").stream()
+                        .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                            .replace("<queuing>", QueueManager.inQueue().toString()))
+                            .replace("<in_match>", Match.inMatch().toString())
+                            .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
+                            .replace("<kit>", match.kit.name)
+                            .replace("<hits>", team?.hits?.toString()!!)
+                            .replace("<opponent-hits>", match.getOpponentTeam(team)?.hits?.toString()!!)
+                            .replace("<combo>", if (matchPlayer.combo == 0 && matchPlayer.comboed == 0) "" else if (matchPlayer.combo == 0) "${CC.RED}(-${matchPlayer.comboed})" else "${CC.GREEN}(+${matchPlayer.combo})")
+                            .replace("<time>", match.getTime()) }.collect(Collectors.toList())
+                }
+
+                    return configFile.getStringList("scoreboard.boxing").stream()
+                        .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                            .replace("<queuing>", QueueManager.inQueue().toString()))
+                            .replace("<in_match>", Match.inMatch().toString())
+                            .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
+                            .replace("<kit>", match.kit.name)
+                            .replace("<hits>", matchPlayer?.hits.toString())
+                            .replace("<opponent-hits>", match.getOpponent(player.uniqueId)?.hits.toString())
+                            .replace("<combo>", if (matchPlayer?.combo == 0 && matchPlayer.comboed == 0) "" else if (matchPlayer?.combo == 0) "${CC.RED}(-${matchPlayer.comboed})" else "${CC.GREEN}(+${matchPlayer?.combo})")
+                            .replace("<time>", match.getTime()) }.collect(Collectors.toList())
+            }
+
             if (match is TeamMatch) {
                 return configFile.getStringList("scoreboard.match").stream()
                     .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
@@ -94,22 +126,6 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                         .replace("<in_match>", Match.inMatch().toString())
                         .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
                         .replace("<kit>", match.kit.name)
-                        .replace("<time>", match.getTime()) }.collect(Collectors.toList())
-            }
-
-            if (match.kit.kitData.boxing) {
-
-                val matchPlayer = match.getMatchPlayer(player.uniqueId)
-
-                return configFile.getStringList("scoreboard.boxing").stream()
-                    .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
-                        .replace("<queuing>", QueueManager.inQueue().toString()))
-                        .replace("<in_match>", Match.inMatch().toString())
-                        .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
-                        .replace("<kit>", match.kit.name)
-                        .replace("<hits>", matchPlayer?.hits.toString())
-                        .replace("<opponent-hits>", match.getOpponent(player.uniqueId)?.hits.toString())
-                        .replace("<combo>", if (matchPlayer?.combo == 0 && matchPlayer.comboed == 0) "" else if (matchPlayer?.combo == 0) "${CC.RED}(-${matchPlayer.comboed})" else "${CC.GREEN}(+${matchPlayer?.combo})")
                         .replace("<time>", match.getTime()) }.collect(Collectors.toList())
             }
 

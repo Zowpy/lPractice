@@ -21,4 +21,6 @@ class Team(val name: String) {
     var bedLocation: Location? = null
 
     var broken = false
+
+    var hits = 0
 }

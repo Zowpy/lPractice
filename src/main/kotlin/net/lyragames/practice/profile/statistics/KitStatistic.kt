@@ -36,7 +36,7 @@ class KitStatistic constructor(val kit: String) {
     var editedKits: MutableList<EditedKit?> = mutableListOf(null, null, null, null)
 
     fun replaceKit(index: Int, loadout: EditedKit?) {
-        editedKits[index] = loadout
+        editedKits.set(index, loadout)
     }
 
     fun deleteKit(loadout: EditedKit?) {

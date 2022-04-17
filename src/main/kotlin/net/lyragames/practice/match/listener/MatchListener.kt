@@ -17,6 +17,8 @@ import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.impl.BedFightMatch
 import net.lyragames.practice.match.impl.MLGRushMatch
+import net.lyragames.practice.match.impl.TeamMatch
+import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.GameMode
@@ -326,7 +328,7 @@ object MatchListener : Listener {
             }
 
 
-            match!!.droppedItems.add(event.itemDrop)
+            match.droppedItems.add(event.itemDrop)
         }else {
             event.isCancelled = true
         }
@@ -492,6 +494,12 @@ object MatchListener : Listener {
                 val ffaPlayer = ffa?.getFFAPlayer(profile.uuid)
                 val ffaPlayer1 = ffa?.getFFAPlayer(profile1.uuid)
 
+                if (Constants.SAFE_ZONE != null && Constants.SAFE_ZONE!!.l1 != null && Constants.SAFE_ZONE!!.l2 != null) {
+                    if (Constants.SAFE_ZONE!!.contains(player.location) || Constants.SAFE_ZONE!!.contains(damager.location)) {
+                        event.isCancelled = true
+                    }
+                }
+
                 if (event.finalDamage >= player.health) {
                     ffa?.handleDeath(ffaPlayer!!, ffaPlayer1!!)
                 }
@@ -532,6 +540,12 @@ object MatchListener : Listener {
                     if (match.kit.kitData.boxing) {
                         event.damage = 0.0
 
+                        if (match is TeamMatch) {
+                            val team = match.getTeam((matchPlayer1 as TeamMatchPlayer).teamUniqueId)
+
+                            team!!.hits++
+                        }
+
                         if (matchPlayer1.hits >= 100) {
                             match.handleDeath(matchPlayer)
                         }
@@ -541,7 +555,7 @@ object MatchListener : Listener {
                         event.damage = 0.0
                     }
 
-                    if (match is MLGRushMatch && matchPlayer.dead || matchPlayer1.dead) {
+                    if (matchPlayer.dead || matchPlayer1.dead) {
                         event.isCancelled = true
                         return
                     }
@@ -712,7 +726,7 @@ object MatchListener : Listener {
                 if (player.itemInHand != null && player.itemInHand.type == Material.ENDER_PEARL) {
                     if (profile!!.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
                         event.setUseItemInHand(Event.Result.ALLOW)
-                        profile.enderPearlCooldown = Cooldown(PracticePlugin.instance, 15) {
+                        profile.enderPearlCooldown = Cooldown(PracticePlugin.instance, 16) {
                             player.sendMessage("${CC.PRIMARY}You can now use the enderpearl.")
                             profile.enderPearlCooldown = null
                         }

@@ -2,8 +2,8 @@
 # FFA Configurations
 #
 
-spawn-location: ""
+SPAWN: ""
 
-safe-zone:
-  min: ""
-  max: ""
+SAFE-ZONE:
+  MIN: ""
+  MAX: ""
