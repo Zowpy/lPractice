@@ -15,5 +15,6 @@ class Settings {
     var scoreboard = true
     var duels = true
     var spectators = true
+    var mapRating = true
     var pingRestriction = 0
 }

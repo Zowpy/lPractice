@@ -264,6 +264,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
                 CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
                 Hotbar.giveHotbar(profile!!)
+                ratingMessage(profile)
 
                 if (matchPlayer.respawnCountdown != null) {
                     matchPlayer.respawnCountdown?.cancel()

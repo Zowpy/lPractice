@@ -188,6 +188,26 @@ class SettingsMenu: Menu() {
             }
         }
 
+        toReturn[4] = object : Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.REDSTONE).name("${CC.PRIMARY}Map Rating")
+                    .lore(listOf(
+                        if (settings?.mapRating!!) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!settings.mapRating) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                settings?.mapRating = !settings?.mapRating!!
+                profile.save()
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
         return toReturn
     }
 

@@ -90,6 +90,7 @@ class PracticePlugin : LyraPlugin() {
         logger.info("Successfully loaded ${if (EventMapManager.maps.size == 1) "1 event map!" else "${EventMapManager.maps.size} event maps!"}")
 
         FFAManager.load()
+        ArenaRatingManager.load()
 
         MenuAPI(this)
 
@@ -113,6 +114,7 @@ class PracticePlugin : LyraPlugin() {
             .register(SettingsCommand)
             .register(FollowCommand)
             .register(FFACommand)
+            .register(RateMapCommand)
 
         Constants.load()
 

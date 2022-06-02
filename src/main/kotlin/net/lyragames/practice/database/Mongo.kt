@@ -16,6 +16,7 @@ class Mongo (private val dbName: String) : Closeable {
     lateinit var database: MongoDatabase
 
     lateinit var profiles: MongoCollection<Document>
+    lateinit var arenaRatings: MongoCollection<Document>
 
     fun load(credentials: MongoCredentials) {
         client = if (credentials.shouldAuthenticate()) {
@@ -29,6 +30,7 @@ class Mongo (private val dbName: String) : Closeable {
         database = client.getDatabase("lpractice")
 
         profiles = database.getCollection("profiles")
+        arenaRatings = database.getCollection("arenaRatings")
     }
 
     override fun close() {
