@@ -23,7 +23,10 @@ import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.entity.*
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
+import org.bukkit.entity.ThrownPotion
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -34,8 +37,6 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
-import javax.xml.transform.Result
-import kotlin.math.abs
 
 /**
  * This Project is property of Zowpy © 2022
@@ -100,8 +101,9 @@ object MatchListener : Listener {
                 return
             }
 
+            val matchPlayer = match.getMatchPlayer(player.uniqueId)
 
-            if (match.getMatchPlayer(player.uniqueId)?.dead!!) {
+            if (matchPlayer?.dead!! || matchPlayer.respawning) {
                 event.isCancelled = true
                 return
             }
@@ -321,8 +323,9 @@ object MatchListener : Listener {
 
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
+            val matchPlayer = match?.getMatchPlayer(player.uniqueId)
 
-            if (match?.getMatchPlayer(player.uniqueId)?.dead!!) {
+            if (matchPlayer?.dead!! || matchPlayer.respawning) {
                 event.isCancelled = true
                 return
             }
@@ -377,8 +380,9 @@ object MatchListener : Listener {
 
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
+            val matchPlayer = match?.getMatchPlayer(player.uniqueId)
 
-            if (match?.getMatchPlayer(player.uniqueId)?.dead!!) {
+            if (matchPlayer?.dead!! || matchPlayer.respawning) {
                 event.isCancelled = true
                 return
             }
@@ -555,7 +559,7 @@ object MatchListener : Listener {
                         event.damage = 0.0
                     }
 
-                    if (matchPlayer.dead || matchPlayer1.dead) {
+                    if (matchPlayer.dead || matchPlayer1.dead || matchPlayer.respawning || matchPlayer1.respawning) {
                         event.isCancelled = true
                         return
                     }
@@ -588,7 +592,7 @@ object MatchListener : Listener {
 
                 val matchPlayer = match.getMatchPlayer(player.uniqueId)
 
-                if (match is MLGRushMatch && matchPlayer?.dead!!) {
+                if (match is MLGRushMatch && (matchPlayer?.dead!! || matchPlayer.respawning)) {
                     event.isCancelled = true
                     return
                 }

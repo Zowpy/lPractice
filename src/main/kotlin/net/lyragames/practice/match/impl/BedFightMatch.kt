@@ -44,9 +44,11 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
         val team1 = Team("Red")
         team1.spawn = (arena as StandaloneBedWarsArena).redSpawn
+        team1.bedLocation = arena.redBed
 
         val team2 = Team("Blue")
         team2.spawn = arena.blueSpawn
+        team2.bedLocation = arena.blueBed
 
         teams.add(team1)
         teams.add(team2)
@@ -66,17 +68,6 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
     }
 
     override fun start() {
-
-        for (team in teams) {
-            if (team.name.equals("Red", true)) {
-                team.spawn = (arena as StandaloneBedWarsArena).redSpawn
-                team.bedLocation = arena.redBed
-            }else {
-                team.spawn = (arena as StandaloneBedWarsArena).blueSpawn
-                team.bedLocation = arena.blueBed
-            }
-        }
-
         for (matchPlayer in players) {
             if (matchPlayer.offline) continue
 
@@ -120,7 +111,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
         val player = getMatchPlayer(event.player.uniqueId)
 
-        if (player?.dead!!) {
+        if (player?.dead!! || player.respawning) {
             event.isCancelled = true
             return
         }
@@ -176,7 +167,14 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
             sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!${if (team?.broken!!) "${CC.GRAY} (${CC.PRIMARY}FINAL${CC.GRAY})" else ""}")
         }
 
-        player.dead = true
+        if (player.offline && team?.players?.none { !it.dead && !it.offline }!!) {
+            if (team.players.none { !it.dead && !it.offline }) {
+                end(getAlivePlayers()[0] as TeamMatchPlayer)
+                return
+            }
+        }
+
+        player.respawning = true
 
         if (team?.broken!!) {
             PlayerUtil.reset(player.player)
@@ -188,10 +186,10 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
             player.player.teleport(player.spawn.clone().add(0.0, 5.0, 0.0))
 
+
             if (team.players.none { !it.dead && !it.offline }) {
                 end(getAlivePlayers()[0] as TeamMatchPlayer)
             }
-
             return
         }
 
@@ -212,7 +210,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
             profile?.getKitStatistic(kit.name)?.generateBooks(player.player)
 
-            player.dead = false
+            player.respawning = false
 
             players.stream().forEach { if (it.player != null) it.player.showPlayer(player.player) }
 
@@ -221,8 +219,6 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
     }
 
     private fun end(player: TeamMatchPlayer) {
-        reset()
-
         countdowns.forEach { it.cancel() }
 
         matchState = MatchState.ENDING

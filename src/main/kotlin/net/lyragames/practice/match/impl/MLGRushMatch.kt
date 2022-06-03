@@ -79,7 +79,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
         val player = getMatchPlayer(event.player.uniqueId)
 
-        if (player?.dead!!) {
+        if (player?.dead!! || player.respawning) {
             event.isCancelled = true
             return
         }
@@ -125,7 +125,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
             sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
         }
 
-        player.dead = true
+        player.respawning = true
 
         PlayerUtil.reset(player.player)
 
@@ -144,7 +144,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
             profile?.getKitStatistic(kit.name)?.generateBooks(player.player)
 
-            player.dead = false
+            player.respawning = false
 
             players.stream().forEach { if (it.player != null) it.player.showPlayer(player.player) }
 

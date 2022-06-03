@@ -17,6 +17,7 @@ import java.util.*
 
 open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location) {
     var dead = false
+    var respawning = false
     var offline = false
     val player: Player
         get() = Bukkit.getPlayer(uuid)
