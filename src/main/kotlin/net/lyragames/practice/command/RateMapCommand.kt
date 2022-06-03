@@ -28,9 +28,9 @@ object RateMapCommand {
         }
 
         val rating = ArenaRating(UUID.randomUUID(), int, player.uniqueId, arena.name)
-        ArenaRatingManager.arenaRatings.add(rating)
-
         rating.save()
+
+        ArenaRatingManager.arenaRatings.add(rating)
 
         player.sendMessage("${CC.GREEN}Thank you for voting! Your feedback is appreciated.")
     }

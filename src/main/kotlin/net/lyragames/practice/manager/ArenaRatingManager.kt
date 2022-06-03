@@ -26,16 +26,20 @@ object ArenaRatingManager {
     }
 
     fun getAverageRating(arena: Arena): Double {
-        val ratings = getArenaRatings(arena)
-
-        val stars5 = ratings.filter { it.stars == 5 }.size
-        val stars4 = ratings.filter { it.stars == 4 }.size
-        val stars3 = ratings.filter { it.stars == 3 }.size
-        val stars2 = ratings.filter { it.stars == 2 }.size
-        val stars1 = ratings.filter { it.stars == 1 }.size
+        val stars5 = getUsersRated(5, arena)
+        val stars4 = getUsersRated(4, arena)
+        val stars3 = getUsersRated(3, arena)
+        val stars2 = getUsersRated(2, arena)
+        val stars1 = getUsersRated(1, arena)
 
         val totalRatings = stars5 * 5 + stars4 * 4 + stars3 * 3 + stars2 * 2 + stars1
 
-        return (totalRatings / 5).toDouble()
+        return (totalRatings / arenaRatings.size).toDouble()
+    }
+
+    fun getUsersRated(int: Int, arena: Arena): Int {
+        val ratings = getArenaRatings(arena)
+
+        return ratings.filter { it.stars == int }.size
     }
 }

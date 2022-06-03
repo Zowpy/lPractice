@@ -95,7 +95,6 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
                     CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
                     Hotbar.giveHotbar(profile!!)
-                    ratingMessage(profile)
 
                     players.stream().filter { !it.offline }.map { it.player }
                         .forEach {
@@ -112,6 +111,11 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
 
                 endMessage(player, player)
 
+                for (matchPlayer in players) {
+                    val profile = Profile.getByUUID(matchPlayer.uuid)
+
+                    ratingMessage(profile!!)
+                }
 
                 matches.remove(this)
                 reset()

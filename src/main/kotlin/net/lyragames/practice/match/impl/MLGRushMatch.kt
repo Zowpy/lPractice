@@ -240,7 +240,6 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
                 CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
                 Hotbar.giveHotbar(profile!!)
-                ratingMessage(profile)
 
                 players.stream().filter { !it.offline }.map { it.player }
                     .forEach {
@@ -309,6 +308,10 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
             getOpponent(player.uuid)?.let {
                 endMessage(player, it)
                 sendTitleBar(player)
+
+                val profile = Profile.getByUUID(it.uuid)
+
+                ratingMessage(profile!!)
             }
 
             matches.remove(this)

@@ -1,9 +1,6 @@
 package net.lyragames.practice.database
 
-import com.mongodb.MongoClient
-import com.mongodb.MongoClientOptions
-import com.mongodb.MongoCredential
-import com.mongodb.ServerAddress
+import com.mongodb.*
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import org.bson.Document
@@ -19,7 +16,9 @@ class Mongo (private val dbName: String) : Closeable {
     lateinit var arenaRatings: MongoCollection<Document>
 
     fun load(credentials: MongoCredentials) {
-        client = if (credentials.shouldAuthenticate()) {
+        client =  if (credentials.useUri) {
+            MongoClient(MongoClientURI(credentials.uri!!))
+        }else if (credentials.shouldAuthenticate()) {
             val serverAddress = ServerAddress(credentials.host, credentials.port)
             val credential = MongoCredential.createCredential(credentials.username!!, dbName, credentials.password!!.toCharArray())
             MongoClient(serverAddress, credential, MongoClientOptions.builder().build())

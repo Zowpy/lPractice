@@ -715,7 +715,7 @@ object MatchListener : Listener {
 
         if (event.action.name.contains("RIGHT")) {
 
-            if (event.hasBlock()) {
+            if (event.hasBlock() && profile?.state != ProfileState.LOBBY && player.gameMode != GameMode.CREATIVE) {
                 if (event.clickedBlock.type == Material.CHEST || event.clickedBlock.type == Material.FURNACE
                     || event.clickedBlock.type.name.contains("DOOR")) {
                     event.isCancelled = true

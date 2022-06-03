@@ -81,7 +81,6 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
                     CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
                     Hotbar.giveHotbar(profile!!)
-                    ratingMessage(profile)
 
                     players.stream().filter { !it.offline }.map { it.player }
                         .forEach {
@@ -97,6 +96,12 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
                 }
 
                 winner?.let { endMessage(it, player) }
+
+                for (matchPlayer in players) {
+                    val profile = Profile.getByUUID(matchPlayer.uuid)
+
+                    ratingMessage(profile!!)
+                }
 
                 matches.remove(this)
                 reset()

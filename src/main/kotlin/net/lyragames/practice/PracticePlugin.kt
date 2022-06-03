@@ -115,6 +115,7 @@ class PracticePlugin : LyraPlugin() {
             .register(FollowCommand)
             .register(FFACommand)
             .register(RateMapCommand)
+            .register(ArenaRatingCommand)
 
         Constants.load()
 
@@ -139,6 +140,8 @@ class PracticePlugin : LyraPlugin() {
             val builder = MongoCredentials.Builder()
                 .host(settingsFile.getString("MONGODB.NORMAL.HOST"))
                 .port(settingsFile.getInt("MONGODB.NORMAL.PORT"))
+                .uri(settingsFile.getString("MONGODB.URI.CONNECTION-STRING"))
+                .useUri(settingsFile.getBoolean("MONGODB.URI-MODE"))
 
             if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED")) {
                 builder.username(settingsFile.getString("MONGODB.NORMAL.AUTH.USERNAME"))

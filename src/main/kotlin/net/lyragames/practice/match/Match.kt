@@ -245,7 +245,6 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
                 Hotbar.giveHotbar(profile!!)
-                ratingMessage(profile)
 
                 players.stream().filter { !it.offline }.map { it.player }
                     .forEach {
@@ -314,6 +313,10 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             getOpponent(player.uuid)?.let {
                 endMessage(it, player)
                 sendTitleBar(it)
+
+                val profile = Profile.getByUUID(it.uuid)
+
+                ratingMessage(profile!!)
             }
 
             matches.remove(this)
@@ -342,12 +345,15 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             .text("${CC.RED}[2] ")
             .command("/ratemap ${arena.name} 2")
             .tooltip("${CC.PRIMARY}Click to vote!")
+            .then()
             .text("${CC.YELLOW}[3] ")
             .command("/ratemap ${arena.name} 3")
             .tooltip("${CC.PRIMARY}Click to vote!")
+            .then()
             .text("${CC.GREEN}[4] ")
             .command("/ratemap ${arena.name} 4")
             .tooltip("${CC.PRIMARY}Click to vote!")
+            .then()
             .text("${CC.DARK_GREEN}[5] ")
             .command("/ratemap ${arena.name} 5")
             .tooltip("${CC.PRIMARY}Click to vote!")

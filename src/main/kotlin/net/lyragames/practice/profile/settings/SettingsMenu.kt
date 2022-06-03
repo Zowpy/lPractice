@@ -191,7 +191,7 @@ class SettingsMenu: Menu() {
         toReturn[4] = object : Button() {
 
             override fun getButtonItem(p0: Player?): ItemStack {
-                return ItemBuilder(Material.REDSTONE).name("${CC.PRIMARY}Map Rating")
+                return ItemBuilder(Material.NETHER_STAR).name("${CC.PRIMARY}Map Rating")
                     .lore(listOf(
                         if (settings?.mapRating!!) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
                         if (!settings.mapRating) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"

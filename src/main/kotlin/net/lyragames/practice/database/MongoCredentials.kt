@@ -5,7 +5,9 @@ data class MongoCredentials (
         var host: String = "localhost",
         var port: Int = 27017,
         var username: String? = null,
-        var password: String? = null
+        var password: String? = null,
+        var uri: String? = null,
+        var useUri: Boolean = false
 )
 
 {
@@ -35,6 +37,17 @@ data class MongoCredentials (
             credentials.password = password
             return this
         }
+
+        fun uri(uri: String): Builder {
+            credentials.uri = uri
+            return this
+        }
+
+        fun useUri(uri: Boolean): Builder {
+            credentials.useUri = uri
+            return this
+        }
+
         fun build(): MongoCredentials {
             return credentials
         }
