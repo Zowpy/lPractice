@@ -28,7 +28,7 @@ import java.util.stream.Collectors
  * Project: Practice
  */
 
-class Profile(val uuid: UUID, val name: String) {
+class Profile(val uuid: UUID, val name: String?) {
 
     var match: UUID? = null
     var ffa: UUID? = null
@@ -107,7 +107,7 @@ class Profile(val uuid: UUID, val name: String) {
     fun load(document: Document) {
         var save = false
 
-        if (!document.getString("name").equals(name)) {
+        if (name != null && !document.getString("name").equals(name)) {
             save = true
         }
 

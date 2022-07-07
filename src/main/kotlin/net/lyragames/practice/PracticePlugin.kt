@@ -14,6 +14,7 @@ import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
+import net.lyragames.practice.api.PracticeAPI
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
 import net.lyragames.practice.arena.type.ArenaType
@@ -55,6 +56,7 @@ class PracticePlugin : LyraPlugin() {
     lateinit var scoreboardFile: ConfigFile
     lateinit var ffaFile: ConfigFile
     lateinit var eventsFile: ConfigFile
+    lateinit var API: PracticeAPI
 
     lateinit var practiceMongo: Mongo
 
@@ -91,6 +93,8 @@ class PracticePlugin : LyraPlugin() {
 
         FFAManager.load()
         ArenaRatingManager.load()
+
+        API = PracticeAPI()
 
         MenuAPI(this)
 
