@@ -39,11 +39,15 @@ class KitManagementMenu(val kit: Kit): Menu() {
 
     override fun getButtons(player: Player): Map<Int, Button> {
         val buttons: MutableMap<Int, Button> = mutableMapOf()
+
         val profile = Profile.getByUUID(player.uniqueId)
         val kitLoadouts: MutableList<EditedKit?>? = profile?.getKitStatistic(kit.name)?.editedKits
+
         var startPos = -1
+
         for (i in 0..3) {
             startPos += 2
+
             var kitLoadout: EditedKit? = null
 
             if (kitLoadouts?.size!! > i) {
@@ -55,7 +59,9 @@ class KitManagementMenu(val kit: Kit): Menu() {
             buttons[startPos + 27] = if (kitLoadout == null) PLACEHOLDER else RenameKitButton(kit, kitLoadout)
             buttons[startPos + 36] = if (kitLoadout == null) PLACEHOLDER else DeleteKitButton(kit, kitLoadout)
         }
+
         buttons[36] = BackButton(KitEditorSelectKitMenu())
+
         return buttons
     }
 
@@ -63,6 +69,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
         if (!isClosedByMenu) {
             val profile = Profile.getByUUID(player.uniqueId)
             profile?.kitEditorData?.kit = null
+
             profile?.save()
         }
     }
@@ -84,10 +91,13 @@ class KitManagementMenu(val kit: Kit): Menu() {
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
             val profile = Profile.getByUUID(player.uniqueId)
+
             profile?.getKitStatistic(kit?.name!!)?.deleteKit(kitLoadout)
+
             if (kit != null) {
                 KitManagementMenu(kit).openMenu(player)
             }
+
         }
     }
 
@@ -106,13 +116,17 @@ class KitManagementMenu(val kit: Kit): Menu() {
                 player.closeInventory()
                 return
             }
+
             val kitLoadout = EditedKit("Kit " + (index + 1))
+
             kitLoadout.armorContent = kit.armorContent
             kitLoadout.content = kit.content
 
             profile.getKitStatistic(kit.name)?.replaceKit(index, kitLoadout)
             profile.kitEditorData?.selectedKit = kitLoadout
+
             profile.save()
+
             KitEditorMenu(index).openMenu(player)
         }
     }
@@ -149,12 +163,11 @@ class KitManagementMenu(val kit: Kit): Menu() {
         override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarSlot: Int) {
             val profile = Profile.getByUUID(player.uniqueId)
 
-            // TODO: this shouldn't be null but sometimes it is?
             if (profile?.kitEditorData?.kit == null) {
                 player.closeInventory()
                 return
             }
-            var kit: EditedKit = EditedKit("Kit " + (index + 1))
+            var kit = EditedKit("Kit " + (index + 1))
 
             if (profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it) }?.editedKits?.size!! > index) {
                 kit = profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it) }?.editedKits?.get(index)!!
@@ -169,6 +182,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
 
             profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it)?.replaceKit(index, kit) }
             profile.kitEditorData?.selectedKit = kit
+
             KitEditorMenu(index).openMenu(player)
         }
     }
