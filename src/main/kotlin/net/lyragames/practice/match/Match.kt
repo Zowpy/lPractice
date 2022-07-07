@@ -195,9 +195,13 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         player.dead = true
 
         if (player.offline) {
+
             sendMessage("&c${player.name} ${CC.PRIMARY}has disconnected!")
+
         } else if (player.lastDamager == null && !player.offline) {
+
             sendMessage("&c${player.name} ${CC.PRIMARY}has died from natural causes!")
+
         } else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
@@ -207,6 +211,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         countdowns.forEach { it.cancel() }
 
         matchState = MatchState.ENDING
+
         Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
             var loserProfile: Profile? = Profile.getByUUID(player.uuid)
 

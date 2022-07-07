@@ -33,10 +33,10 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
     override fun getButtons(player: Player?): Map<Int, Button> {
         val buttons: MutableMap<Int, Button> = mutableMapOf()
-        val fixedContents: Array<ItemStack> = InventoryUtil.fixInventoryOrder(snapshot.contents)
+        val fixedContents = InventoryUtil.fixInventoryOrder(snapshot.contents)
 
         for (i in fixedContents.indices) {
-            val itemStack: ItemStack = fixedContents[i]
+            val itemStack = fixedContents[i]
 
             if (itemStack != null && itemStack.type !== Material.AIR) {
                 buttons[i] = DisplayButton(itemStack, true)
@@ -44,7 +44,7 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
         }
         for (i in 0 until snapshot.armor.size) {
-            val itemStack: ItemStack = snapshot.armor[i]
+            val itemStack = snapshot.armor[i]
 
             if (itemStack != null && itemStack.type !== Material.AIR) {
                 buttons[39 - i] = DisplayButton(itemStack, true)
@@ -117,7 +117,7 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
     private class EffectsButton(private val effects: Collection<PotionEffect?>) : Button() {
 
         override fun getButtonItem(player: Player): ItemStack {
-            val builder: ItemBuilder = ItemBuilder(Material.POTION).name("${CC.PRIMARY}Potion Effects")
+            val builder = ItemBuilder(Material.POTION).name("${CC.PRIMARY}Potion Effects")
 
             if (effects.isEmpty()) {
                 builder.lore("${CC.PRIMARY}No potion effects")
@@ -170,5 +170,4 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
                 .build()
         }
     }
-
 }
