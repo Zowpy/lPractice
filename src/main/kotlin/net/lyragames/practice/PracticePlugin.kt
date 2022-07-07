@@ -167,7 +167,7 @@ class PracticePlugin : LyraPlugin() {
 
             for (entity in world.entities) {
                 if (entity is Player) {
-                    continue;
+                    continue
                 }
                 if (entity is LivingEntity || entity is Item || entity is ExperienceOrb) {
                     entity.remove()

@@ -37,27 +37,36 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
         for (i in fixedContents.indices) {
             val itemStack: ItemStack = fixedContents[i]
+
             if (itemStack != null && itemStack.type !== Material.AIR) {
                 buttons[i] = DisplayButton(itemStack, true)
             }
+
         }
         for (i in 0 until snapshot.armor.size) {
             val itemStack: ItemStack = snapshot.armor[i]
+
             if (itemStack != null && itemStack.type !== Material.AIR) {
                 buttons[39 - i] = DisplayButton(itemStack, true)
             }
+
         }
         var pos = 45
+
         buttons[pos++] = HealthButton(snapshot.health.toInt())
         buttons[pos++] = HungerButton(snapshot.hunger)
         buttons[pos++] = EffectsButton(snapshot.effects!!)
+
         if (snapshot.shouldDisplayRemainingPotions()) {
             buttons[pos++] = PotionsButton(snapshot.username!!, snapshot.getRemainingPotions())
         }
+
         buttons[pos] = StatisticsButton(snapshot)
+
         if (this.snapshot.opponent != null) {
             buttons[53] = SwitchInventoryButton(this.snapshot.opponent!!)
         }
+
         return buttons
     }
 
@@ -65,6 +74,7 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
         override fun getButtonItem(player: Player): ItemStack {
             val snapshot = MatchSnapshot.getByUuid(opponent)
+
             return if (snapshot != null) {
                 ItemBuilder(Material.LEVER)
                     .name("${CC.PRIMARY}Opponent's Inventory")
@@ -108,10 +118,12 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
 
         override fun getButtonItem(player: Player): ItemStack {
             val builder: ItemBuilder = ItemBuilder(Material.POTION).name("${CC.PRIMARY}Potion Effects")
+
             if (effects.isEmpty()) {
                 builder.lore("${CC.PRIMARY}No potion effects")
             } else {
                 val lore: MutableList<String> = ArrayList()
+
                 effects.forEach(Consumer { effect ->
                     val name: String =
                         PotionUtil.getName(effect?.type).toString() + " " + (effect?.amplifier?.plus(1))
@@ -120,8 +132,10 @@ class MatchDetailsMenu(private val snapshot: MatchSnapshot) : Menu() {
                             ?.let { TimeUtil.millisToTimer(it.toLong()).toString() } + ")"
                     lore.add("${CC.SECONDARY}$name${CC.PRIMARY}$duration")
                 })
+
                 builder.lore(lore)
             }
+
             return builder.build()
         }
     }

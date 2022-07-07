@@ -37,20 +37,27 @@ class ViewInventoryMenu(private val target: Player) : Menu() {
         val fixedContents: Array<ItemStack> = InventoryUtil.fixInventoryOrder(target.inventory.contents)
         for (i in fixedContents.indices) {
             val itemStack: ItemStack = fixedContents[i]
+
             if (itemStack.type !== Material.AIR) {
                 buttons[i] = DisplayButton(itemStack, true)
             }
+
         }
+
         for (i in target.inventory.armorContents.indices) {
             val itemStack: ItemStack? = target.inventory.armorContents[i]
+
             if (itemStack != null && itemStack.type !== Material.AIR) {
                 buttons[39 - i] = DisplayButton(itemStack, true)
             }
+
         }
         var pos = 45
+
         buttons[pos++] = HealthButton(if (target.health == 0.0) 0 else (target.health / 2.0).roundToInt())
         buttons[pos++] = HungerButton(target.foodLevel)
         buttons[pos] = EffectsButton(target.activePotionEffects)
+
         return buttons
     }
 
