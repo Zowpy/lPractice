@@ -30,7 +30,7 @@ object ArenaCommand {
     @Command(value = ["arena", "arena help"], description = "arena help message")
     fun help(@Sender player: Player) {
         player.sendMessage("${CC.PRIMARY}Arena Commands:")
-        player.sendMessage(CC.CHAT_BAR)
+        player.sendMessage(CC.translate("&7&m---------------------"))
         player.sendMessage("${CC.SECONDARY}/arena create <name>")
         player.sendMessage("${CC.SECONDARY}/arena delete <arena>")
         player.sendMessage("${CC.SECONDARY}/arena pos1 <arena>")
@@ -40,14 +40,14 @@ object ArenaCommand {
         player.sendMessage("${CC.SECONDARY}/arena deadzone <arena> ${CC.GRAY}- set an arena's lowest Y location (Used for bridges, bedfight, etc)")
         player.sendMessage("${CC.SECONDARY}/arena bed1 <arena> ${CC.GRAY}- only supported for mlgrush (stand on bed)")
         player.sendMessage("${CC.SECONDARY}/arena bed2 <arena> ${CC.GRAY}- only supported for mlgrush (stand on bed)")
-        player.sendMessage(CC.CHAT_BAR)
+        player.sendMessage(CC.translate("&7&m---------------------"))
         player.sendMessage("${CC.PRIMARY}BedWars Arena Command:")
-        player.sendMessage(CC.CHAT_BAR)
+        player.sendMessage(CC.translate("&7&m---------------------"))
         player.sendMessage("${CC.SECONDARY}/arena redspawn <arena>")
         player.sendMessage("${CC.SECONDARY}/arena bluespawn <arena>")
         player.sendMessage("${CC.SECONDARY}/arena redbed <arena>")
         player.sendMessage("${CC.SECONDARY}/arena bluebed <arena>")
-        player.sendMessage(CC.CHAT_BAR)
+        player.sendMessage(CC.translate("&7&m---------------------"))
     }
 
     @Command(value = ["arena create"], description = "create a new arena")

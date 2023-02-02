@@ -167,10 +167,11 @@ class KitManagementMenu(val kit: Kit): Menu() {
                 player.closeInventory()
                 return
             }
-            var kit = EditedKit("Kit " + (index + 1))
 
-            if (profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it) }?.editedKits?.size!! > index) {
-                kit = profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it) }?.editedKits?.get(index)!!
+            var kit = profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it) }?.editedKits?.get(index)
+
+            if (kit == null) {
+                kit = EditedKit("Kit " + (index + 1))
             }
 
             if (kit.content == null || kit.armorContent == null) {
@@ -180,8 +181,11 @@ class KitManagementMenu(val kit: Kit): Menu() {
 
             kit.originalKit = profile.kitEditorData?.kit?.name
 
-            profile.kitEditorData?.kit?.name?.let { profile.getKitStatistic(it)?.replaceKit(index, kit) }
+            profile.getKitStatistic(kit.name)?.replaceKit(index, kit)
+
             profile.kitEditorData?.selectedKit = kit
+
+            profile.save()
 
             KitEditorMenu(index).openMenu(player)
         }

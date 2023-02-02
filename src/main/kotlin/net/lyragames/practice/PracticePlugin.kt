@@ -75,6 +75,7 @@ class PracticePlugin : LyraPlugin() {
 
         loadMongo()
         cleanupWorld()
+
         InventoryUtil.removeCrafting(Material.WORKBENCH)
 
         CC.PRIMARY = ChatColor.valueOf(settingsFile.getString("COLOR.PRIMARY")).toString()

@@ -19,14 +19,17 @@ class Mongo (private val dbName: String) : Closeable {
         client =  if (credentials.useUri) {
             MongoClient(MongoClientURI(credentials.uri!!))
         }else if (credentials.shouldAuthenticate()) {
-            val serverAddress = ServerAddress(credentials.host, credentials.port)
-            val credential = MongoCredential.createCredential(credentials.username!!, dbName, credentials.password!!.toCharArray())
-            MongoClient(serverAddress, credential, MongoClientOptions.builder().build())
+           // val serverAddress = ServerAddress(credentials.host, credentials.port)
+          //  val credential = MongoCredential.createCredential(credentials.username!!, dbName, credentials.password!!.toCharArray())
+         //   MongoClient(serverAddress, credential, MongoClientOptions.builder().build())
+
+            MongoClient(MongoClientURI("mongodb://${credentials.username}:${credentials.password}@${credentials.host}:${credentials.port}"))
 
         } else {
-            MongoClient(credentials.host, credentials.port)
+            MongoClient(MongoClientURI("mongodb://${credentials.host}:${credentials.port}"))
         }
-        database = client.getDatabase("lpractice")
+
+        database = client.getDatabase(dbName)
 
         profiles = database.getCollection("profiles")
         arenaRatings = database.getCollection("arenaRatings")

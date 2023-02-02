@@ -10,6 +10,8 @@ object ArenaRatingManager {
     val arenaRatings: MutableList<ArenaRating> = mutableListOf()
 
     fun load() {
+        if (PracticePlugin.instance.practiceMongo.arenaRatings.find().first() == null) return
+
         for (document in PracticePlugin.instance.practiceMongo.arenaRatings.find()) {
             val arenaRating = ArenaRating(UUID.fromString(document.getString("uuid")), document.getInteger("stars"), UUID.fromString(document.getString("user")), document.getString("arena"))
 

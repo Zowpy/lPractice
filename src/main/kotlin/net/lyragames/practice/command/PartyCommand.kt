@@ -15,6 +15,18 @@ import org.bukkit.entity.Player
 
 object PartyCommand {
 
+    @Command(value = ["party", "p", "party help", "p help"])
+    fun help(@Sender player: Player) {
+        player.sendMessage("${CC.PRIMARY}Party Commands:")
+        player.sendMessage(CC.translate("&7&m---------------------"))
+        player.sendMessage("${CC.SECONDARY}/party create")
+        player.sendMessage("${CC.SECONDARY}/party disband")
+        player.sendMessage("${CC.SECONDARY}/party leave")
+        player.sendMessage("${CC.SECONDARY}/party join <player>")
+        player.sendMessage("${CC.SECONDARY}/party invite <player>")
+        player.sendMessage(CC.translate("&7&m---------------------"))
+    }
+
     @Command(value = ["party create", "p create"], description = "create a party")
     fun create(@Sender player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
