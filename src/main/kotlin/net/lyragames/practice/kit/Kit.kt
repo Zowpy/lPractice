@@ -5,18 +5,19 @@ import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.data.KitData
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.material.MaterialData
 
 /**
- * This Project is property of Zowpy © 2021
+ * This Project is property of Zowpy & EliteAres © 2021
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 12/19/2021
  * Project: Practice
  */
 
 class Kit(val name: String) {
-    var displayItem: Material = Material.IRON_SWORD
+    var displayItem: ItemStack = ItemStack(Material.IRON_SWORD)
     var content: Array<ItemStack> = arrayOf()
     var armorContent: Array<ItemStack> = arrayOf()
     val kitData = KitData()
@@ -25,7 +26,7 @@ class Kit(val name: String) {
         val configFile = PracticePlugin.instance.kitsFile
         val section = configFile.createSection("kits.$name")
 
-        section.set("material", displayItem.name)
+        section.set("icon", InventoryUtil.serializeItemStack(displayItem))
         if (content.isEmpty()) section.set("content", "null") else section.set("content", InventoryUtil.serializeInventory(content))
         if (armorContent.isEmpty()) section.set("armorContent", "null") else section.set("armorContent", InventoryUtil.serializeInventory(armorContent))
 
@@ -42,6 +43,7 @@ class Kit(val name: String) {
         dataSection.set("bedFights", kitData.bedFights)
         dataSection.set("hunger", kitData.hunger)
         dataSection.set("regeneration", kitData.regeneration)
+        dataSection.set("fallDamage", kitData.fallDamage)
 
         configFile.save()
     }

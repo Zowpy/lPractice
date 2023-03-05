@@ -10,6 +10,7 @@ import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.BracketsEvent
 import net.lyragames.practice.event.player.EventPlayerState
+import net.lyragames.practice.kit.data.KitData
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
@@ -18,6 +19,7 @@ import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.impl.BedFightMatch
 import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.match.impl.TeamMatch
+import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
@@ -39,10 +41,10 @@ import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 1/27/2022
  * Project: lPractice
  */
@@ -59,7 +61,7 @@ object MatchListener : Listener {
         }
 
         if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
-            if (player.gameMode != GameMode.CREATIVE) {
+            if (player.gameMode != GameMode.CREATIVE && profile.canBuild) {
                 event.isCancelled = true
             }
             return
@@ -128,7 +130,7 @@ object MatchListener : Listener {
         }
 
         if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
-            if (player.gameMode != GameMode.CREATIVE) {
+            if (player.gameMode != GameMode.CREATIVE && profile.canBuild) {
                 event.isCancelled = true
             }
             return
@@ -396,6 +398,8 @@ object MatchListener : Listener {
             event.isCancelled = true
         }
     }
+
+
 
     @EventHandler(ignoreCancelled = true)
     fun onHit(event: EntityDamageByEntityEvent) {
@@ -678,9 +682,26 @@ object MatchListener : Listener {
     @EventHandler
     fun onDamage(event: EntityDamageEvent) {
         if (event.entity is Player) {
+            val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)
+            val match = profile?.matchObject
+            val kit = match?.kit
+            if (match != null) {
+                if (kit?.kitData?.fallDamage == true) {
+                    event.setDamage(event.damage)
+                }
+            } else {
+                if (event.cause == EntityDamageEvent.DamageCause.FALL) {
+                    event.isCancelled = true
+                }
+            }
 
-            if (event.cause == EntityDamageEvent.DamageCause.FALL) {
-                event.isCancelled = true
+            if ((event.entity as Player).health <= 0) {
+                if (kit?.kitData?.fallDamage == true) {
+                    val matchPlayer = match.getMatchPlayer(profile.uuid)
+
+
+                    match.handleDeath(matchPlayer!!)
+                }
             }
         }
     }

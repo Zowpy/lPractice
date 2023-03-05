@@ -4,6 +4,7 @@ import me.vaperion.blade.command.annotation.Command
 import me.vaperion.blade.command.annotation.Permission
 import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
+import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.admin.AdminKitEditMenu
@@ -12,14 +13,15 @@ import net.lyragames.practice.profile.Profile
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.material.MaterialData
 import java.util.*
 
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/16/2022
  * Project: lPractice
  */
@@ -34,6 +36,7 @@ object KitCommand {
         player.sendMessage("${CC.SECONDARY}/kit delete <kit>")
         player.sendMessage("${CC.SECONDARY}/kit content <kit>")
         player.sendMessage("${CC.SECONDARY}/kit edit <kit>")
+        player.sendMessage("${CC.SECONDARY}/kit items <kit>")
         player.sendMessage("${CC.SECONDARY}/kit icon <kit> ${CC.GRAY}- hold item in hand")
     }
 
@@ -61,8 +64,8 @@ object KitCommand {
             return
         }
 
-        kit.content = player.inventory.contents
-        kit.armorContent = player.inventory.armorContents
+        kit.content = player.inventory.contents.clone()
+        kit.armorContent = player.inventory.armorContents.clone()
         kit.save()
 
         for (document in PracticePlugin.instance.practiceMongo.profiles.find()) {
@@ -75,6 +78,14 @@ object KitCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${kit.name}${CC.PRIMARY}'s item contents!")
     }
 
+    @Permission("lpractice.command.kit.content.retreive")
+    @Command(value = ["kit items"], description = "retreive a kit's items")
+    fun items(@Sender player: Player, kit: Kit) {
+        player.inventory.contents = kit.content
+        player.inventory.armorContents = kit.armorContent
+        player.sendMessage("${CC.PRIMARY}Successfully retrieved ${CC.SECONDARY}${kit.name}${CC.PRIMARY}'s item contents!")
+    }
+
     @Permission("lpractice.command.kit.displayitem")
     @Command(value = ["kit icon", "kit displayitem"])
     fun displayItem(@Sender player: Player, kit: Kit) {
@@ -82,12 +93,11 @@ object KitCommand {
             player.sendMessage("${CC.RED}You are not holding an item!")
             return
         }
-
-        kit.displayItem = player.itemInHand.type
+        kit.displayItem = player.itemInHand
         kit.save()
 
         QueueManager.queues.filter { it.kit.name.equals(kit.name, false) }.forEach {
-            it.kit.displayItem = player.itemInHand.type
+            it.kit.displayItem = player.itemInHand
         }
 
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${kit.name}${CC.PRIMARY}'s display item!")

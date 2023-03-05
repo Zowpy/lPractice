@@ -103,8 +103,8 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>sk89q-repo</id>
-            <url>https://maven.sk89q.com/repo/</url>
+            <id>elmakers-repo</id>
+            <url>https://maven.elmakers.com/repository/</url>
         </repository>
         <repository>
             <id>dmulloy2-repo</id>
@@ -172,9 +172,11 @@
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>6.1.5</version>
-            <scope>provided</scope>
+            <version>6.0.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/fawe.jar</systemPath>
         </dependency>
+
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-core</artifactId>
@@ -187,6 +189,36 @@
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${project.basedir}\libs\assemble.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.lyragames</groupId>
+            <artifactId>ReplayAPI</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\libs\Replay.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.lyragames</groupId>
+            <artifactId>TablistAPI</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\libs\Ziggurat.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lyragames</groupId>
+            <artifactId>Core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\libs\LyraCore.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lyragames</groupId>
+            <artifactId>NPC</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\libs\NPC.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.github.cryptomorin</groupId>

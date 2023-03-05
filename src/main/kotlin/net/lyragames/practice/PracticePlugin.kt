@@ -3,6 +3,7 @@ package net.lyragames.practice
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.thatkawaiisam.assemble.Assemble
+import io.github.thatkawaiisam.ziggurat.Ziggurat
 import me.vaperion.blade.Blade
 import me.vaperion.blade.command.bindings.impl.BukkitBindings
 import me.vaperion.blade.command.bindings.impl.DefaultBindings
@@ -14,6 +15,7 @@ import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
+import net.lyragames.practice.adapter.TablistAdapter
 import net.lyragames.practice.api.PracticeAPI
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
@@ -33,6 +35,7 @@ import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.KitProvider
 import net.lyragames.practice.kit.editor.listener.KitEditorListener
 import net.lyragames.practice.kit.serializer.EditKitSerializer
+import net.lyragames.practice.listener.WorldListener
 import net.lyragames.practice.manager.*
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
@@ -41,6 +44,7 @@ import net.lyragames.practice.task.EnderPearlCooldownTask
 import net.lyragames.practice.task.EventAnnounceTask
 import net.lyragames.practice.task.TNTEventBlockRemovalTask
 import net.lyragames.practice.task.TNTTagTask
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.ExperienceOrb
@@ -48,9 +52,11 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
+
 class PracticePlugin : LyraPlugin() {
 
     lateinit var settingsFile: ConfigFile
+    lateinit var tablistFile: ConfigFile
     lateinit var kitsFile: ConfigFile
     lateinit var arenasFile: ConfigFile
     lateinit var scoreboardFile: ConfigFile
@@ -61,11 +67,14 @@ class PracticePlugin : LyraPlugin() {
     lateinit var practiceMongo: Mongo
 
     private lateinit var blade: Blade
+    var onlinePlayer: MutableCollection<out Player>? = Bukkit.getOnlinePlayers()
 
+    private lateinit var ziggurat: Ziggurat
     override fun onEnable() {
         instance = this
 
         settingsFile = ConfigFile(this, "settings")
+        tablistFile = ConfigFile(this, "tablist")
         kitsFile = ConfigFile(this, "kits")
         arenasFile = ConfigFile(this, "arenas")
         scoreboardFile = ConfigFile(this, "scoreboard")
@@ -77,6 +86,7 @@ class PracticePlugin : LyraPlugin() {
         cleanupWorld()
 
         InventoryUtil.removeCrafting(Material.WORKBENCH)
+
 
         CC.PRIMARY = ChatColor.valueOf(settingsFile.getString("COLOR.PRIMARY")).toString()
         CC.SECONDARY = ChatColor.valueOf(settingsFile.getString("COLOR.SECONDARY")).toString()
@@ -120,7 +130,9 @@ class PracticePlugin : LyraPlugin() {
             .register(FollowCommand)
             .register(FFACommand)
             .register(RateMapCommand)
+            .register(BuildCommand)
             .register(ArenaRatingCommand)
+            .register(SpawnCommand)
 
         Constants.load()
 
@@ -130,14 +142,20 @@ class PracticePlugin : LyraPlugin() {
         TNTTagTask
         EnderPearlCooldownTask
 
+        if (tablistFile.getBoolean("tablist.enabled")) {
+            ziggurat = Ziggurat(this, TablistAdapter())
+        }
+
         if (scoreboardFile.getBoolean("scoreboard.enabled")) {
             Assemble(this, ScoreboardAdapter(scoreboardFile))
         }
 
+        server.pluginManager.registerEvents(WorldListener, this)
         server.pluginManager.registerEvents(ProfileListener, this)
         server.pluginManager.registerEvents(MatchListener, this)
         server.pluginManager.registerEvents(KitEditorListener, this)
         server.pluginManager.registerEvents(ItemListener(), this)
+
     }
 
     private fun loadMongo() {
@@ -165,6 +183,7 @@ class PracticePlugin : LyraPlugin() {
     private fun cleanupWorld() {
         for (world in server.worlds) {
             world.time = 4000
+
 
             for (entity in world.entities) {
                 if (entity is Player) {

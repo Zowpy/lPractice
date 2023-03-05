@@ -12,10 +12,10 @@ import org.bukkit.event.player.PlayerJoinEvent
 
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/15/2022
  * Project: lPractice
  */
@@ -28,6 +28,8 @@ object ProfileListener: Listener {
             val profile = Profile(event.uniqueId, event.name)
             profile.load()
             Profile.profiles.add(profile)
+
+
         } catch (e: Exception) {
             event.loginResult = AsyncPlayerPreLoginEvent.Result.KICK_OTHER
             event.kickMessage = CC.RED + "Failed to load your profile!"

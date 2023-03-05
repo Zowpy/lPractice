@@ -1,6 +1,7 @@
 package net.lyragames.practice.match
 
 import com.google.common.base.Joiner
+import me.jumper251.replay.api.ReplayAPI
 import mkremins.fanciful.FancyMessage
 import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.title.TitleBar
@@ -23,6 +24,7 @@ import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.utils.EloUtil
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -34,16 +36,17 @@ import java.util.stream.Collectors
 
 
 /**
- * This Project is property of Zowpy © 2021
+ * This Project is property of Zowpy & EliteAres © 2021
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 12/19/2021
  * Project: Practice
  */
 
 open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
+    lateinit var random: Random
     val uuid = UUID.randomUUID()
     var friendly = false
     var matchState = MatchState.STARTING
@@ -54,6 +57,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val snapshots: MutableList<MatchSnapshot> = mutableListOf()
     val spectators: MutableList<MatchSpectator> = mutableListOf()
     val countdowns: MutableList<Countdown> = mutableListOf()
+    var bukkitPlayers: MutableList<Player> = mutableListOf()
+
 
     open fun start() {
 
@@ -62,7 +67,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
             val player = matchPlayer.player
             val profile = Profile.getByUUID(player.uniqueId)
-
+            bukkitPlayers.add(player)
             CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
             PlayerUtil.reset(player)
@@ -82,6 +87,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 started = System.currentTimeMillis()
             })
         }
+           // ReplayAPI.getInstance().recordReplay(UUID.randomUUID(), )
     }
 
     open fun getMatchType(): MatchType {
@@ -137,13 +143,11 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         PlayerUtil.reset(player)
 
+
+
+        sendToSpawn(player)
         spectators.removeIf { it.uuid == player.uniqueId }
 
-        Hotbar.giveHotbar(profile)
-
-        if (Constants.SPAWN != null) {
-            player.teleport(Constants.SPAWN)
-        }
     }
 
     open fun forceRemoveSpectator(player: Player) {
@@ -157,18 +161,16 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         PlayerUtil.reset(player)
 
-        spectators.removeIf { it.uuid == player.uniqueId }
 
         Hotbar.giveHotbar(profile!!)
+        sendToSpawn(player)
 
-        if (Constants.SPAWN != null) {
-            player.teleport(Constants.SPAWN)
-        }
+        spectators.removeIf { it.uuid == player.uniqueId }
+
     }
 
-    open fun canHit(player: Player, target: Player): Boolean {
-        return true
-    }
+
+    open fun canHit(player: Player, target: Player): Boolean = true
 
     open fun addPlayer(player: Player, location: Location) {
         val matchPlayer = MatchPlayer(player.uniqueId, player.name, location)
@@ -205,7 +207,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         } else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
+            sendMessage("&c${player.name} ${CC.PRIMARY}has been slain by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
         }
 
         countdowns.forEach { it.cancel() }
@@ -223,12 +225,13 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             }
 
             for (matchPlayer in players) {
+
                 if (matchPlayer.offline) continue
                 val winner = matchPlayer.uuid != player.uuid
 
                 val bukkitPlayer = matchPlayer.player
                 val profile = Profile.getByUUID(matchPlayer.uuid)
-
+                bukkitPlayers.remove(bukkitPlayer)
                 val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
                 snapshot.potionsThrown = matchPlayer.potionsThrown
                 snapshot.potionsMissed = matchPlayer.potionsMissed
@@ -243,9 +246,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 profile?.match = null
                 profile?.state = ProfileState.LOBBY
 
-                if (Constants.SPAWN != null) {
-                    bukkitPlayer.teleport(Constants.SPAWN)
-                }
+                sendToSpawn(bukkitPlayer)
 
                 CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
@@ -315,13 +316,19 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 MatchSnapshot.snapshots.add(snapshot)
             }
 
+
+
             getOpponent(player.uuid)?.let {
+
+
+                sendTitle("&a${it.name}&e's VICTORY!", "&eThe duel has ended!")
                 endMessage(it, player)
-                sendTitleBar(it)
 
                 val profile = Profile.getByUUID(it.uuid)
+                val opponentProfile = Profile.getByUUID(player.uuid)
 
                 ratingMessage(profile!!)
+                ratingMessage(opponentProfile!!)
             }
 
             matches.remove(this)
@@ -372,7 +379,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             .then()
             .text("${CC.GREEN}Winner: ")
             .then()
-            .text("${winner.name} \n")
+            .text("${winner.name}  |")
             .command("/matchsnapshot ${winner.uuid}")
             .then()
             .text("${CC.RED}Loser: ")
@@ -396,17 +403,31 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
 
         for (spectator in spectators) {
-            if (spectator.player == null) continue
+            if (spectator.player != null) {
 
-            fancyMessage.send(spectator.player)
-            forceRemoveSpectator(spectator.player)
+                fancyMessage.send(spectator.player)
+                removeSpectator(spectator.player)
+            }
         }
     }
 
-    fun sendTitleBar(winner: MatchPlayer) {
-        val titleBar = TitleBar("${CC.GREEN}${winner.name}${CC.YELLOW} won!", false)
+//    fun sendTitleBar(winner: MatchPlayer) {
+//        val titleBar = TitleBar("${CC.GREEN}${winner.name}${CC.YELLOW}'s VICTORY!", false)
+//
+//        players.forEach {
+//            if (!it.offline) titleBar.sendPacket(it.player)
+//        }
+//    }
 
-        players.forEach { if (!it.offline) titleBar.sendPacket(it.player) }
+    fun sendTitle(title: String, subtitle: String) {
+        val titleBar = TitleBar(ChatColor.translateAlternateColorCodes('&',title), false)
+        val subtitleBar = TitleBar(ChatColor.translateAlternateColorCodes('&', subtitle), true)
+
+        players.forEach {
+            if (!it.offline) titleBar.sendPacket(it.player)
+            if (!it.offline) subtitleBar.sendPacket(it.player)
+
+        }
     }
 
     fun getTime(): String {
@@ -424,6 +445,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     fun reset() {
         blocksPlaced.forEach { it.type = Material.AIR }
         droppedItems.forEach { it.remove() }
+
     }
 
     fun getMatchPlayer(uuid: UUID): MatchPlayer? {
@@ -443,6 +465,13 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     fun getAlivePlayers(): MutableList<MatchPlayer> {
         return players.stream().filter { !it.dead && !it.offline }
             .collect(Collectors.toList())
+    }
+    fun sendToSpawn(player: Player) {
+        if (Constants.SPAWN != null) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.instance, Runnable {
+                player.teleport(Constants.SPAWN)
+            }, 60L)
+        }
     }
 
     companion object {

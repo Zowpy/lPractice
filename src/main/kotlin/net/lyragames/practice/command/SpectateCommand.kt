@@ -12,24 +12,27 @@ object SpectateCommand {
 
     @Command(value = ["spectate", "s", "spec"], description = "spectate a player's match")
     fun spectate(@Sender player: Player, target: Player) {
-        val profile = Profile.getByUUID(target.uniqueId)
+        val targetProfile = Profile.getByUUID(target.uniqueId)
+        val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state != ProfileState.MATCH) {
+        if (targetProfile?.state != ProfileState.MATCH) {
             player.sendMessage("${CC.RED}That player in not in a match!")
             return
         }
 
-        if (!profile.settings.spectators && !player.hasPermission("lpractice.bypass.spectate")) {
+        if (!targetProfile.settings.spectators && !player.hasPermission("lpractice.bypass.spectate")) {
             player.sendMessage("${CC.SECONDARY}${target.name}${CC.PRIMARY}'s spectating is off.")
             return
         }
 
-        val match = Match.getByUUID(profile.match!!)
+        val match = Match.getByUUID(targetProfile.match!!)
 
         if (match == null) {
             player.sendMessage("${CC.RED}That player in not in a match!")
             return
         }
+
+        if (profile?.state != ProfileState.LOBBY) return
 
         match.addSpectator(player)
         player.teleport(target)

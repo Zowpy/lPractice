@@ -4,6 +4,7 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.menu.Button
 import net.lyragames.menu.Menu
+import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.match.ffa.FFAPlayer
@@ -15,10 +16,10 @@ import org.bukkit.inventory.ItemStack
 
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/26/2022
  * Project: lPractice
  */
@@ -52,6 +53,10 @@ class FFAChoosingMenu: Menu() {
 
                         profile?.state = ProfileState.FFA
                         profile?.ffa = ffa?.uuid
+                        //TODO Change to FFA SPAWN later
+                        if (Constants.SPAWN != null ){
+                            player.teleport(Constants.SPAWN)
+                        }
 
                         val ffaPlayer = FFAPlayer(player.uniqueId, player.name)
                         ffa?.players?.add(ffaPlayer)

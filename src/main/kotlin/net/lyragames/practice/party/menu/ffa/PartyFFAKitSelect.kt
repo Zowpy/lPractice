@@ -18,10 +18,10 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/26/2022
  * Project: lPractice
  */
@@ -65,6 +65,7 @@ class PartyFFAKitSelect(private val party: Party): Menu() {
                             val profile = Profile.getByUUID(uuid)
 
                             profile?.match = match.uuid
+                            profile?.matchObject = match
                             profile?.state = ProfileState.MATCH
                             match.addPlayer(partyPlayer, arena.l1!!)
                         }

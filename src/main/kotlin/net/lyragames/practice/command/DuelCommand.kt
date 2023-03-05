@@ -98,6 +98,7 @@ object DuelCommand {
 
         profile.match = match.uuid
         profile.state = ProfileState.MATCH
+        profile.matchObject = match
 
         val profile1 = Profile.getByUUID(target.uniqueId)
         profile1?.state = ProfileState.MATCH
@@ -157,6 +158,7 @@ object DuelCommand {
             val profileParty = Profile.getByUUID(uuid)
             profileParty?.state = ProfileState.MATCH
             profileParty?.match = match.uuid
+            profileParty?.matchObject = match
 
             match.addPlayer(Bukkit.getPlayer(uuid), team1)
         }
@@ -165,6 +167,7 @@ object DuelCommand {
             val profileParty = Profile.getByUUID(uuid)
             profileParty?.state = ProfileState.MATCH
             profileParty?.match = match.uuid
+            profileParty?.matchObject = match
 
             match.addPlayer(Bukkit.getPlayer(uuid), team2)
         }

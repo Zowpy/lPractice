@@ -20,10 +20,10 @@ import org.bukkit.Bukkit
 
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/26/2022
  * Project: lPractice
  */

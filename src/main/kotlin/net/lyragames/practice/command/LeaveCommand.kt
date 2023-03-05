@@ -38,7 +38,9 @@ object LeaveCommand {
                 player.hidePlayer(it)
                 it.hidePlayer(player)
             }
-
-        Hotbar.giveHotbar(profile)
+             Hotbar.giveHotbar(profile)
+             if (Constants.SPAWN != null) {
+                 player.teleport(Constants.SPAWN)
+             }
     }
 }

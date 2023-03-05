@@ -15,10 +15,10 @@ import org.bukkit.inventory.ItemStack
 
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/24/2022
  * Project: lPractice
  */
@@ -64,6 +64,7 @@ class PartyPlayersMenu(private val party: Party): PaginatedMenu() {
                         val profile = Profile.getByUUID(it.uniqueId)
 
                         if (clickType?.isRightClick!!) {
+                            if (player?.uniqueId == party.leader) return;
                             party.banned.add(it.uniqueId)
                             party.players.remove(it.uniqueId)
 
@@ -71,6 +72,7 @@ class PartyPlayersMenu(private val party: Party): PaginatedMenu() {
                             Hotbar.giveHotbar(profile!!)
                             party.sendMessage("${CC.SECONDARY}${it.name}${CC.PRIMARY} has been banned from the party!")
                         }else if (clickType.isLeftClick) {
+                            if (player?.uniqueId == party.leader) return;
                             party.players.remove(it.uniqueId)
 
                             profile?.party = null

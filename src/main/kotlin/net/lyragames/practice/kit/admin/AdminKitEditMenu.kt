@@ -19,10 +19,10 @@ import org.bukkit.inventory.ItemStack
 
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/21/2022
  * Project: lPractice
  */
@@ -331,6 +331,26 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.regeneration = !kit.kitData.regeneration
+                kit.save()
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+        toReturn[12] = object: Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.FEATHER)
+                    .name("${CC.PRIMARY}Fall Damage")
+                    .lore(listOf(
+                        if (kit.kitData.fallDamage) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.fallDamage) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.fallDamage = !kit.kitData.fallDamage
                 kit.save()
             }
 
