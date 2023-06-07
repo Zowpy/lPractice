@@ -3,7 +3,6 @@ package net.lyragames.practice
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.thatkawaiisam.assemble.Assemble
-import io.github.thatkawaiisam.ziggurat.Ziggurat
 import me.vaperion.blade.Blade
 import me.vaperion.blade.command.bindings.impl.BukkitBindings
 import me.vaperion.blade.command.bindings.impl.DefaultBindings
@@ -69,7 +68,7 @@ class PracticePlugin : LyraPlugin() {
     private lateinit var blade: Blade
     var onlinePlayer: MutableCollection<out Player>? = Bukkit.getOnlinePlayers()
 
-    private lateinit var ziggurat: Ziggurat
+    //private lateinit var ziggurat: Ziggurat
     override fun onEnable() {
         instance = this
 
@@ -143,7 +142,7 @@ class PracticePlugin : LyraPlugin() {
         EnderPearlCooldownTask
 
         if (tablistFile.getBoolean("tablist.enabled")) {
-            ziggurat = Ziggurat(this, TablistAdapter())
+            //ziggurat = Ziggurat(this, TablistAdapter())
         }
 
         if (scoreboardFile.getBoolean("scoreboard.enabled")) {

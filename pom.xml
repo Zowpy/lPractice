@@ -175,7 +175,7 @@
             <artifactId>worldedit-bukkit</artifactId>
             <version>6.0.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/fawe.jar</systemPath>
+            <systemPath>${project.basedir}/libs/FAWE.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -184,6 +184,7 @@
             <version>6.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>io.github.thatkawaiisam</groupId>
             <artifactId>assemble</artifactId>
@@ -191,7 +192,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}\libs\assemble.jar</systemPath>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>net.lyragames</groupId>
             <artifactId>ReplayAPI</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -220,7 +221,7 @@
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${project.basedir}\libs\NPC.jar</systemPath>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>

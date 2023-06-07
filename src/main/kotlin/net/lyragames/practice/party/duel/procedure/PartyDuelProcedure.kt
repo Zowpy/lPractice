@@ -5,12 +5,11 @@ import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.party.duel.PartyDuelRequest
 import java.util.*
 
-
 /**
- * This Project is property of Zowpy & EliteAres © 2022
+ * This Project is property of Zowpy © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy & EliteAres
+ * @author Zowpy
  * Created: 3/3/2022
  * Project: lPractice
  */

@@ -1,21 +1,9 @@
 package net.lyragames.practice.adapter
 
-import io.github.thatkawaiisam.ziggurat.ZigguratAdapter
-import io.github.thatkawaiisam.ziggurat.ZigguratCommons
-import io.github.thatkawaiisam.ziggurat.utils.BufferedTabObject
-import io.github.thatkawaiisam.ziggurat.utils.SkinTexture
-import io.github.thatkawaiisam.ziggurat.utils.TabColumn
-import javafx.scene.control.Skin
-import net.lyragames.core.CorePlugin
-import net.lyragames.core.profile.Profile
-import net.lyragames.practice.PracticePlugin
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
-import org.bukkit.entity.Player
 
-
-class TablistAdapter: ZigguratAdapter {
-    override fun getSlots(player: Player?): MutableSet<BufferedTabObject> {
+class TablistAdapter//: ZigguratAdapter {
+{
+    /*override fun getSlots(player: Player?): MutableSet<BufferedTabObject> {
 
         var toReturn: HashSet<BufferedTabObject> = hashSetOf()
         var plugin = CorePlugin.getInstance()
@@ -69,5 +57,5 @@ class TablistAdapter: ZigguratAdapter {
 
     override fun getHeader(): String {
         return ChatColor.translateAlternateColorCodes('&', PracticePlugin.instance.tablistFile.getString("tablist.header"))
-    }
+    } */
 }

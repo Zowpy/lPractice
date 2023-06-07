@@ -22,7 +22,6 @@ import net.lyragames.practice.match.spectator.MatchSpectator
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
-import net.lyragames.practice.utils.EloUtil
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location

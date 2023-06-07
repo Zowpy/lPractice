@@ -1,4 +1,4 @@
 name: Practice
 version: '${project.version}'
 main: net.lyragames.practice.PracticePlugin
-authors: [ Zowpy, EliteAres ]
+authors: [ Zowpy ]

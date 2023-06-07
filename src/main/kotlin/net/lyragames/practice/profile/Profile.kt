@@ -21,10 +21,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.stream.Collectors
 
 /**
- * This Project is property of Zowpy & EliteAres © 2021
+ * This Project is property of Zowpy © 2021
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy & EliteAres
+ * @author Zowpy
  * Created: 12/19/2021
  * Project: Practice
  */

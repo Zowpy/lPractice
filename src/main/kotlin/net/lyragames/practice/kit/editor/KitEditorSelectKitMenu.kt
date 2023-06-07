@@ -1,6 +1,5 @@
 package net.lyragames.practice.kit.editor
 
-import lombok.AllArgsConstructor
 import net.lyragames.llib.utils.CC
 import net.lyragames.menu.Button
 import net.lyragames.menu.ItemBuilder
@@ -13,10 +12,10 @@ import org.bukkit.inventory.ItemStack
 
 
 /**
- * This Project is property of Zowpy & EliteAres © 2022
+ * This Project is property of Zowpy © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy & EliteAres
+ * @author Zowpy
  * Created: 2/21/2022
  * Project: lPractice
  */

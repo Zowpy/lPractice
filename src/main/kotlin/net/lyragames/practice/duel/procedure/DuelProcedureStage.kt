@@ -2,10 +2,10 @@ package net.lyragames.practice.duel.procedure
 
 
 /**
- * This Project is property of Zowpy & EliteAres © 2022
+ * This Project is property of Zowpy © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy & EliteAres
+ * @author Zowpy
  * Created: 2/28/2022
  * Project: lPractice
  */

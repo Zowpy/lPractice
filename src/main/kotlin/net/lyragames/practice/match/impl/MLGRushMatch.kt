@@ -28,10 +28,10 @@ import org.bukkit.event.block.BlockBreakEvent
 
 
 /**
- * This Project is property of Zowpy & EliteAres © 2022
+ * This Project is property of Zowpy © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy & EliteAres
+ * @author Zowpy
  * Created: 3/29/2022
  * Project: lPractice
  */
@@ -265,7 +265,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
             getOpponent(player.uuid)?.let {
                 endMessage(player, it)
-                sendTitle("&a${it.name}&e's VICTORY!", "&eThe duel has ended!")
+                sendTitleBar(player)
 
                 val profile = Profile.getByUUID(it.uuid)
 

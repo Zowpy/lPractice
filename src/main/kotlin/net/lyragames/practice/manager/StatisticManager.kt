@@ -4,6 +4,15 @@ import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.utils.EloUtil
 
+/**
+ * This Project is property of Zowpy © 2023
+ * Redistribution of this Project is not allowed
+ *
+ * @author Zowpy
+ * Created: 6/7/2023
+ * Project: lPractice
+ */
+
 object StatisticManager {
 
     fun win(profile: Profile, loserProfile: Profile, kit: Kit, ranked: Boolean) {
