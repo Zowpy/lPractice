@@ -12,6 +12,7 @@ import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.manager.StatisticManager
 import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
@@ -274,53 +275,10 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
                     }
 
                 if (winner && !friendly) {
-                    val globalStatistics = profile.globalStatistic
-
-                    globalStatistics.wins++
-                    globalStatistics.streak++
-
-                    if (globalStatistics.streak >= globalStatistics.bestStreak) {
-                        globalStatistics.bestStreak = globalStatistics.streak
-                    }
-
-                    val kitStatistic = profile.getKitStatistic(kit.name)!!
-
-                    kitStatistic.wins++
-
-                    if (ranked) {
-                        kitStatistic.rankedWins++
-                        val elo = loserProfile.getKitStatistic(kit.name)?.elo
-                        loserProfile.getKitStatistic(kit.name)?.elo = loserProfile.getKitStatistic(kit.name)?.elo?.plus(elo?.let { EloUtil.getNewRating(it, kitStatistic.elo, false) }!!)!!
-                        kitStatistic.elo =+ EloUtil.getNewRating(kitStatistic.elo, loserProfile.getKitStatistic(kit.name)?.elo!!, true)
-
-                        if (kitStatistic.elo >= kitStatistic.peakELO) {
-                            kitStatistic.peakELO = kitStatistic.elo
-                        }
-                    }
-
-                    kitStatistic.currentStreak++
-
-                    if (kitStatistic.currentStreak >= kitStatistic.bestStreak) {
-                        kitStatistic.bestStreak = kitStatistic.currentStreak
-                    }
-
-                    profile.save()
+                    StatisticManager.win(profile, loserProfile, kit, ranked)
                 }else {
                     if (!friendly) {
-                        val globalStatistics = profile.globalStatistic
-
-                        globalStatistics.losses++
-                        globalStatistics.streak = 0
-
-                        val kitStatistic = profile.getKitStatistic(kit.name)!!
-
-                        kitStatistic.currentStreak = 0
-
-                        if (ranked) {
-                            kitStatistic.rankedWins++
-                        }
-
-                        profile.save()
+                        StatisticManager.loss(profile, kit, ranked)
                     }
                 }
             }

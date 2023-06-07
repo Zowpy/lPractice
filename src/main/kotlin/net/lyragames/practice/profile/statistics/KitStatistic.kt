@@ -28,7 +28,9 @@ class KitStatistic constructor(val kit: String) {
     var elo = 1000
     var peakELO = 1000
     var wins = 0
+    var losses = 0
 
+    var rankedLosses = 0
     var rankedWins = 0
     var currentStreak = 0
     var bestStreak = 0

@@ -13,6 +13,7 @@ import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaRatingManager
+import net.lyragames.practice.manager.StatisticManager
 import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.match.player.MatchPlayer
@@ -66,7 +67,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
 
             PlayerUtil.reset(player)
-            PlayerUtil.allowMovement(player)
+            PlayerUtil.denyMovement(player)
 
             player.teleport(matchPlayer.spawn)
             profile?.getKitStatistic(kit.name)?.generateBooks(player)
@@ -77,6 +78,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 "&aMatch starting in <seconds> seconds!",
                 6
             ) {
+                PlayerUtil.allowMovement(player)
                 player.sendMessage(CC.GREEN + "Match started!")
                 matchState = MatchState.FIGHTING
                 started = System.currentTimeMillis()
@@ -259,53 +261,10 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                     }
 
                 if (winner && !friendly) {
-                    val globalStatistics = profile.globalStatistic
-
-                    globalStatistics.wins++
-                    globalStatistics.streak++
-
-                    if (globalStatistics.streak >= globalStatistics.bestStreak) {
-                        globalStatistics.bestStreak = globalStatistics.streak
-                    }
-
-                    val kitStatistic = profile.getKitStatistic(kit.name)!!
-
-                    kitStatistic.wins++
-
-                    if (ranked) {
-                        kitStatistic.rankedWins++
-                        val elo = loserProfile.getKitStatistic(kit.name)?.elo
-                        loserProfile.getKitStatistic(kit.name)?.elo = loserProfile.getKitStatistic(kit.name)?.elo?.plus(elo?.let { EloUtil.getNewRating(it, kitStatistic.elo, false) }!!)!!
-                        kitStatistic.elo =+ EloUtil.getNewRating(kitStatistic.elo, loserProfile.getKitStatistic(kit.name)?.elo!!, true)
-
-                        if (kitStatistic.elo >= kitStatistic.peakELO) {
-                            kitStatistic.peakELO = kitStatistic.elo
-                        }
-                    }
-
-                    kitStatistic.currentStreak++
-
-                    if (kitStatistic.currentStreak >= kitStatistic.bestStreak) {
-                        kitStatistic.bestStreak = kitStatistic.currentStreak
-                    }
-
-                    profile.save()
+                    StatisticManager.win(profile, loserProfile, kit, ranked)
                 }else {
                     if (!friendly) {
-                        val globalStatistics = profile.globalStatistic
-
-                        globalStatistics.losses++
-                        globalStatistics.streak = 0
-
-                        val kitStatistic = profile.getKitStatistic(kit.name)!!
-
-                        kitStatistic.currentStreak = 0
-
-                        if (ranked) {
-                            kitStatistic.rankedWins++
-                        }
-
-                        profile.save()
+                        StatisticManager.loss(profile, kit, ranked)
                     }
                 }
             }
@@ -322,6 +281,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 val profile = Profile.getByUUID(it.uuid)
 
                 ratingMessage(profile!!)
+                ratingMessage(Profile.getByUUID(player.uuid)!!)
             }
 
             matches.remove(this)

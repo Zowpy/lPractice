@@ -40,5 +40,7 @@ object LeaveCommand {
             }
 
         Hotbar.giveHotbar(profile)
+
+        player.sendMessage("${CC.PRIMARY}You have left ${CC.SECONDARY}FFA.")
     }
 }
