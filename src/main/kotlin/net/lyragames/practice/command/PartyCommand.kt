@@ -88,7 +88,7 @@ object PartyCommand {
                 }
 
             PartyManager.parties.remove(party)
-        }else {
+        } else {
             party?.players?.remove(player.uniqueId)
             profile.party = null
             Hotbar.giveHotbar(profile)

@@ -11,15 +11,17 @@ import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
 import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
+import net.lyragames.practice.arena.menu.ArenaManageMenu
 import net.lyragames.practice.arena.type.ArenaType
+import net.lyragames.practice.kit.admin.AdminKitEditMenu
 import org.bukkit.entity.Player
 
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/15/2022
  * Project: lPractice
  */
@@ -281,5 +283,12 @@ object ArenaCommand {
         arena.save()
 
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue location!")
+    }
+
+    @Command(value = ["arena menu"], description = "manage active arenas")
+    @Permission("lpractice.command.arena.menu")
+    fun manage(@Sender player: Player, arena: Arena) {
+        ArenaManageMenu(arena).openMenu(player)
+
     }
 }

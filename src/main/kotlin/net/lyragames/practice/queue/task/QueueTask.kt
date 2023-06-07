@@ -21,10 +21,10 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/16/2022
  * Project: lPractice
  */
@@ -152,9 +152,11 @@ object QueueTask: BukkitRunnable() {
                         val profile1 = Profile.getByUUID(secondPlayer.uniqueId)
 
                         profile?.match = match.uuid
+                        profile?.matchObject = match
                         profile?.state = ProfileState.MATCH
 
                         profile1?.match = match.uuid
+                        profile1?.matchObject = match
                         profile1?.state = ProfileState.MATCH
 
                         if (arena is StandaloneBedWarsArena) {

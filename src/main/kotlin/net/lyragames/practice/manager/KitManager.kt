@@ -7,10 +7,10 @@ import org.bukkit.Material
 
 
 /**
- * This Project is property of Zowpy © 2022
+ * This Project is property of Zowpy & EliteAres © 2022
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 2/16/2022
  * Project: lPractice
  */
@@ -26,7 +26,8 @@ object KitManager {
             val section = configFile.getConfigurationSection("kits.$key")
             val kit = Kit(key)
 
-            kit.displayItem = Material.valueOf(section.getString("material"))
+                kit.displayItem = InventoryUtil.deserializeItemStack(section.getString("icon"))
+
 
             if (!section.getString("content").equals("null", false)) {
                 kit.content = InventoryUtil.deserializeInventory(section.getString("content"))

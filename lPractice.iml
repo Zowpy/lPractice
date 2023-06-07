@@ -12,12 +12,13 @@
       <configuration version="3" platform="JVM 1.8" allPlatforms="JVM [1.8]" useProjectSettings="false">
         <compilerSettings />
         <compilerArguments>
+          <option name="jvmTarget" value="1.8" />
           <option name="languageVersion" value="1.6" />
           <option name="apiVersion" value="1.6" />
-          <option name="pluginOptions">
+          <option name="pluginClasspaths">
             <array />
           </option>
-          <option name="pluginClasspaths">
+          <option name="pluginOptions">
             <array />
           </option>
           <option name="errors">
@@ -67,7 +68,15 @@
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test:1.6.20" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldedit:worldedit-bukkit:6.1.5" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.sk89q.worldedit:worldedit-bukkit:6.0.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/fawe.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldedit:worldedit-core:6.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: de.schlichtherle:truezip:6.8.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:17.0" level="project" />
@@ -82,6 +91,42 @@
       <library name="Maven: io.github.thatkawaiisam:assemble:1.0-SNAPSHOT">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/libs/assemble.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: net.lyragames:ReplayAPI:1.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/Replay.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: net.lyragames:TablistAPI:1.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/Ziggurat.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: net.lyragames:Core:1.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/LyraCore.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: net.lyragames:NPC:1.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/NPC.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

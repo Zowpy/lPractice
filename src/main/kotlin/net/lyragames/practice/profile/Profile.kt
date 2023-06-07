@@ -6,6 +6,7 @@ import net.lyragames.llib.utils.Cooldown
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.duel.DuelRequest
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.match.Match
 import net.lyragames.practice.party.invitation.PartyInvitation
 import net.lyragames.practice.profile.editor.KitEditorData
 import net.lyragames.practice.profile.settings.Settings
@@ -20,10 +21,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.stream.Collectors
 
 /**
- * This Project is property of Zowpy © 2021
+ * This Project is property of Zowpy & EliteAres © 2021
  * Redistribution of this Project is not allowed
  *
- * @author Zowpy
+ * @author Zowpy & EliteAres
  * Created: 12/19/2021
  * Project: Practice
  */
@@ -31,6 +32,7 @@ import java.util.stream.Collectors
 class Profile(val uuid: UUID, val name: String?) {
 
     var match: UUID? = null
+    var matchObject: Match? = null
     var ffa: UUID? = null
     var spectatingMatch: UUID? = null
 
@@ -54,6 +56,7 @@ class Profile(val uuid: UUID, val name: String?) {
 
     var state = ProfileState.LOBBY
 
+    var canBuild = false
     var enderPearlCooldown: Cooldown? = null
 
     val player: Player
