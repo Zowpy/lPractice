@@ -26,7 +26,7 @@ object KitManager {
             val section = configFile.getConfigurationSection("kits.$key")
             val kit = Kit(key)
 
-                kit.displayItem = InventoryUtil.deserializeItemStack(section.getString("icon"))
+            kit.displayItem = InventoryUtil.deserializeItemStack(section.getString("icon"))
 
 
             if (!section.getString("content").equals("null", false)) {

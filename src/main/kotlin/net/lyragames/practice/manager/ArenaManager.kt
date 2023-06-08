@@ -43,21 +43,10 @@ object ArenaManager {
             arena.deadzone = section.getInt("deadzone")
             arena.arenaType = ArenaType.valueOf(section.getString("type").uppercase())
 
-            if (!section.getString("l1").equals("null", false)) {
-                arena.l1 = LocationUtil.deserialize(section.getString("l1"))
-            }
-
-            if (!section.getString("l2").equals("null", false)) {
-                arena.l2 = LocationUtil.deserialize(section.getString("l2"))
-            }
-
-            if (!section.getString("min").equals("null", false)) {
-                arena.min = LocationUtil.deserialize(section.getString("min"))
-            }
-
-            if (!section.getString("max").equals("null", false)) {
-                arena.max = LocationUtil.deserialize(section.getString("l1"))
-            }
+            arena.l1 = LocationUtil.deserialize(section.getString("l1"))
+            arena.l2 = LocationUtil.deserialize(section.getString("l2"))
+            arena.min = LocationUtil.deserialize(section.getString("min"))
+            arena.max = LocationUtil.deserialize(section.getString("max"))
 
          //   if (!section.getString("arenaType").equals("null", false)) {
           //      arena.arenaType = ArenaType.valueOf(section.getString("arenaType"))
@@ -146,7 +135,7 @@ object ArenaManager {
                     }
 
                     if (!section1.getString("max").equals("null", false)) {
-                        arena1.max = LocationUtil.deserialize(section1.getString("l1"))
+                        arena1.max = LocationUtil.deserialize(section1.getString("max"))
                     }
 
                     if (arena1.min != null && arena1.max != null) {
@@ -177,8 +166,6 @@ object ArenaManager {
             .findAny().orElse(null) */
 
         for (arena in Arena.arenas) {
-            if (arena == null) continue
-
             if (!arena.isSetup) continue
             if (kit.kitData.build && !arena.isFree()) continue
 

@@ -25,6 +25,7 @@ import net.lyragames.practice.command.admin.*
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.database.Mongo
 import net.lyragames.practice.database.MongoCredentials
+import net.lyragames.practice.event.listener.EventListener
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.EventMapProvider
 import net.lyragames.practice.event.map.type.EventMapType
@@ -36,6 +37,7 @@ import net.lyragames.practice.kit.editor.listener.KitEditorListener
 import net.lyragames.practice.kit.serializer.EditKitSerializer
 import net.lyragames.practice.listener.WorldListener
 import net.lyragames.practice.manager.*
+import net.lyragames.practice.match.ffa.listener.FFAListener
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
@@ -90,8 +92,11 @@ class PracticePlugin : LyraPlugin() {
         CC.PRIMARY = ChatColor.valueOf(settingsFile.getString("COLOR.PRIMARY")).toString()
         CC.SECONDARY = ChatColor.valueOf(settingsFile.getString("COLOR.SECONDARY")).toString()
 
-        ArenaManager.load()
-        logger.info("Successfully loaded ${if (Arena.arenas.size == 1) "1 arena!" else "${Arena.arenas.size} arenas!"}")
+        server.scheduler.runTaskLater(this, {
+            ArenaManager.load()
+            logger.info("Successfully loaded ${if (Arena.arenas.size == 1) "1 arena!" else "${Arena.arenas.size} arenas!"}")
+        }, 120L)
+
 
         KitManager.load()
         logger.info("Successfully loaded ${if (Kit.kits.size == 1) "1 kit!" else "${Kit.kits.size} kits!"}")
@@ -152,6 +157,8 @@ class PracticePlugin : LyraPlugin() {
         server.pluginManager.registerEvents(WorldListener, this)
         server.pluginManager.registerEvents(ProfileListener, this)
         server.pluginManager.registerEvents(MatchListener, this)
+        server.pluginManager.registerEvents(FFAListener, this)
+        server.pluginManager.registerEvents(EventListener, this)
         server.pluginManager.registerEvents(KitEditorListener, this)
         server.pluginManager.registerEvents(ItemListener(), this)
 

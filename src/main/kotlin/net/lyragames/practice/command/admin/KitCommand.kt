@@ -6,6 +6,7 @@ import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.admin.AdminKitEditMenu
 import net.lyragames.practice.manager.QueueManager
@@ -72,7 +73,12 @@ object KitCommand {
             val profile = Profile(UUID.fromString(document.getString("uuid")), document.getString("name"))
             profile.load(document)
 
-            profile.getKitStatistic(kit.name)?.editedKits?.clear()
+            val editedKits = profile.getKitStatistic(kit.name)?.editedKits ?: continue
+
+            editedKits[0] = null
+            editedKits[1] = null
+            editedKits[2] = null
+            editedKits[3] = null
         }
 
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${kit.name}${CC.PRIMARY}'s item contents!")

@@ -25,12 +25,14 @@ class FFA(val kit: Kit) {
     val players: MutableList<FFAPlayer> = mutableListOf()
     val droppedItems: MutableList<Item> = mutableListOf()
 
-    fun handleDeath(ffaPlayer: FFAPlayer, killer: FFAPlayer) {
+    fun handleDeath(ffaPlayer: FFAPlayer, killer: FFAPlayer?) {
         ffaPlayer.death++
         ffaPlayer.killStreak = 0
 
-        killer.kills++
-        killer.killStreak++
+        if (killer != null) {
+            killer.kills++
+            killer.killStreak++
+        }
 
         setup(ffaPlayer)
     }

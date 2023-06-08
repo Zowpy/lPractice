@@ -1,13 +1,8 @@
 package net.lyragames.practice.bots
 
-import com.comphenix.protocol.utility.MinecraftReflection.getBukkitEntity
-import net.citizensnpcs.nms.v1_8_R3.util.NMSImpl
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
-import net.minecraft.server.v1_8_R3.DataWatcher
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityMetadata
 import org.bukkit.entity.Damageable
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
@@ -15,7 +10,10 @@ import java.util.*
 
 class BotLogic: BukkitRunnable() {
 
-    private val lyraBot: LyraBot? = null
+    override fun run() {
+        TODO("Not yet implemented")
+    }
+   /* private val lyraBot: LyraBot? = null
     private val difficulty: LyraBot.BotDifficulty? = null
     private val random: Random? = null
     private val players: List<UUID>? = null
@@ -73,5 +71,5 @@ class BotLogic: BukkitRunnable() {
 
     override fun run() {
         TODO("Not yet implemented")
-    }
+    } */
 }

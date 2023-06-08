@@ -159,6 +159,11 @@ open class Event(val host: UUID, val eventMap: EventMap) {
             .collect(Collectors.toList())
     }
 
+    fun isPlaying(uuid: UUID): Boolean {
+        return getAlivePlayers().stream()
+            .anyMatch { it.uuid == uuid }
+    }
+
     fun getPlayer(uuid: UUID): EventPlayer? {
         return players.stream().filter { it.uuid == uuid }
             .findFirst().orElse(null)

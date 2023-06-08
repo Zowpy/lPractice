@@ -1,4 +1,5 @@
 name: Practice
 version: '1.0-SNAPSHOT'
 main: net.lyragames.practice.PracticePlugin
-authors: [ Zowpy, EliteAres ]
+authors: [ Zowpy ]
+softdepend: [ Multiverse-Core, SlimeWorldManager ]

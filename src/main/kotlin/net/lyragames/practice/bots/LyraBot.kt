@@ -1,23 +1,9 @@
 package net.lyragames.practice.bots
 
-import net.citizensnpcs.api.npc.NPC
-import net.citizensnpcs.util.PlayerAnimation
-import net.lyragames.menu.ItemBuilder
-import net.lyragames.practice.arena.Arena
-import net.lyragames.practice.arena.impl.StandaloneArena
-import net.lyragames.practice.kit.Kit
-import org.bukkit.Effect
-import org.bukkit.EntityEffect
-import org.bukkit.Material
-import org.bukkit.Sound
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import java.util.*
-
 class LyraBot {
 
-    // Variables
-    lateinit var npc: NPC
+    /*// Variables
+    //lateinit var npc: NPC
     lateinit var kit: Kit
     lateinit var arena: Arena
     lateinit var standaloneArena: StandaloneArena
@@ -28,9 +14,9 @@ class LyraBot {
 
 
     // Functions
-    fun isSpawned() = npc.isSpawned
+    //fun isSpawned() = npc.isSpawned
 
-    fun getBukkitEntity(): Player = npc.entity as Player
+    //fun getBukkitEntity(): Player = npc.entity as Player
 
     fun attack() {
         if (getBukkitEntity() == null) return
@@ -41,8 +27,8 @@ class LyraBot {
     fun destroy() {
         if (getBukkitEntity() == null) return
             getBukkitEntity().health = 20.0
-            npc.despawn()
-            npc.destroy()
+            //npc.despawn()
+            //npc.destroy()
             destroyed = true
     }
 
@@ -87,5 +73,5 @@ class LyraBot {
             3.2, ItemBuilder(Material.STAINED_GLASS_PANE).name("Expert").lore(listOf("Challenge the Hard Bot","Featuring 3.2 Reach")).build()
         )
 
-    }
+    } */
 }
