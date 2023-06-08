@@ -7,6 +7,7 @@ import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.BracketsEvent
 import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.manager.EventManager
+import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Material
@@ -303,6 +304,28 @@ object EventListener : Listener {
                     val bracketEvent = currentEvent as BracketsEvent
 
                     event.isCancelled = !(bracketEvent.kit.kitData.fallDamage && bracketEvent.isPlaying(profile.uuid))
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    fun onRegen(event: EntityRegainHealthEvent) {
+        if (event.entity is Player) {
+            val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)
+
+            if (profile!!.state == ProfileState.EVENT) {
+                val currentEvent = EventManager.event
+
+                if (currentEvent!!.state != EventState.FIGHTING) {
+                    return
+                }
+
+                if (currentEvent.type == EventType.BRACKETS) {
+
+                    val kit = (currentEvent as BracketsEvent).kit
+
+                    event.isCancelled = !(kit.kitData.regeneration && event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN)
                 }
             }
         }

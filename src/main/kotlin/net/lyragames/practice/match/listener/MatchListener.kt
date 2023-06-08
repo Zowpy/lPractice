@@ -429,6 +429,20 @@ object MatchListener : Listener {
         }
     }
 
+    @EventHandler
+    fun onRegen(event: EntityRegainHealthEvent) {
+        if (event.entity is Player) {
+            val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)
+
+            if (profile!!.state == ProfileState.MATCH) {
+                val match = Match.getByUUID(profile.match!!)
+                val kit = match!!.kit
+
+                event.isCancelled = !(kit.kitData.regeneration && event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN)
+            }
+        }
+    }
+
     @EventHandler(ignoreCancelled = true)
     fun onProjectileLaunchEvent(event: ProjectileLaunchEvent) {
         if (event.entity.shooter is Player) {

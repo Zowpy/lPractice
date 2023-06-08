@@ -2,12 +2,14 @@ package net.lyragames.practice.match.ffa.listener
 
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.manager.FFAManager
+import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -97,6 +99,20 @@ object FFAListener : Listener {
 
             if (!ffaMatch.kit.kitData.hunger) {
                 event.isCancelled = true
+            }
+        }
+    }
+
+    @EventHandler
+    fun onRegen(event: EntityRegainHealthEvent) {
+        if (event.entity is Player) {
+            val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)
+
+            if (profile!!.state == ProfileState.FFA) {
+                val ffa = FFAManager.getByUUID(profile.uuid)
+                val kit = ffa!!.kit
+
+                event.isCancelled = !(kit.kitData.regeneration && event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN)
             }
         }
     }
