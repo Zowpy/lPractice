@@ -2,6 +2,7 @@ package net.lyragames.practice.profile
 
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
+import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.profile.hotbar.Hotbar
 import org.bukkit.Bukkit
@@ -45,9 +46,11 @@ object ProfileListener: Listener {
 
         // Load in permissions and rank data to give player abilities like flight on join and other perks
 
-        if (Constants.SPAWN != null) {
-            event.player.teleport(Constants.SPAWN)
-        }
+        Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
+            if (Constants.SPAWN != null) {
+                event.player.teleport(Constants.SPAWN)
+            }
+        }, 20L)
 
         Hotbar.giveHotbar(Profile.getByUUID(event.player.uniqueId)!!)
 

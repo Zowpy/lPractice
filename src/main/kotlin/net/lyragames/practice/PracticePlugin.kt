@@ -186,7 +186,6 @@ class PracticePlugin : LyraPlugin() {
         for (world in server.worlds) {
             world.time = 4000
 
-
             for (entity in world.entities) {
                 if (entity is Player) {
                     continue

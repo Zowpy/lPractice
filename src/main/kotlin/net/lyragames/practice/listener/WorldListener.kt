@@ -31,11 +31,11 @@ object WorldListener : Listener {
         event.isCancelled = true
     }
 
-    @EventHandler
+    /*@EventHandler
     fun interact(event: PlayerInteractEvent) {
         val profile = Profile.getByUUID(event.player.uniqueId)
 
-        event.isCancelled = !(profile?.canBuild == true && profile?.match == null)
-    }
+        event.isCancelled = !(profile?.canBuild!! && profile.match == null)
+    } */
 
 }

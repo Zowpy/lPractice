@@ -270,6 +270,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
                 val profile = Profile.getByUUID(it.uuid)
 
                 ratingMessage(profile!!)
+                ratingMessage(Profile.getByUUID(player.uuid)!!)
             }
 
             matches.remove(this)

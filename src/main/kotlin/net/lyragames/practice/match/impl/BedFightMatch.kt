@@ -295,6 +295,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
                 val profile = Profile.getByUUID(it.uuid)
 
                 ratingMessage(profile!!)
+                ratingMessage(Profile.getByUUID(player.uuid)!!)
             }
 
             matches.remove(this)

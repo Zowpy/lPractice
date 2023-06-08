@@ -270,7 +270,6 @@ object MatchListener : Listener {
             val profile1 = Profile.getByUUID(damager.uniqueId)
 
             if (profile?.state != ProfileState.MATCH || profile1?.state != ProfileState.MATCH) {
-                event.isCancelled = true
                 return
             }
 
@@ -324,6 +323,8 @@ object MatchListener : Listener {
 
                     matchPlayer.combo = 0
                 }
+            } else {
+                event.isCancelled = true
             }
         }else if (event.entity is Player && event.damager == null || event.damager !is Player) {
             val player = event.entity as Player
@@ -630,7 +631,21 @@ object MatchListener : Listener {
                 }
             }
         }
+    }
 
+    @EventHandler
+    fun onVoid(event: PlayerMoveEvent) {
+        if (event.from == event.to) return
+
+        val profile = Profile.getByUUID(event.player.uniqueId)
+
+        if (profile!!.state == ProfileState.LOBBY || profile.state == ProfileState.QUEUE) {
+            if (event.to.y <= 2) {
+                if (Constants.SPAWN != null) {
+                    event.player.teleport(Constants.SPAWN)
+                }
+            }
+        }
     }
 
     @EventHandler

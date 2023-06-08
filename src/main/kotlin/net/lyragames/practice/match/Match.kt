@@ -298,6 +298,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     fun ratingMessage(profile: Profile) {
         if (!profile.settings.mapRating) return
         if (ArenaRatingManager.hasRated(profile.uuid, arena)) return
+        if (profile.player == null || !profile.player.isOnline) return
 
         val fancyMessage = FancyMessage()
             .text("${CC.PRIMARY}Rate The Map: ")
