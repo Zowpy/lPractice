@@ -257,6 +257,7 @@ object MatchListener : Listener {
             val profile = Profile.getByUUID(event.entity.uniqueId)
 
             if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
+                println("profile state is lobby or queue or spec")
                 event.isCancelled = true
                 return
             }
@@ -276,21 +277,21 @@ object MatchListener : Listener {
             if (profile.match?.equals(profile1.match)!!) {
                 val match = Match.getByUUID(profile.match!!)
 
-                if (match?.matchState != MatchState.FIGHTING) {
-                    event.isCancelled = true
-                    return
-                }
-
-                val matchPlayer = match.getMatchPlayer(player.uniqueId)
+                val matchPlayer = match!!.getMatchPlayer(player.uniqueId)
                 val matchPlayer1 = match.getMatchPlayer(damager.uniqueId)
 
                 if (!match.canHit(player, damager)) {
                     event.isCancelled = true
                 }else {
-                    matchPlayer?.lastDamager = damager.uniqueId
-                    matchPlayer!!.comboed++
+                    if (matchPlayer!!.dead || matchPlayer1!!.dead || matchPlayer.respawning || matchPlayer1.respawning) {
+                        event.isCancelled = true
+                        return
+                    }
 
-                    matchPlayer1!!.hits++
+                    matchPlayer.lastDamager = damager.uniqueId
+                    matchPlayer.comboed++
+
+                    matchPlayer1.hits++
                     matchPlayer1.combo++
                     matchPlayer1.comboed = 0
 
@@ -316,14 +317,10 @@ object MatchListener : Listener {
                         event.damage = 0.0
                     }
 
-                    if (matchPlayer.dead || matchPlayer1.dead || matchPlayer.respawning || matchPlayer1.respawning) {
-                        event.isCancelled = true
-                        return
-                    }
-
                     matchPlayer.combo = 0
                 }
             } else {
+                println("not same match")
                 event.isCancelled = true
             }
         }else if (event.entity is Player && event.damager == null || event.damager !is Player) {
@@ -336,13 +333,7 @@ object MatchListener : Listener {
 
             if (profile?.match != null) {
                 val match = Match.getByUUID(profile.match!!)
-
-                if (match?.matchState != MatchState.FIGHTING) {
-                    event.isCancelled = true
-                    return
-                }
-
-                val matchPlayer = match.getMatchPlayer(player.uniqueId)
+                val matchPlayer = match!!.getMatchPlayer(player.uniqueId)
 
                 if (match is MLGRushMatch && (matchPlayer?.dead!! || matchPlayer.respawning)) {
                     event.isCancelled = true
@@ -411,7 +402,7 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onDamage(event: EntityDamageEvent) {
         if (event.entity is Player) {
             val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)
@@ -425,12 +416,18 @@ object MatchListener : Listener {
                 val match = Match.getByUUID(profile.match!!)
                 val kit = match!!.kit
 
-                event.isCancelled = !(kit.kitData.fallDamage && event.cause == EntityDamageEvent.DamageCause.FALL)
+                if (match.matchState != MatchState.FIGHTING) {
+                    event.isCancelled = true
+                }
+
+                if (!kit.kitData.fallDamage && event.cause == EntityDamageEvent.DamageCause.FALL) {
+                    event.isCancelled = true
+                }
             }
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onRegen(event: EntityRegainHealthEvent) {
         if (event.entity is Player) {
             val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)

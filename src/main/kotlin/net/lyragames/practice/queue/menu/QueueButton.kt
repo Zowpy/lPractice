@@ -27,7 +27,7 @@ import org.bukkit.inventory.ItemStack
 class QueueButton(private val queue: Queue, private val ranked: Boolean): Button() {
 
     override fun getButtonItem(player: Player?): ItemStack {
-        return ItemBuilder(queue.kit.displayItem)
+        return ItemBuilder(ItemStack(queue.kit.displayItem))
             .name(CC.BOLD + CC.YELLOW + queue.kit.name).addFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS)
             .lore(arrayListOf(
                 "${CC.PRIMARY}Playing: ${CC.SECONDARY}${Match.matches.stream().filter { 

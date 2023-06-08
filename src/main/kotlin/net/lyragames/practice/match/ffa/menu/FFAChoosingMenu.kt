@@ -42,7 +42,7 @@ class FFAChoosingMenu: Menu() {
             toReturn[toReturn.size] = object : Button() {
 
                 override fun getButtonItem(p0: Player?): ItemStack {
-                    return ItemBuilder(kit.displayItem).name("${CC.PRIMARY}${kit.name}")
+                    return ItemBuilder(kit.displayItem.clone()).name("${CC.PRIMARY}${kit.name}")
                         .lore("${CC.PRIMARY}Currently playing: ${CC.SECONDARY}${ffa?.players?.size}")
                         .build()
                 }
@@ -53,9 +53,9 @@ class FFAChoosingMenu: Menu() {
 
                         profile?.state = ProfileState.FFA
                         profile?.ffa = ffa?.uuid
-                        //TODO Change to FFA SPAWN later
-                        if (Constants.SPAWN != null ){
-                            player.teleport(Constants.SPAWN)
+
+                        if (Constants.FFA_SPAWN != null ){
+                            player.teleport(Constants.FFA_SPAWN)
                         }
 
                         val ffaPlayer = FFAPlayer(player.uniqueId, player.name)
