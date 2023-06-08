@@ -30,7 +30,12 @@ object DuelCommand {
 
         val profile = Profile.getByUUID(target.uniqueId)
 
-        if (profile?.state != ProfileState.LOBBY) {
+        if (profile!!.duelRequests.any { it.uuid == player.uniqueId && !it.isExpired() }) {
+            player.sendMessage("${CC.RED}You already have an ongoing duel request to ${target.name}.")
+            return
+        }
+
+        if (profile.state != ProfileState.LOBBY) {
             player.sendMessage("${CC.RED}That player is currently busy!")
             return
         }
@@ -118,12 +123,12 @@ object DuelCommand {
             return
         }
 
-        if (profile?.party == null) {
+        if (profile.party == null) {
             player.sendMessage("${CC.RED}You are not in a party!")
             return
         }
 
-        if (profile1?.party == null) {
+        if (profile1.party == null) {
             player.sendMessage("${CC.RED}That player is not in a party!")
             return
         }

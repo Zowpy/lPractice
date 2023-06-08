@@ -21,7 +21,7 @@ import java.util.*
 
 class DuelRequest(var uuid: UUID, var target: UUID, var kit: Kit, var arena: Arena) {
 
-    private val executedAt = System.currentTimeMillis()
+    var executedAt = System.currentTimeMillis()
 
     fun isExpired(): Boolean {
         return System.currentTimeMillis() - executedAt >= 60_000

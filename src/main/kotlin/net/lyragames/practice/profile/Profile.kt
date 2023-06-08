@@ -1,7 +1,7 @@
 package net.lyragames.practice.profile
 
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.client.model.UpdateOptions
 import net.lyragames.llib.utils.Cooldown
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.duel.DuelRequest
@@ -18,7 +18,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.stream.Collectors
 
 /**
  * This Project is property of Zowpy © 2021
@@ -43,8 +42,8 @@ class Profile(val uuid: UUID, val name: String?) {
 
     var party: UUID? = null
 
-    val partyInvites: MutableList<PartyInvitation> = mutableListOf()
-    val duelRequests: MutableList<DuelRequest> = mutableListOf()
+    var partyInvites: MutableList<PartyInvitation> = mutableListOf()
+    var duelRequests: MutableList<DuelRequest> = mutableListOf()
 
     var kitEditorData: KitEditorData? = KitEditorData()
     var settings: Settings = Settings()
@@ -65,7 +64,9 @@ class Profile(val uuid: UUID, val name: String?) {
     private fun toBson() : Document {
         return Document("uuid", uuid.toString())
             .append("name", name)
-            .append("kitsStatistics", kitStatistics.stream().map { kitStatistic -> PracticePlugin.GSON.toJson(kitStatistic) }.collect(Collectors.toList()))
+            .append("duelRequests", duelRequests.map { PracticePlugin.GSON.toJson(it) }.toMutableList())
+            .append("partyInvites", partyInvites.map { PracticePlugin.GSON.toJson(it) }.toMutableList())
+            .append("kitsStatistics", kitStatistics.map { PracticePlugin.GSON.toJson(it) }.toMutableList())
             .append("globalStatistics", PracticePlugin.GSON.toJson(globalStatistic))
             .append("settings", PracticePlugin.GSON.toJson(settings))
             .append("silent", silent)
@@ -73,7 +74,7 @@ class Profile(val uuid: UUID, val name: String?) {
 
     fun save() {
         CompletableFuture.runAsync {
-            PracticePlugin.instance.practiceMongo.profiles.replaceOne(Filters.eq("uuid", uuid.toString()), toBson(), ReplaceOptions().upsert(true))
+            PracticePlugin.instance.practiceMongo.profiles.updateOne(Filters.eq("uuid", uuid.toString()), Document("${'$'}set", toBson()), UpdateOptions().upsert(true))
         }
     }
 
@@ -114,7 +115,14 @@ class Profile(val uuid: UUID, val name: String?) {
             save = true
         }
 
-        kitStatistics = document.getList("kitsStatistics", String::class.java).stream().map { s -> PracticePlugin.GSON.fromJson(s, KitStatistic::class.java) }.collect(Collectors.toList())
+        duelRequests = document.getList("duelRequests", String::class.java).map { PracticePlugin.GSON.fromJson(it, DuelRequest::class.java) }.toMutableList()
+        partyInvites = document.getList("partyInvites", String::class.java).map { PracticePlugin.GSON.fromJson(it, PartyInvitation::class.java) }.toMutableList()
+
+        if (duelRequests.removeIf { it.isExpired() } || partyInvites.removeIf { it.isExpired() }) {
+            save = true
+        }
+
+        kitStatistics = document.getList("kitsStatistics", String::class.java).map { PracticePlugin.GSON.fromJson(it, KitStatistic::class.java) }.toMutableList()
         globalStatistic = PracticePlugin.GSON.fromJson(document.getString("globalStatistics"), GlobalStatistics::class.java)
         settings = PracticePlugin.GSON.fromJson(document.getString("settings"), Settings::class.java)
 

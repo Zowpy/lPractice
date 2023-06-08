@@ -14,7 +14,6 @@ import net.lyragames.llib.utils.ConfigFile
 import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
-import net.lyragames.practice.adapter.TablistAdapter
 import net.lyragames.practice.api.PracticeAPI
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
@@ -25,6 +24,8 @@ import net.lyragames.practice.command.admin.*
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.database.Mongo
 import net.lyragames.practice.database.MongoCredentials
+import net.lyragames.practice.duel.DuelRequest
+import net.lyragames.practice.duel.gson.DuelRequestGsonAdapter
 import net.lyragames.practice.event.listener.EventListener
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.EventMapProvider
@@ -45,7 +46,6 @@ import net.lyragames.practice.task.EnderPearlCooldownTask
 import net.lyragames.practice.task.EventAnnounceTask
 import net.lyragames.practice.task.TNTEventBlockRemovalTask
 import net.lyragames.practice.task.TNTTagTask
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.ExperienceOrb
@@ -68,7 +68,6 @@ class PracticePlugin : LyraPlugin() {
     lateinit var practiceMongo: Mongo
 
     private lateinit var blade: Blade
-    var onlinePlayer: MutableCollection<out Player>? = Bukkit.getOnlinePlayers()
 
     //private lateinit var ziggurat: Ziggurat
     override fun onEnable() {
@@ -92,11 +91,8 @@ class PracticePlugin : LyraPlugin() {
         CC.PRIMARY = ChatColor.valueOf(settingsFile.getString("COLOR.PRIMARY")).toString()
         CC.SECONDARY = ChatColor.valueOf(settingsFile.getString("COLOR.SECONDARY")).toString()
 
-        server.scheduler.runTaskLater(this, {
-            ArenaManager.load()
-            logger.info("Successfully loaded ${if (Arena.arenas.size == 1) "1 arena!" else "${Arena.arenas.size} arenas!"}")
-        }, 120L)
-
+        ArenaManager.load()
+        logger.info("Successfully loaded ${if (Arena.arenas.size == 1) "1 arena!" else "${Arena.arenas.size} arenas!"}")
 
         KitManager.load()
         logger.info("Successfully loaded ${if (Kit.kits.size == 1) "1 kit!" else "${Kit.kits.size} kits!"}")
@@ -214,6 +210,7 @@ class PracticePlugin : LyraPlugin() {
             .disableHtmlEscaping()
             .serializeNulls()
             .registerTypeHierarchyAdapter(EditedKit::class.java, EditKitSerializer)
+            .registerTypeHierarchyAdapter(DuelRequest::class.java, DuelRequestGsonAdapter)
             .create()
     }
 }
