@@ -77,6 +77,7 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             eventPlayer.state = EventPlayerState.LOBBY
 
             eventPlayer.player.teleport(eventMap.spawn)
+
             Hotbar.giveHotbar(Profile.getByUUID(eventPlayer.uuid)!!)
             PlayerUtil.reset(eventPlayer.player)
         }
@@ -91,9 +92,11 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
 
     override fun end(winner: EventPlayer?) {
         Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "N/A"} won the event!")
+
         players.forEach {
-            forceRemove(it.player)
+            forceRemove(it)
         }
+
         EventManager.event = null
     }
 }

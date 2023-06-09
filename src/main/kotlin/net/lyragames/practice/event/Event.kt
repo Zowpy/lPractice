@@ -107,6 +107,15 @@ open class Event(val host: UUID, val eventMap: EventMap) {
         Bukkit.broadcastMessage("${CC.GREEN}${player.name}${CC.YELLOW} has joined the event. ${CC.GRAY}(${players.size}/${requiredPlayers})")
     }
 
+    open fun handleDisconnect(eventPlayer: EventPlayer) {
+        eventPlayer.dead = true
+        eventPlayer.offline = true
+
+        if (isPlaying(eventPlayer.uuid)) {
+            endRound(getOpponent(eventPlayer))
+        }
+    }
+
     open fun removePlayer(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
         players.removeIf { it.uuid == player.uniqueId }
@@ -126,10 +135,15 @@ open class Event(val host: UUID, val eventMap: EventMap) {
         Hotbar.giveHotbar(profile!!)
     }
 
-    open fun forceRemove(player: Player) {
-        val profile = Profile.getByUUID(player.uniqueId)
+    open fun forceRemove(eventPlayer: EventPlayer) {
+        if (eventPlayer.offline) return
+
+        val profile = Profile.getByUUID(eventPlayer.uuid)
+        val player = eventPlayer.player
 
         players.forEach {
+            if (it.offline) return@forEach
+
             it.player.hidePlayer(player)
             player.hidePlayer(it.player)
         }

@@ -75,10 +75,21 @@ class TNTRunEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         end(winner)
     }
 
+    override fun handleDisconnect(eventPlayer: EventPlayer) {
+        eventPlayer.dead = true
+        eventPlayer.offline = true
+
+        playingPlayers.remove(eventPlayer)
+
+        if (getAlivePlayers().size < 2) {
+            endRound(null)
+        }
+    }
+
     override fun end(winner: EventPlayer?) {
-        Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "N/A"} won the event!")
+        Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "no one"} won the event!")
         players.forEach {
-            forceRemove(it.player)
+            forceRemove(it)
         }
 
         reset()

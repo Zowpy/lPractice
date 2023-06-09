@@ -83,7 +83,9 @@ class TNTTagEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             eventPlayer.player.isFlying = true
 
             players.forEach {
-                it.player!!.playEffect(eventPlayer.player.location, Effect.EXPLOSION_HUGE, 1000)
+                if (it.offline) return@forEach
+
+                it.player.playEffect(eventPlayer.player.location, Effect.EXPLOSION_HUGE, 1000)
                 it.player.hidePlayer(eventPlayer.player)
             }
 
@@ -100,6 +102,15 @@ class TNTTagEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         }, 40L)
     }
 
+    override fun handleDisconnect(eventPlayer: EventPlayer) {
+        eventPlayer.dead = true
+        eventPlayer.offline = true
+
+        if (eventPlayer.tagged || getAlivePlayers().size < 2) {
+            endRound(null)
+        }
+    }
+
     override fun getRemainingRounds(): Int {
         return players.filter { !it.offline && !it.dead && !it.tagged}.count()
     }
@@ -110,8 +121,9 @@ class TNTTagEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
 
     override fun end(winner: EventPlayer?) {
         Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "N/A"} won the event!")
+
         players.forEach {
-            forceRemove(it.player)
+            forceRemove(it)
         }
 
         EventManager.event = null

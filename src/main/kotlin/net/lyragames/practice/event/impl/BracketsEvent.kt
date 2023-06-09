@@ -105,9 +105,11 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
 
     override fun end(winner: EventPlayer?) {
         Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "N/A"} won the event!")
-        players.forEach { player ->
-            forceRemove(player.player)
+
+        players.forEach {
+            forceRemove(it)
         }
+
         EventManager.event = null
     }
 

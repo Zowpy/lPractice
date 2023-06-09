@@ -13,10 +13,13 @@ import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
 
@@ -235,7 +238,7 @@ object EventListener : Listener {
                         eventPlayer1.player.inventory.clear()
                         eventPlayer1.tagged = false
 
-                        for (x in 0 until 35) {
+                        for (x in 0 until 36) {
                             eventPlayer?.player?.inventory?.setItem(x, ItemStack(Material.TNT))
                         }
 
@@ -248,6 +251,19 @@ object EventListener : Listener {
                 if (!currentEvent.canHit(player, damager)) {
                     event.isCancelled = true
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    fun onInventoryClick(event: InventoryClickEvent) {
+        if (event.clickedInventory.type != InventoryType.PLAYER) return
+
+        val profile = Profile.getByUUID(event.whoClicked.uniqueId)
+
+        if (profile!!.state == ProfileState.EVENT) {
+            if (EventManager.event!!.type == EventType.TNT_TAG) {
+                event.isCancelled = true
             }
         }
     }
@@ -347,7 +363,7 @@ object EventListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     fun onQuit(event: PlayerQuitEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
@@ -357,12 +373,8 @@ object EventListener : Listener {
             val currentEvent = EventManager.event ?: return
             val eventPlayer = currentEvent.getPlayer(player.uniqueId)
 
-            if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == player.uniqueId }) return
-
-            eventPlayer?.dead = true
-            eventPlayer?.offline = true
-
-            currentEvent.endRound(currentEvent.getOpponent(eventPlayer!!))
+            //if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == player.uniqueId }) return
+            currentEvent.handleDisconnect(eventPlayer!!)
         }
     }
 }

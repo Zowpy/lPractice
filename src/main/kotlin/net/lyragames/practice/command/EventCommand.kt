@@ -59,6 +59,5 @@ object EventCommand {
         }
 
         EventManager.event?.startRound()
-
     }
 }
