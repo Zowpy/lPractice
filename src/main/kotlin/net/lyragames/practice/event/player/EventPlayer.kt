@@ -14,7 +14,7 @@ import java.util.*
  * Project: lPractice
  */
 
-class EventPlayer(val uuid: UUID) {
+class EventPlayer(val uuid: UUID, val name: String) {
 
     val player: Player
       get() = Bukkit.getPlayer(uuid)

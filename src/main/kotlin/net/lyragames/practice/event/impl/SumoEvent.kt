@@ -51,7 +51,7 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         for (eventPlayer in players) {
             if (eventPlayer.offline) continue
 
-            Countdown(
+            countdowns.add(Countdown(
                 PracticePlugin.instance,
                 eventPlayer.player,
                 "&aRound $round starting in <seconds> seconds!",
@@ -65,7 +65,7 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
                 if (playingPlayers.contains(eventPlayer)) {
                     PlayerUtil.allowMovement(eventPlayer.player)
                 }
-            }
+            })
         }
 
     }
@@ -96,6 +96,12 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         players.forEach {
             forceRemove(it)
         }
+
+        countdowns.forEach {
+            it.cancel()
+        }
+
+        countdowns.clear()
 
         EventManager.event = null
     }

@@ -1,6 +1,7 @@
 package net.lyragames.practice.event
 
 import net.lyragames.llib.utils.CC
+import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.event.impl.BracketsEvent
@@ -61,6 +62,7 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
     val droppedItems: MutableList<Item> = mutableListOf()
     var playingPlayers: MutableList<EventPlayer> = mutableListOf()
+    val countdowns: MutableList<Countdown> = mutableListOf()
 
     open fun getRemainingRounds(): Int {
         return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed <= 1 }.count().toInt() / 2
@@ -90,7 +92,7 @@ open class Event(val host: UUID, val eventMap: EventMap) {
 
     open fun addPlayer(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
-        val eventPlayer = EventPlayer(player.uniqueId)
+        val eventPlayer = EventPlayer(player.uniqueId, player.name)
 
         profile?.state = ProfileState.EVENT
 
@@ -108,6 +110,8 @@ open class Event(val host: UUID, val eventMap: EventMap) {
     }
 
     open fun handleDisconnect(eventPlayer: EventPlayer) {
+        sendMessage("${CC.SECONDARY}${eventPlayer.name}${CC.PRIMARY} disconnected.")
+
         eventPlayer.dead = true
         eventPlayer.offline = true
 

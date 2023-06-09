@@ -47,7 +47,7 @@ class TNTRunEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
         for (eventPlayer in players) {
             if (eventPlayer.offline) continue
 
-            Countdown(
+            countdowns.add(Countdown(
                 PracticePlugin.instance,
                 eventPlayer.player,
                 "&aEvent starting in <seconds> seconds!",
@@ -57,7 +57,7 @@ class TNTRunEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
                 state = EventState.FIGHTING
 
                 started = System.currentTimeMillis()
-            }
+            })
         }
 
     }
@@ -76,6 +76,8 @@ class TNTRunEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
     }
 
     override fun handleDisconnect(eventPlayer: EventPlayer) {
+        sendMessage("${CC.SECONDARY}${eventPlayer.name}${CC.PRIMARY} disconnected.")
+
         eventPlayer.dead = true
         eventPlayer.offline = true
 
@@ -88,9 +90,16 @@ class TNTRunEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
 
     override fun end(winner: EventPlayer?) {
         Bukkit.broadcastMessage("${CC.GREEN}${if (winner != null) winner.player.name else "no one"} won the event!")
+
         players.forEach {
             forceRemove(it)
         }
+
+        countdowns.forEach {
+            it.cancel()
+        }
+
+        countdowns.clear()
 
         reset()
         EventManager.event = null

@@ -63,7 +63,7 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
         for (eventPlayer in players) {
             if (eventPlayer.offline) continue
 
-            Countdown(
+            countdowns.add(Countdown(
                 PracticePlugin.instance,
                 eventPlayer.player,
                 "&aRound $round starting in <seconds> seconds!",
@@ -77,7 +77,7 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
                 if (playingPlayers.contains(eventPlayer)) {
                     PlayerUtil.allowMovement(eventPlayer.player)
                 }
-            }
+            })
         }
 
     }
@@ -109,6 +109,12 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
         players.forEach {
             forceRemove(it)
         }
+
+        countdowns.forEach {
+            it.cancel()
+        }
+
+        countdowns.clear()
 
         EventManager.event = null
     }

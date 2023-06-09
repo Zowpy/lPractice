@@ -40,7 +40,9 @@ object ProfileListener: Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
+        PlayerUtil.allowMovement(event.player)
         PlayerUtil.reset(event.player)
+
         val profile = Profile.getByUUID(event.player.uniqueId)
         profile?.state = ProfileState.LOBBY
 
@@ -50,7 +52,7 @@ object ProfileListener: Listener {
             if (Constants.SPAWN != null) {
                 event.player.teleport(Constants.SPAWN)
             }
-        }, 20L)
+        }, 2L)
 
         Hotbar.giveHotbar(Profile.getByUUID(event.player.uniqueId)!!)
 
