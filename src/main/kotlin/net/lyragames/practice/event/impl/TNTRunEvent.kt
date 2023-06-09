@@ -50,10 +50,10 @@ class TNTRunEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             Countdown(
                 PracticePlugin.instance,
                 eventPlayer.player,
-                "&aGame starting in <seconds> seconds!",
+                "&aEvent starting in <seconds> seconds!",
                 6
             ) {
-                eventPlayer.player.sendMessage("${CC.GREEN}Game started!")
+                eventPlayer.player.sendMessage("${CC.GREEN}Event started!")
                 state = EventState.FIGHTING
 
                 started = System.currentTimeMillis()

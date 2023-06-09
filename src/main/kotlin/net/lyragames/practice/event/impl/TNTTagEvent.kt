@@ -49,10 +49,10 @@ class TNTTagEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             Countdown(
                 PracticePlugin.instance,
                 eventPlayer.player,
-                "&aGame starting in <seconds> seconds!",
+                "&aRound $round starting in <seconds> seconds!",
                 6
             ) {
-                eventPlayer.player.sendMessage("${CC.GREEN}Game started!")
+                eventPlayer.player.sendMessage("${CC.GREEN}Round started!")
                 state = EventState.FIGHTING
 
                 started = System.currentTimeMillis()
