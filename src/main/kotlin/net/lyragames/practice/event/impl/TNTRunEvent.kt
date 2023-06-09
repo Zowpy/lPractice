@@ -55,6 +55,8 @@ class TNTRunEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             ) {
                 eventPlayer.player.sendMessage("${CC.GREEN}Game started!")
                 state = EventState.FIGHTING
+
+                started = System.currentTimeMillis()
             }
         }
 

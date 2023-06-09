@@ -1,12 +1,12 @@
 package net.lyragames.practice.task
 
+import net.lyragames.llib.utils.CC
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.TNTTagEvent
 import net.lyragames.practice.manager.EventManager
 import org.bukkit.scheduler.BukkitRunnable
-
 
 /**
  * This Project is property of Zowpy © 2022
@@ -20,7 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable
 object TNTTagTask: BukkitRunnable() {
 
     init {
-        this.runTaskTimerAsynchronously(PracticePlugin.instance, 20 * 60L, 20 * 60L)
+        this.runTaskTimerAsynchronously(PracticePlugin.instance, 20, 20)
     }
 
     override fun run() {
@@ -28,6 +28,16 @@ object TNTTagTask: BukkitRunnable() {
         if (event.type != EventType.TNT_TAG) return
         if (event.state != EventState.FIGHTING) return
 
-        (event as TNTTagEvent).endRound(null)
+        val seconds = 60 - (System.currentTimeMillis() - event.started) / 1000
+
+        when (seconds) {
+            30L,15L,10L,5L,4L,3L,2L,1L -> {
+                event.sendMessage("${CC.PRIMARY}The round is ending in ${CC.SECONDARY}$seconds${CC.PRIMARY} seconds.")
+            }
+        }
+
+        if (seconds <= 0) {
+            (event as TNTTagEvent).endRound(null)
+        }
     }
 }

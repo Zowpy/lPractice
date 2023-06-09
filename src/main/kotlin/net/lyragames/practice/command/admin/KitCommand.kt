@@ -4,18 +4,17 @@ import me.vaperion.blade.command.annotation.Command
 import me.vaperion.blade.command.annotation.Permission
 import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.practice.PracticePlugin
-import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.admin.AdminKitEditMenu
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.profile.statistics.KitStatistic
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.material.MaterialData
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 
 /**
@@ -53,6 +52,16 @@ object KitCommand {
         kit.save()
         Kit.kits.add(kit)
 
+        CompletableFuture.runAsync {
+            for (document in PracticePlugin.instance.practiceMongo.profiles.find()) {
+                val profile = Profile(UUID.fromString(document.getString("_id")), null)
+                profile.load(document)
+
+                profile.kitStatistics.add(KitStatistic(kit.name))
+                profile.saveSync()
+            }
+        }
+
         player.sendMessage("${CC.PRIMARY}Successfully created ${CC.SECONDARY}${kit.name}${CC.PRIMARY}!")
     }
 
@@ -69,16 +78,20 @@ object KitCommand {
         kit.armorContent = player.inventory.armorContents.clone()
         kit.save()
 
-        for (document in PracticePlugin.instance.practiceMongo.profiles.find()) {
-            val profile = Profile(UUID.fromString(document.getString("uuid")), document.getString("name"))
-            profile.load(document)
+        CompletableFuture.runAsync {
+            for (document in PracticePlugin.instance.practiceMongo.profiles.find()) {
+                val profile = Profile(UUID.fromString(document.getString("uuid")), document.getString("name"))
+                profile.load(document)
 
-            val editedKits = profile.getKitStatistic(kit.name)?.editedKits ?: continue
+                val editedKits = profile.getKitStatistic(kit.name)?.editedKits ?: continue
 
-            editedKits[0] = null
-            editedKits[1] = null
-            editedKits[2] = null
-            editedKits[3] = null
+                editedKits[0] = null
+                editedKits[1] = null
+                editedKits[2] = null
+                editedKits[3] = null
+
+                profile.saveSync()
+            }
         }
 
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${kit.name}${CC.PRIMARY}'s item contents!")

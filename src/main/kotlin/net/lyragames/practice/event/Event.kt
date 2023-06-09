@@ -57,6 +57,7 @@ open class Event(val host: UUID, val eventMap: EventMap) {
     var requiredPlayers = 32
 
     var created = System.currentTimeMillis()
+    var started: Long = 0
 
     val droppedItems: MutableList<Item> = mutableListOf()
     var playingPlayers: MutableList<EventPlayer> = mutableListOf()

@@ -55,7 +55,7 @@ class TNTTagEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
                 eventPlayer.player.sendMessage("${CC.GREEN}Game started!")
                 state = EventState.FIGHTING
 
-
+                started = System.currentTimeMillis()
             }
         }
 
@@ -64,7 +64,7 @@ class TNTTagEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             tagger.tagged = true
             tagger.player.inventory.helmet = ItemStack(Material.TNT)
 
-            for (x in 0 until 35) {
+            for (x in 0 until 36) {
                 tagger.player.inventory.setItem(x, ItemStack(Material.TNT))
             }
             tagger.player.updateInventory()
@@ -83,10 +83,8 @@ class TNTTagEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
             eventPlayer.player.isFlying = true
 
             players.forEach {
-                if (it.player != null) {
-                    it.player.playEffect(eventPlayer.player.location, Effect.EXPLOSION_HUGE, 1000)
-                    it.player.hidePlayer(eventPlayer.player)
-                }
+                it.player!!.playEffect(eventPlayer.player.location, Effect.EXPLOSION_HUGE, 1000)
+                it.player.hidePlayer(eventPlayer.player)
             }
 
             Hotbar.giveHotbar(Profile.getByUUID(eventPlayer.uuid)!!)

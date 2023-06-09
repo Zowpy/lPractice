@@ -72,6 +72,8 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
                 eventPlayer.player.sendMessage(CC.GREEN + "Round started!")
                 state = EventState.FIGHTING
 
+                started = System.currentTimeMillis()
+
                 if (playingPlayers.contains(eventPlayer)) {
                     PlayerUtil.allowMovement(eventPlayer.player)
                 }

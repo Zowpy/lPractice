@@ -60,6 +60,8 @@ class SumoEvent(host: UUID, eventMap: EventMap) : Event(host, eventMap) {
                 eventPlayer.player.sendMessage(CC.GREEN + "Round started!")
                 state = EventState.FIGHTING
 
+                started = System.currentTimeMillis()
+
                 if (playingPlayers.contains(eventPlayer)) {
                     PlayerUtil.allowMovement(eventPlayer.player)
                 }

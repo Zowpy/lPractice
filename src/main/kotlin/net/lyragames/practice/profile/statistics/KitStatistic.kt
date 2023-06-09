@@ -61,31 +61,39 @@ class KitStatistic constructor(val kit: String) {
         )
         customItemStack.isRightClick = true
         customItemStack.isRemoveOnClick = true
-        customItemStack.clicked = Consumer { event: PlayerInteractEvent ->
+        customItemStack.clicked = Consumer { event ->
             val player1 = event.player
-            player1.inventory.contents = kit?.content
-            player1.inventory.armorContents = kit?.armorContent
+
+            player1.inventory.contents = kit!!.content
+            player1.inventory.armorContents = kit.armorContent
             player1.updateInventory()
         }
+
         customItemStack.create()
 
         player.inventory.setItem(8, customItemStack.itemStack)
+
         for (editedKit in profile!!.getKitStatistic(kit?.name!!)?.editedKits!!) {
             if (editedKit == null) continue
+
             val item = CustomItemStack(
                 player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY).addFlags(ItemFlag.HIDE_ENCHANTS)
                     .name(CC.RED + editedKit.name).build()
             )
+
             item.isRightClick = true
             item.isRemoveOnClick = true
-            item.clicked = Consumer { event: PlayerInteractEvent ->
+            item.clicked = Consumer { event ->
                 val player1 = event.player
+
                 player1.inventory.contents = editedKit.content
                 player1.inventory.armorContents = editedKit.armorContent
                 player1.updateInventory()
             }
+
             item.create()
             player.inventory.setItem(i, item.itemStack)
+
             if (i++ == 8) i++
         }
     }

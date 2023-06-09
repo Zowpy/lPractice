@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture
  * Project: Practice
  */
 
-class Profile(val uuid: UUID, val name: String?) {
+class Profile(val uuid: UUID, var name: String?) {
 
     var match: UUID? = null
     var matchObject: Match? = null
@@ -62,7 +62,7 @@ class Profile(val uuid: UUID, val name: String?) {
         get() = Bukkit.getPlayer(uuid)
 
     private fun toBson() : Document {
-        return Document("uuid", uuid.toString())
+        return Document("_id", uuid.toString())
             .append("name", name)
             .append("duelRequests", duelRequests.map { PracticePlugin.GSON.toJson(it) }.toMutableList())
             .append("partyInvites", partyInvites.map { PracticePlugin.GSON.toJson(it) }.toMutableList())
@@ -76,6 +76,10 @@ class Profile(val uuid: UUID, val name: String?) {
         CompletableFuture.runAsync {
             PracticePlugin.instance.practiceMongo.profiles.updateOne(Filters.eq("uuid", uuid.toString()), Document("${'$'}set", toBson()), UpdateOptions().upsert(true))
         }
+    }
+
+    fun saveSync() {
+        PracticePlugin.instance.practiceMongo.profiles.updateOne(Filters.eq("uuid", uuid.toString()), Document("${'$'}set", toBson()), UpdateOptions().upsert(true))
     }
 
     fun load() {
@@ -113,6 +117,8 @@ class Profile(val uuid: UUID, val name: String?) {
 
         if (name != null && !document.getString("name").equals(name)) {
             save = true
+        }else if (name == null) {
+            name = document.getString("name")
         }
 
         duelRequests = document.getList("duelRequests", String::class.java).map { PracticePlugin.GSON.fromJson(it, DuelRequest::class.java) }.toMutableList()

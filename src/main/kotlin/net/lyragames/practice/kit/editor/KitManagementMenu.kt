@@ -50,7 +50,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
 
             var kitLoadout: EditedKit? = null
 
-            if (kitLoadouts?.size!! > i) {
+            if (kitLoadouts!!.size > i) {
                 kitLoadout = kitLoadouts[i]
             }
 
@@ -92,12 +92,8 @@ class KitManagementMenu(val kit: Kit): Menu() {
         override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarButton: Int) {
             val profile = Profile.getByUUID(player.uniqueId)
 
-            profile?.getKitStatistic(kit?.name!!)?.deleteKit(kitLoadout)
-
-            if (kit != null) {
-                KitManagementMenu(kit).openMenu(player)
-            }
-
+            profile!!.getKitStatistic(kit!!.name)?.deleteKit(kitLoadout)
+            KitManagementMenu(kit).openMenu(player)
         }
     }
 
