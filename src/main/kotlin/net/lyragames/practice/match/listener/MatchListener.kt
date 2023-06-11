@@ -257,7 +257,6 @@ object MatchListener : Listener {
             val profile = Profile.getByUUID(event.entity.uniqueId)
 
             if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
-                println("profile state is lobby or queue or spec")
                 event.isCancelled = true
                 return
             }
@@ -320,7 +319,6 @@ object MatchListener : Listener {
                     matchPlayer.combo = 0
                 }
             } else {
-                println("not same match")
                 event.isCancelled = true
             }
         }else if (event.entity is Player && event.damager == null || event.damager !is Player) {
@@ -418,6 +416,11 @@ object MatchListener : Listener {
 
                 if (match.matchState != MatchState.FIGHTING) {
                     event.isCancelled = true
+                }
+
+                if (match.getMatchPlayer(profile.uuid)!!.dead) {
+                    event.isCancelled = true
+                    return
                 }
 
                 if (!kit.kitData.fallDamage && event.cause == EntityDamageEvent.DamageCause.FALL) {

@@ -24,8 +24,8 @@ class MatchSnapshot(player: Player, dead: Boolean) {
     var opponent: UUID? = null
     var health = 0.0
     var hunger = 0
-    var armor: Array<ItemStack>
-    var contents: Array<ItemStack>
+    var armor: Array<ItemStack?>
+    var contents: Array<ItemStack?>
     var effects: Collection<PotionEffect>? = null
     var potionsThrown = 0
     var potionsMissed = 0

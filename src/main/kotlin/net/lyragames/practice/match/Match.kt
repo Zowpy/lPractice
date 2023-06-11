@@ -209,23 +209,20 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
         }
 
+        end(mutableListOf(player))
+    }
+
+    open fun end(losers: MutableList<MatchPlayer>) {
         countdowns.forEach { it.cancel() }
+
+        val winners = players.filter { !losers.contains(it) }
+            .toMutableList()
 
         matchState = MatchState.ENDING
 
         Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
-            var loserProfile: Profile? = Profile.getByUUID(player.uuid)
-
-            if (loserProfile == null) {
-                val newProfile = Profile(player.uuid, player.name)
-                newProfile.load()
-
-                loserProfile = newProfile
-            }
-
             for (matchPlayer in players) {
                 if (matchPlayer.offline) continue
-                val winner = matchPlayer.uuid != player.uuid
 
                 val bukkitPlayer = matchPlayer.player
                 val profile = Profile.getByUUID(matchPlayer.uuid)
@@ -259,13 +256,15 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                         it.hidePlayer(bukkitPlayer)
                     }
 
-                if (winner && !friendly) {
-                    StatisticManager.win(profile, loserProfile, kit, ranked)
+                if (!losers.contains(matchPlayer) && !friendly) {
+                    StatisticManager.win(profile, profile, kit, ranked)
                 }else {
                     if (!friendly) {
                         StatisticManager.loss(profile, kit, ranked)
                     }
                 }
+
+                ratingMessage(profile)
             }
 
             for (snapshot in snapshots) {
@@ -273,14 +272,17 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 MatchSnapshot.snapshots.add(snapshot)
             }
 
-            getOpponent(player.uuid)?.let {
-                endMessage(it, player)
-                sendTitleBar(it)
+            sendTitleBar(winners)
+            endMessage(winners, losers)
 
-                val profile = Profile.getByUUID(it.uuid)
+            if (!spectators.isEmpty()) {
+                for (i in 0..spectators.size) {
+                    val spectator = spectators[i]
 
-                ratingMessage(profile!!)
-                ratingMessage(Profile.getByUUID(player.uuid)!!)
+                    if (spectator.player == null) continue
+
+                    forceRemoveSpectator(spectator.player)
+                }
             }
 
             matches.remove(this)
@@ -326,20 +328,41 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         fancyMessage.send(profile.player)
     }
 
-    open fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
+    open fun endMessage(winners: MutableList<MatchPlayer>, losers: MutableList<MatchPlayer>) {
         val fancyMessage = FancyMessage()
             .text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------\n")
             .then()
             .text("${CC.GREEN}Winner: ")
             .then()
-            .text("${winner.name} \n")
-            .command("/matchsnapshot ${winner.uuid}")
-            .then()
-            .text("${CC.RED}Loser: ")
-            .then()
-            .text("${loser.name} \n")
-            .command("/matchsnapshot ${loser.uuid}")
-            .then()
+
+        var wi = 1
+        for (matchPlayer in winners) {
+            if (wi < winners.size) {
+                fancyMessage.text("${matchPlayer.name}${CC.GRAY}, ")
+            }else {
+                fancyMessage.text("${matchPlayer.name}\n")
+            }
+
+            fancyMessage.command("/matchsnapshot ${matchPlayer.uuid.toString()}")
+            fancyMessage.then()
+            wi++
+        }
+
+        fancyMessage.text("${CC.RED}Loser: ").then()
+
+        var i = 1
+        for (matchPlayer in losers) {
+
+            if (i < losers.size) {
+                fancyMessage.text("${matchPlayer.name}${CC.GRAY}, ")
+            }else {
+                fancyMessage.text("${matchPlayer.name}\n")
+            }
+
+            fancyMessage.command("/matchsnapshot ${matchPlayer.uuid.toString()}")
+            fancyMessage.then()
+            i++
+        }
 
         if (spectators.isNotEmpty()) {
             fancyMessage.text("\n${CC.GREEN}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
@@ -349,22 +372,23 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             fancyMessage.text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
         }
 
-        for (player in players) {
-            if (player.offline) continue
+        for (matchPlayer in players) {
+            if (matchPlayer.offline) continue
 
-            fancyMessage.send(player.player)
+            fancyMessage.send(matchPlayer.player)
         }
 
         for (spectator in spectators) {
             if (spectator.player == null) continue
 
             fancyMessage.send(spectator.player)
-            forceRemoveSpectator(spectator.player)
         }
     }
 
-    fun sendTitleBar(winner: MatchPlayer) {
-        val titleBar = TitleBar("${CC.GREEN}${winner.name}${CC.YELLOW} won!", false)
+    fun sendTitleBar(winners: MutableList<MatchPlayer>) {
+        val winnerString = Joiner.on(", ").join(winners.map { it.name }.toList())
+
+        val titleBar = TitleBar("${CC.GREEN}$winnerString${CC.YELLOW} won!", false)
 
         players.forEach { if (!it.offline) titleBar.sendPacket(it.player) }
     }

@@ -198,7 +198,8 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
     }
 
     private fun end(player: TeamMatchPlayer) {
-        reset()
+        end(getTeam(player.teamUniqueId)!!.players.map { getMatchPlayer(it.uuid)!! }.toMutableList())
+        /*reset()
 
         countdowns.forEach { it.cancel() }
 
@@ -276,10 +277,10 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
             matches.remove(this)
             reset()
             arena.free = true
-        }, 20L)
+        }, 20L) */
     }
 
-    override fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
+    /*override fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
        // val losingTeam = teams.stream().filter { team -> !team.players.stream().map }.findAny().orElse(null)
       //  val winningTeam = teams.stream().filter { it.uuid != losingTeam.uuid }.findAny().orElse(null)
 
@@ -361,7 +362,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
             fancyMessage.send(spectator.player)
             forceRemoveSpectator(spectator.player)
         }
-    }
+    } */
 
     override fun handleQuit(matchPlayer: MatchPlayer) {
         matchPlayer.offline = true

@@ -27,6 +27,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
+import kotlin.streams.toList
 
 
 /**
@@ -169,10 +170,8 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         }
 
         if (player.offline && team?.players?.none { !it.dead && !it.offline }!!) {
-            if (team.players.none { !it.dead && !it.offline }) {
-                end(getAlivePlayers()[0] as TeamMatchPlayer)
-                return
-            }
+            end(team.players.map { getMatchPlayer(it.uuid)!! }.toMutableList())
+            return
         }
 
         player.respawning = true
@@ -189,7 +188,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
 
             if (team.players.none { !it.dead && !it.offline }) {
-                end(getAlivePlayers()[0] as TeamMatchPlayer)
+                end(team.players.map { getMatchPlayer(it.uuid)!! }.toMutableList())
             }
             return
         }
@@ -219,7 +218,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         }
     }
 
-    private fun end(player: TeamMatchPlayer) {
+    /*private fun end(player: TeamMatchPlayer) {
         countdowns.forEach { it.cancel() }
 
         matchState = MatchState.ENDING
@@ -302,9 +301,9 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
             reset()
             arena.free = true
         }, 20L)
-    }
+    } */
 
-    override fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
+    /*override fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
         // val losingTeam = teams.stream().filter { team -> !team.players.stream().map }.findAny().orElse(null)
         //  val winningTeam = teams.stream().filter { it.uuid != losingTeam.uuid }.findAny().orElse(null)
 
@@ -386,13 +385,14 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
             fancyMessage.send(spectator.player)
             forceRemoveSpectator(spectator.player)
         }
-    }
+    } */
 
     override fun handleQuit(matchPlayer: MatchPlayer) {
         matchPlayer.offline = true
 
         if (teams.stream().anyMatch { team -> team.players.stream().noneMatch { !it.offline } }) {
-            end(players.stream().filter { !it.offline }.findAny().orElse(null) as TeamMatchPlayer)
+            val team = teams.stream().filter { team -> team.players.stream().noneMatch { !it.dead && !it.offline } }.findFirst().orElse(null)
+            team!!.players.map { getMatchPlayer(it.uuid)!! }.toMutableList().let { end(it) }
         }
     }
 }
