@@ -99,6 +99,8 @@ object DuelCommand {
             match.addPlayer(target, arena.l2!!)
         }
 
+        match.friendly = true
+
         profile.duelRequests.remove(duelRequest)
 
         profile.match = match.uuid
@@ -159,7 +161,7 @@ object DuelCommand {
         val team1 = match.teams[0]
         val team2 = match.teams[1]
 
-        for (uuid in party?.players!!) {
+        for (uuid in party.players) {
             val profileParty = Profile.getByUUID(uuid)
             profileParty?.state = ProfileState.MATCH
             profileParty?.match = match.uuid

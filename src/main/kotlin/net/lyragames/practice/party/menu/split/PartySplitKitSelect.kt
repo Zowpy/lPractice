@@ -59,6 +59,7 @@ class PartySplitKitSelect(private val party: Party): Menu() {
                         }
 
                         val match = TeamMatch(kit, arena, false)
+                        match.friendly = true
 
                         for (uuid in party.players) {
                             val partyPlayer = Bukkit.getPlayer(uuid) ?: continue

@@ -10,6 +10,7 @@ import net.lyragames.practice.party.PartyType
 import net.lyragames.practice.party.invitation.PartyInvitation
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.hotbar.Hotbar
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
@@ -80,7 +81,7 @@ object PartyCommand {
         val party = PartyManager.getByUUID(profile.party!!)
 
         if (party?.leader == player.uniqueId) {
-            party?.players?.map { Profile.getByUUID(it) }
+            party?.players?.filter { Bukkit.getPlayer(it) != null }?.map { Profile.getByUUID(it) }
                 ?.forEach {
                     it?.party = null
                     it?.player?.sendMessage("${CC.RED}The party has been disbanded.")

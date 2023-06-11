@@ -1,12 +1,11 @@
 package net.lyragames.practice.listener
 
-import net.lyragames.practice.profile.Profile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBurnEvent
+import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.block.LeavesDecayEvent
 import org.bukkit.event.hanging.HangingBreakEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 
 object WorldListener : Listener {
@@ -28,6 +27,11 @@ object WorldListener : Listener {
 
     @EventHandler
     fun blockBurn(event: BlockBurnEvent) {
+        event.isCancelled = true
+    }
+
+    @EventHandler
+    fun blockPhysics(event: BlockPhysicsEvent) {
         event.isCancelled = true
     }
 

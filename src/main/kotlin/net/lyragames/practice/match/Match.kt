@@ -213,6 +213,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     open fun end(losers: MutableList<MatchPlayer>) {
+        reset()
+
         countdowns.forEach { it.cancel() }
 
         val winners = players.filter { !losers.contains(it) }

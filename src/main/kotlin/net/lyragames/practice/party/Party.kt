@@ -26,9 +26,7 @@ class Party(var leader: UUID) {
 
     fun sendMessage(string: String) {
         players.stream().forEach {
-            val player = Bukkit.getPlayer(it)
-
-            if (player == null) return@forEach
+            val player = Bukkit.getPlayer(it) ?: return@forEach
 
             player.sendMessage(CC.translate(string))
         }

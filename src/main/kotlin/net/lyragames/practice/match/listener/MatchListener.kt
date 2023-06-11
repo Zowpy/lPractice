@@ -31,6 +31,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.ThrownPotion
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
@@ -98,37 +99,29 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     fun onBreak(event: BlockBreakEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.state == ProfileState.SPECTATING) {
             event.isCancelled = true
-            return
         }
 
         if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
-            if (player.gameMode != GameMode.CREATIVE && profile.canBuild) {
+            if (!profile.canBuild) {
                 event.isCancelled = true
             }
-            return
         }
 
         if (profile?.state == ProfileState.FFA) {
             event.isCancelled = true
-            return
         }
 
-        if (profile?.match != null) {
+        if (profile!!.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
 
-            if (match?.matchState != MatchState.FIGHTING) {
-                event.isCancelled = true
-                return
-            }
-
-            if (match.kit.kitData.mlgRush && match is MLGRushMatch) {
+            if (match!!.kit.kitData.mlgRush && match is MLGRushMatch) {
                 match.handleBreak(event)
                 return
             }
@@ -580,6 +573,8 @@ object MatchListener : Listener {
 
     @EventHandler
     fun onMove(event: PlayerMoveEvent) {
+        if (event.to == event.from) return
+
         val player = event.player
 
         val profile = Profile.getByUUID(player.uniqueId)
@@ -588,13 +583,19 @@ object MatchListener : Listener {
             val match = Match.getByUUID(profile.match!!)
 
             if (match != null) {
-
                 if (match.kit.kitData.mlgRush || match.kit.kitData.bedFights) {
 
                     if (event.to.y <= match.arena.deadzone) {
                         val matchPlayer = match.getMatchPlayer(player.uniqueId)
 
-                        if (!matchPlayer?.dead!!) {
+                        if (matchPlayer!!.respawning) {
+                            player.teleport(match.arena.bounds.center)
+                            return
+                        }
+
+                        if (!matchPlayer.dead) {
+                            matchPlayer.lastDamager = null
+
                             match.handleDeath(matchPlayer)
                         }
                     }
@@ -646,10 +647,5 @@ object MatchListener : Listener {
                 }
             }
         }
-    }
-
-    @EventHandler
-    fun onBlockDamage(event: BlockDamageEvent) {
-        event.isCancelled = true
     }
 }
