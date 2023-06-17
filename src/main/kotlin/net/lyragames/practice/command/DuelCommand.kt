@@ -41,7 +41,7 @@ object DuelCommand {
         }
 
         if (!profile.settings.duels && !player.hasPermission("lpractice.bypass.duels")) {
-            player.sendMessage("${CC.SECONDARY}${target.name}${CC.PRIMARY}'s duels are off.")
+            player.sendMessage("${CC.SECONDARY}${target.name}${CC.PRIMARY}'s has duels disabled.")
             return
         }
 

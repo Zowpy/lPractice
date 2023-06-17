@@ -92,6 +92,12 @@ object MatchListener : Listener {
 
 
             if (match.kit.kitData.build || match.kit.kitData.mlgRush || match.kit.kitData.bedFights) {
+                if (match.arena.max!!.y <= event.block.y) {
+                    event.isCancelled = true
+                    player.sendMessage("${CC.RED}You cannot place blocks here.")
+                    return
+                }
+
                 match.blocksPlaced.add(event.blockPlaced)
             } else {
                 event.isCancelled = true
@@ -464,6 +470,11 @@ object MatchListener : Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    fun onSleep(event: PlayerBedEnterEvent) {
+        event.isCancelled = true
     }
 
     @EventHandler

@@ -21,7 +21,7 @@ object SpectateCommand {
         }
 
         if (!targetProfile.settings.spectators && !player.hasPermission("lpractice.bypass.spectate")) {
-            player.sendMessage("${CC.SECONDARY}${target.name}${CC.PRIMARY}'s spectating is off.")
+            player.sendMessage("${CC.SECONDARY}${target.name}${CC.PRIMARY}'s has spectating disabled.")
             return
         }
 
