@@ -262,7 +262,12 @@ object MatchListener : Listener {
             val profile = Profile.getByUUID(player.uniqueId)
             val profile1 = Profile.getByUUID(damager.uniqueId)
 
-            if (profile?.state != ProfileState.MATCH || profile1?.state != ProfileState.MATCH) {
+            if (profile!!.state == ProfileState.SPECTATING || profile1!!.state == ProfileState.SPECTATING) {
+                event.isCancelled = true
+                return
+            }
+
+            if (profile.state != ProfileState.MATCH || profile1.state != ProfileState.MATCH) {
                 return
             }
 

@@ -205,7 +205,6 @@ class PracticePlugin : LyraPlugin() {
 
         @JvmStatic
         val GSON: Gson = GsonBuilder()
-            .setPrettyPrinting()
             .disableHtmlEscaping()
             .serializeNulls()
             .registerTypeHierarchyAdapter(EditedKit::class.java, EditKitSerializer)

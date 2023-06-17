@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 
 object SettingsCommand {
 
-    @Command(value = ["settings"], description = "change your settings")
+    @Command(value = ["settings", "lpractice:settings"], description = "change your settings")
     fun settings(@Sender player: Player) {
         SettingsMenu().openMenu(player)
     }

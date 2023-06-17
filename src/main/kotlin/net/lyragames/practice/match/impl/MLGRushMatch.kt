@@ -105,7 +105,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
                                 }
 
                                 event.isCancelled = true
-                                player!!.points++
+                                player.points++
                                 resetMatch(player as TeamMatchPlayer)
                             }
                         }
@@ -147,15 +147,15 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
             player.respawning = false
 
-            players.stream().forEach { if (it.player != null) it.player.showPlayer(player.player) }
+            players.stream().forEach { if (!it.offline) it.player.showPlayer(player.player) }
 
             player.respawnCountdown = null
         }
     }
 
     private fun resetMatch(winner: TeamMatchPlayer) {
-        if (winner.points == 5) {
-            end(winner)
+        if (winner.points >= 5) {
+            end(getOpponent(winner.uuid) as TeamMatchPlayer)
         }else {
             round++
 
@@ -199,170 +199,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
     private fun end(player: TeamMatchPlayer) {
         end(getTeam(player.teamUniqueId)!!.players.map { getMatchPlayer(it.uuid)!! }.toMutableList())
-        /*reset()
-
-        countdowns.forEach { it.cancel() }
-
-        matchState = MatchState.ENDING
-        Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
-            var loserProfile: Profile? = Profile.getByUUID(player.uuid)
-
-            if (loserProfile == null) {
-                val newProfile = Profile(player.uuid, player.name)
-                newProfile.load()
-
-                loserProfile = newProfile
-            }
-
-            for (matchPlayer in players) {
-                if (matchPlayer.offline) continue
-                val winner = matchPlayer.uuid != player.uuid
-
-                val bukkitPlayer = matchPlayer.player
-                val profile = Profile.getByUUID(matchPlayer.uuid)
-
-                val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
-                snapshot.potionsThrown = matchPlayer.potionsThrown
-                snapshot.potionsMissed = matchPlayer.potionsMissed
-                snapshot.longestCombo = matchPlayer.longestCombo
-                snapshot.totalHits = matchPlayer.hits
-                snapshot.opponent = getOpponent(bukkitPlayer.uniqueId)?.uuid
-
-                snapshots.add(snapshot)
-
-                PlayerUtil.reset(bukkitPlayer)
-                PlayerUtil.allowMovement(bukkitPlayer)
-                profile?.match = null
-                profile?.state = ProfileState.LOBBY
-
-                if (Constants.SPAWN != null) {
-                    bukkitPlayer.teleport(Constants.SPAWN)
-                }
-
-                CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
-
-                Hotbar.giveHotbar(profile!!)
-
-                players.stream().filter { !it.offline }.map { it.player }
-                    .forEach {
-                        if (it.player == null) return@forEach
-                        bukkitPlayer.hidePlayer(it)
-                        it.hidePlayer(bukkitPlayer)
-                    }
-
-                if (winner && !friendly) {
-                    StatisticManager.win(profile, loserProfile, kit, ranked)
-                }else {
-                    if (!friendly) {
-                        StatisticManager.loss(profile, kit, ranked)
-                    }
-                }
-            }
-
-            for (snapshot in snapshots) {
-                snapshot.createdAt = System.currentTimeMillis()
-                MatchSnapshot.snapshots.add(snapshot)
-            }
-
-            getOpponent(player.uuid)?.let {
-                endMessage(player, it)
-                sendTitleBar(player)
-
-                val profile = Profile.getByUUID(it.uuid)
-
-                ratingMessage(profile!!)
-                ratingMessage(Profile.getByUUID(player.uuid)!!)
-            }
-
-            matches.remove(this)
-            reset()
-            arena.free = true
-        }, 20L) */
     }
-
-    /*override fun endMessage(winner: MatchPlayer, loser: MatchPlayer) {
-       // val losingTeam = teams.stream().filter { team -> !team.players.stream().map }.findAny().orElse(null)
-      //  val winningTeam = teams.stream().filter { it.uuid != losingTeam.uuid }.findAny().orElse(null)
-
-        val losingTeam = getTeam((loser as TeamMatchPlayer).teamUniqueId)
-        val winningTeam = getOpponentTeam(losingTeam!!)
-
-        /*for (team in teams) {
-
-            var points = 0
-
-            for (matchPlayer in team.players) {
-                points += matchPlayer.points
-            }
-
-            if (points == 5) {
-                winningTeam = team
-            }else {
-                losingTeam = team
-            }
-        }
-
-        if (winningTeam == null) {
-
-        } */
-
-
-        val fancyMessage = FancyMessage()
-            .text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------\n")
-            .then()
-            .text("${CC.GREEN}Winner: ")
-            .then()
-
-        var wi = 1
-        for (matchPlayer in winningTeam?.players!!) {
-            if (wi < winningTeam.players.size) {
-                fancyMessage.text("${matchPlayer.name}${CC.GRAY}, ")
-            }else {
-                fancyMessage.text("${matchPlayer.name}\n")
-            }
-
-            fancyMessage.command("/matchsnapshot ${matchPlayer.uuid.toString()}")
-            fancyMessage.then()
-            wi++
-        }
-
-        fancyMessage.text("${CC.RED}Loser: ").then()
-
-        var i = 1
-        for (matchPlayer in losingTeam?.players!!) {
-
-            if (i < losingTeam.players.size) {
-                fancyMessage.text("${matchPlayer.name}${CC.GRAY}, ")
-            }else {
-                fancyMessage.text("${matchPlayer.name}\n")
-            }
-
-            fancyMessage.command("/matchsnapshot ${matchPlayer.uuid.toString()}")
-            fancyMessage.then()
-            i++
-        }
-
-        if (spectators.isNotEmpty()) {
-            fancyMessage.text("\n${CC.GREEN}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
-                .then().text("${Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name })}\n")
-                .then().text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
-        }else {
-            fancyMessage.text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
-        }
-
-        for (player in players) {
-            if (player.offline) continue
-
-            fancyMessage.send(player.player)
-        }
-
-        for (spectator in spectators) {
-            if (spectator.player == null) continue
-
-            fancyMessage.send(spectator.player)
-            forceRemoveSpectator(spectator.player)
-        }
-    } */
 
     override fun handleQuit(matchPlayer: MatchPlayer) {
         matchPlayer.offline = true
