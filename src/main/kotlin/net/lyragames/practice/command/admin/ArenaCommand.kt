@@ -9,6 +9,8 @@ import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.StandaloneArena
 import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
+import net.lyragames.practice.arena.impl.bridge.BridgeArena
+import net.lyragames.practice.arena.impl.bridge.StandaloneBridgeArena
 import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.arena.menu.ArenaManageMenu
@@ -34,12 +36,13 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Arena Commands:")
         player.sendMessage(CC.translate("&7&m---------------------"))
         player.sendMessage("${CC.SECONDARY}/arena create <name>")
+        player.sendMessage("${CC.SECONDARY}/arena type <name> <type> ${CC.GRAY}- Sumo, MLGRush, BedFight, Bridge, Build and Normal")
         player.sendMessage("${CC.SECONDARY}/arena delete <arena>")
         player.sendMessage("${CC.SECONDARY}/arena pos1 <arena>")
         player.sendMessage("${CC.SECONDARY}/arena pos2 <arena>")
         player.sendMessage("${CC.SECONDARY}/arena min <arena>")
         player.sendMessage("${CC.SECONDARY}/arena max <arena>")
-        player.sendMessage("${CC.SECONDARY}/arena deadzone <arena> ${CC.GRAY}- set an arena's lowest Y location (Used for bridges, bedfight, etc)")
+        player.sendMessage("${CC.SECONDARY}/arena deadzone <arena> <deadzone> ${CC.GRAY}- set an arena's lowest Y location (Used for bridges, bedfight, etc)")
         player.sendMessage("${CC.SECONDARY}/arena bed1 <arena> ${CC.GRAY}- only supported for mlgrush (stand on bed)")
         player.sendMessage("${CC.SECONDARY}/arena bed2 <arena> ${CC.GRAY}- only supported for mlgrush (stand on bed)")
         player.sendMessage(CC.translate("&7&m---------------------"))
@@ -49,6 +52,16 @@ object ArenaCommand {
         player.sendMessage("${CC.SECONDARY}/arena bluespawn <arena>")
         player.sendMessage("${CC.SECONDARY}/arena redbed <arena>")
         player.sendMessage("${CC.SECONDARY}/arena bluebed <arena>")
+        player.sendMessage(CC.translate("&7&m---------------------"))
+        player.sendMessage(CC.translate("&7&m---------------------"))
+        player.sendMessage("${CC.PRIMARY}Bridge Arena Command:")
+        player.sendMessage(CC.translate("&7&m---------------------"))
+        player.sendMessage("${CC.SECONDARY}/arena redspawn <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena bluespawn <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena redportal1 <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena redportal2 <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena blueportal1 <arena>")
+        player.sendMessage("${CC.SECONDARY}/arena blueportal2 <arena>")
         player.sendMessage(CC.translate("&7&m---------------------"))
     }
 
@@ -123,11 +136,11 @@ object ArenaCommand {
 
     @Command(value = ["arena deadzone", "arena yval"], description = "set an arena's lowest Y location (Used for sumo, bridges, bedfight, pearlfight, etc")
     @Permission("lpractice.command.arena.setup")
-    fun deadzone(@Sender player: Player, arena: Arena) {
-        arena.deadzone = player.location.y.toInt()
+    fun deadzone(@Sender player: Player, arena: Arena, deadzone: Int) {
+        arena.deadzone = deadzone
         arena.save()
 
-        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s deadzone!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s deadzone to ${CC.SECONDARY}$deadzone${CC.PRIMARY}!")
     }
 
     @Command(value = ["arena type"], description = "change an arena type")
@@ -188,6 +201,42 @@ object ArenaCommand {
 
                     newDuplicate.bounds = Cuboid(newDuplicate.min, newDuplicate.max)
                     newDuplicate.arenaType = ArenaType.BEDFIGHT
+
+                    arena.duplicates.removeIf { it.name.equals(duplicate.name, false) }
+                    arena.duplicates.add(newDuplicate)
+                }
+            }
+
+            Arena.arenas.removeIf { it.name.equals(arena.name, false) }
+            Arena.arenas.add(newArena)
+
+            newArena.save()
+        }else if (type == ArenaType.BRIDGE) {
+            val newArena = StandaloneBridgeArena(arena.name)
+            newArena.l1 = arena.l1
+            newArena.l2 = arena.l2
+            newArena.deadzone = arena.deadzone
+            newArena.min = arena.min
+            newArena.max = arena.max
+            newArena.arenaType = type
+
+            if (arena is StandaloneArena) {
+                for (duplicate in arena.duplicates) {
+                    val newDuplicate = BridgeArena(duplicate.name)
+
+                    newDuplicate.min = duplicate.min
+                    newDuplicate.max = duplicate.max
+                    newDuplicate.bluePortal1 = (duplicate as BridgeArena).bluePortal1
+                    newDuplicate.bluePortal2 = duplicate.bluePortal2
+                    newDuplicate.redPortal1 = duplicate.redPortal1
+                    newDuplicate.redPortal2 = duplicate.redPortal2
+                    newDuplicate.blueSpawn = duplicate.blueSpawn
+                    newDuplicate.redSpawn = duplicate.redSpawn
+                    newDuplicate.deadzone = duplicate.deadzone
+                    newDuplicate.duplicate = true
+
+                    newDuplicate.bounds = Cuboid(newDuplicate.min, newDuplicate.max)
+                    newDuplicate.arenaType = ArenaType.BRIDGE
 
                     arena.duplicates.removeIf { it.name.equals(duplicate.name, false) }
                     arena.duplicates.add(newDuplicate)
@@ -259,36 +308,105 @@ object ArenaCommand {
     @Permission("lpractice.command.arena.setup")
     fun redPos(@Sender player: Player, arena: Arena) {
 
-        if (arena.arenaType != ArenaType.BEDFIGHT) {
-            player.sendMessage("${CC.RED}This command is only supported for Bed Fights arenas!")
+        if (arena.arenaType != ArenaType.BEDFIGHT || arena.arenaType != ArenaType.BRIDGE) {
+            player.sendMessage("${CC.RED}This command is only supported for Bed Fights & Bridge arenas!")
             return
         }
 
-        (arena as StandaloneBedWarsArena).redSpawn = player.location
+        if (arena.arenaType == ArenaType.BEDFIGHT) {
+            (arena as StandaloneBedWarsArena).redSpawn = player.location
+        }else {
+            (arena as StandaloneBridgeArena).redSpawn = player.location
+        }
+
         arena.save()
 
-        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red location!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red spawn location!")
     }
 
     @Command(value = ["arena bluespawn"], description = "set an arena's second location")
     @Permission("lpractice.command.arena.setup")
     fun bluePos(@Sender player: Player, arena: Arena) {
 
-        if (arena.arenaType != ArenaType.BEDFIGHT) {
-            player.sendMessage("${CC.RED}This command is only supported for Bed Fights arenas!")
+        if (arena.arenaType != ArenaType.BEDFIGHT || arena.arenaType != ArenaType.BRIDGE) {
+            player.sendMessage("${CC.RED}This command is only supported for Bed Fights & Bridge arenas!")
             return
         }
 
-        (arena as StandaloneBedWarsArena).blueSpawn = player.location
+        if (arena.arenaType == ArenaType.BEDFIGHT) {
+            (arena as StandaloneBedWarsArena).blueSpawn = player.location
+        }else {
+            (arena as StandaloneBridgeArena).blueSpawn = player.location
+        }
+
         arena.save()
 
-        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue location!")
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue spawn location!")
+    }
+
+    @Command(value = ["arena blueportal1"])
+    @Permission("lpractice.command.arena.setup")
+    fun bluePortal1(@Sender player: Player, arena: Arena) {
+
+        if (arena.arenaType != ArenaType.BRIDGE) {
+            player.sendMessage("${CC.RED}This command is only supported for Bridges arenas!")
+            return
+        }
+
+        (arena as StandaloneBridgeArena).bluePortal1 = player.location
+        arena.save()
+
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue portal position 1 location!")
+    }
+
+    @Command(value = ["arena blueportal2"])
+    @Permission("lpractice.command.arena.setup")
+    fun bluePortal2(@Sender player: Player, arena: Arena) {
+
+        if (arena.arenaType != ArenaType.BRIDGE) {
+            player.sendMessage("${CC.RED}This command is only supported for Bridges arenas!")
+            return
+        }
+
+        (arena as StandaloneBridgeArena).bluePortal2 = player.location
+        arena.save()
+
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue portal position 2 location!")
+    }
+
+    @Command(value = ["arena redportal1"])
+    @Permission("lpractice.command.arena.setup")
+    fun redPortal1(@Sender player: Player, arena: Arena) {
+
+        if (arena.arenaType != ArenaType.BRIDGE) {
+            player.sendMessage("${CC.RED}This command is only supported for Bridges arenas!")
+            return
+        }
+
+        (arena as StandaloneBridgeArena).redPortal1 = player.location
+        arena.save()
+
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red portal position 1 location!")
+    }
+
+    @Command(value = ["arena redportal2"])
+    @Permission("lpractice.command.arena.setup")
+    fun redPortal2(@Sender player: Player, arena: Arena) {
+
+        if (arena.arenaType != ArenaType.BRIDGE) {
+            player.sendMessage("${CC.RED}This command is only supported for Bridges arenas!")
+            return
+        }
+
+        (arena as StandaloneBridgeArena).redPortal2 = player.location
+        arena.save()
+
+        player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red portal position 2 location!")
     }
 
     @Command(value = ["arena menu"], description = "manage active arenas")
     @Permission("lpractice.command.arena.menu")
     fun manage(@Sender player: Player, arena: Arena) {
         ArenaManageMenu(arena).openMenu(player)
-
     }
 }
