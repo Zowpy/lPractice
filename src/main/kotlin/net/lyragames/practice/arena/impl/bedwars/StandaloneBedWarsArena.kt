@@ -4,24 +4,18 @@ import com.sk89q.worldedit.Vector
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.WorldEditException
 import com.sk89q.worldedit.bukkit.BukkitWorld
-import com.sk89q.worldedit.extent.Extent
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
-import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.function.mask.ExistingBlockMask
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy
-import com.sk89q.worldedit.function.operation.Operation
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.session.ClipboardHolder
-import com.sk89q.worldedit.world.World
-import com.sk89q.worldedit.world.registry.WorldData
 import net.lyragames.llib.utils.Cuboid
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.impl.StandaloneArena
 import org.bukkit.Location
 import java.util.concurrent.ThreadLocalRandom
-
 
 /**
  * This Project is property of Zowpy © 2022
@@ -66,8 +60,8 @@ class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
                 configSection1.set("l2", LocationUtil.serialize(arena.l2))
                 configSection1.set("min", LocationUtil.serialize(arena.min))
                 configSection1.set("max", LocationUtil.serialize(arena.max))
-                configSection.set("redBed", LocationUtil.serialize((arena as BedWarsArena).redBed))
-                configSection.set("blueBed", LocationUtil.serialize(arena.blueBed))
+                configSection1.set("redBed", LocationUtil.serialize((arena as BedWarsArena).redBed))
+                configSection1.set("blueBed", LocationUtil.serialize(arena.blueBed))
                 configSection1.set("deadzone", arena.deadzone)
 
                 i++
@@ -79,21 +73,21 @@ class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
 
     override fun duplicate(world: org.bukkit.World, times: Int) {
         for (i in 0 until times) {
-            val random: Double = ThreadLocalRandom.current().nextDouble(10.0) + 1
-            val offsetMultiplier: Double = ThreadLocalRandom.current().nextDouble(10000.0) + 1
+            val random = ThreadLocalRandom.current().nextDouble(10.0) + 1
+            val offsetMultiplier = ThreadLocalRandom.current().nextDouble(10000.0) + 1
 
-            val offsetX: Double = random * offsetMultiplier / 10
-            val offsetZ: Double = random * offsetMultiplier / 10
+            val offsetX = random * offsetMultiplier / 10
+            val offsetZ = random * offsetMultiplier / 10
 
-            val minX: Double = min!!.x + offsetX
-            val minZ: Double = min!!.z + offsetZ
-            val maxX: Double = max!!.x + offsetX
-            val maxZ: Double = max!!.z + offsetZ
+            val minX = min!!.x + offsetX
+            val minZ = min!!.z + offsetZ
+            val maxX = max!!.x + offsetX
+            val maxZ = max!!.z + offsetZ
 
-            val aX: Double = redSpawn!!.x + offsetX
-            val aZ: Double = redSpawn!!.z + offsetZ
-            val bX: Double = blueSpawn!!.x + offsetX
-            val bZ: Double = blueSpawn!!.z + offsetZ
+            val aX = redSpawn!!.x + offsetX
+            val aZ = redSpawn!!.z + offsetZ
+            val bX = blueSpawn!!.x + offsetX
+            val bZ = blueSpawn!!.z + offsetZ
 
             val b1X = redBed!!.x + offsetX
             val b1Z = redBed!!.z + offsetZ
@@ -110,6 +104,7 @@ class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
             val b2 = Location(world, b2X, redBed!!.y, b2Z)
 
             val arena = BedWarsArena(name + i)
+
             arena.bounds = Cuboid(min, max)
             arena.l1 = a
             arena.l2 = b
@@ -119,25 +114,32 @@ class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
             arena.max = max
             arena.duplicate = true
             arena.deadzone = deadzone
+
             duplicates.add(arena)
 
-            val weWorld: World = BukkitWorld(world)
-            val worldData: WorldData = weWorld.worldData
+            val weWorld = BukkitWorld(world)
+            val worldData = weWorld.worldData
+
             val to = Vector(minX, bounds.lowerY.toDouble(), minZ)
-            val clipboard: Clipboard = BlockArrayClipboard(
+
+            val clipboard = BlockArrayClipboard(
                 CuboidRegion(
                     Vector(min.x, min.y, min.z),
                     Vector(max.x, max.y, max.z)
                 )
             )
-            val destination: Extent = WorldEdit.getInstance().editSessionFactory.getEditSession(weWorld, -1)
+
+            val destination = WorldEdit.getInstance().editSessionFactory.getEditSession(weWorld, -1)
             val copy = ForwardExtentCopy(clipboard, clipboard.region, clipboard.origin, destination, to)
+
             copy.sourceMask = ExistingBlockMask(clipboard)
-            val operation: Operation = ClipboardHolder(clipboard, worldData)
+
+            val operation = ClipboardHolder(clipboard, worldData)
                 .createPaste(destination, worldData)
                 .ignoreAirBlocks(false)
                 .to(to)
                 .build()
+
             try {
                 Operations.completeLegacy(operation)
             } catch (e: WorldEditException) {

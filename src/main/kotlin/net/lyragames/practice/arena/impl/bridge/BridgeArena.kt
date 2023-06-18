@@ -1,0 +1,15 @@
+package net.lyragames.practice.arena.impl.bridge
+
+import net.lyragames.practice.arena.Arena
+import org.bukkit.Location
+
+class BridgeArena(name: String) : Arena(name) {
+
+    var redSpawn: Location? = null
+    var redPortal1: Location? = null
+    var redPortal2: Location? = null
+
+    var blueSpawn: Location? = null
+    var bluePortal1: Location? = null
+    var bluePortal2: Location? = null
+}
