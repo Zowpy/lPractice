@@ -1,5 +1,6 @@
 package net.lyragames.practice.match.team
 
+import net.lyragames.llib.utils.Cuboid
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import org.bukkit.Location
 import java.util.*
@@ -14,13 +15,15 @@ import java.util.*
  */
 
 class Team(val name: String) {
-    val uuid = UUID.randomUUID()
+    val uuid: UUID = UUID.randomUUID()
     val players: MutableList<TeamMatchPlayer> = mutableListOf()
 
     var spawn: Location? = null
     var bedLocation: Location? = null
+    var portal: Cuboid? = null
 
     var broken = false
 
     var hits = 0
+    var points = 0
 }

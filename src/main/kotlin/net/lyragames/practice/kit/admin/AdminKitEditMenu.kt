@@ -17,7 +17,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 
-
 /**
  * This Project is property of Zowpy © 2022
  * Redistribution of this Project is not allowed
@@ -351,6 +350,28 @@ class AdminKitEditMenu(private val kit: Kit): Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.fallDamage = !kit.kitData.fallDamage
+                kit.save()
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
+        toReturn[13] = object: Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.STAINED_CLAY)
+                    .durability(11)
+                    .name("${CC.PRIMARY}Bridge")
+                    .lore(listOf(
+                        if (kit.kitData.bridge) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                        if (!kit.kitData.bridge) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                    )).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.bridge = !kit.kitData.bridge
                 kit.save()
             }
 

@@ -308,7 +308,7 @@ object ArenaCommand {
     @Permission("lpractice.command.arena.setup")
     fun redPos(@Sender player: Player, arena: Arena) {
 
-        if (arena.arenaType != ArenaType.BEDFIGHT || arena.arenaType != ArenaType.BRIDGE) {
+        if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.BRIDGE) {
             player.sendMessage("${CC.RED}This command is only supported for Bed Fights & Bridge arenas!")
             return
         }
@@ -328,7 +328,7 @@ object ArenaCommand {
     @Permission("lpractice.command.arena.setup")
     fun bluePos(@Sender player: Player, arena: Arena) {
 
-        if (arena.arenaType != ArenaType.BEDFIGHT || arena.arenaType != ArenaType.BRIDGE) {
+        if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.BRIDGE) {
             player.sendMessage("${CC.RED}This command is only supported for Bed Fights & Bridge arenas!")
             return
         }

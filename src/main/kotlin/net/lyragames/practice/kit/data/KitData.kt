@@ -20,6 +20,7 @@ class KitData {
     var boxing = false
     var mlgRush = false
     var bedFights = false
+    var bridge = false
     var hunger = true
     var regeneration = true
     var fallDamage = true

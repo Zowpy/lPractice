@@ -22,7 +22,7 @@ import org.bukkit.inventory.ItemStack
  * Project: lPractice
  */
 
-class DuelSelectArenaMenu: PaginatedMenu() {
+class DuelSelectArenaMenu : PaginatedMenu() {
 
     override fun getPrePaginatedTitle(p0: Player?): String {
         return "Select an arena"
@@ -47,22 +47,16 @@ class DuelSelectArenaMenu: PaginatedMenu() {
             if (arena.arenaType == ArenaType.BUILD && !duelProcedure.kit!!.kitData.build) continue
             if (arena.arenaType == ArenaType.SUMO && !duelProcedure.kit!!.kitData.sumo) continue
             if (arena.arenaType == ArenaType.MLGRUSH && !duelProcedure.kit!!.kitData.mlgRush) continue
-            if (arena.arenaType == ArenaType.BEDFIGHT && !duelProcedure.kit!!.kitData.bedFights) {
-                println("test v1")
-                continue
-            }
+            if (arena.arenaType == ArenaType.BEDFIGHT && !duelProcedure.kit!!.kitData.bedFights) continue
+            if (arena.arenaType == ArenaType.BRIDGE && !duelProcedure.kit!!.kitData.bridge) continue
 
             val kitData = duelProcedure.kit!!.kitData
 
-            println("${arena.name}: ${arena.arenaType.name}")
-
             if (arena.arenaType == ArenaType.NORMAL && (kitData.build
-                || kitData.bedFights
-                || kitData.mlgRush
-                || kitData.sumo)) {
-                    println("test v2")
-                    continue
-            }
+                        || kitData.bedFights
+                        || kitData.mlgRush
+                        || kitData.sumo
+                        || kitData.bridge)) continue
 
             //if (arena.arenaType != ArenaType.NORMAL) continue
 

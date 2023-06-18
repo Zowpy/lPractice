@@ -8,10 +8,11 @@ import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.arena.impl.StandaloneArena
 import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
+import net.lyragames.practice.arena.impl.bridge.BridgeArena
+import net.lyragames.practice.arena.impl.bridge.StandaloneBridgeArena
 import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.kit.Kit
-
 
 /**
  * This Project is property of Zowpy © 2022
@@ -38,6 +39,8 @@ object ArenaManager {
                 arena = StandaloneMLGRushArena(key)
             }else if (section.getString("type").equals("BEDFIGHT", true)) {
                 arena = StandaloneBedWarsArena(key)
+            }else if (section.getString("type").equals("BRIDGE", true)) {
+                arena = StandaloneBridgeArena(key)
             }
 
             arena.deadzone = section.getInt("deadzone")
@@ -48,45 +51,34 @@ object ArenaManager {
             arena.min = LocationUtil.deserialize(section.getString("min"))
             arena.max = LocationUtil.deserialize(section.getString("max"))
 
-         //   if (!section.getString("arenaType").equals("null", false)) {
-          //      arena.arenaType = ArenaType.valueOf(section.getString("arenaType"))
-          //  }
-
-            //if (!section.getDouble("deadzone").equals("null")) {
-            //    arena.deadzone = section.getDouble("deadzone")
-          //  }
-
             if (arena.min != null && arena.max != null) {
                 arena.bounds = Cuboid(arena.min, arena.max)
             }
 
             if (arena is StandaloneMLGRushArena) {
-
-                if (!section.getString("bed1").equals("null", false)) {
-                    arena.bed1 = LocationUtil.deserialize(section.getString("bed1"))
-                }
-
-                if (!section.getString("bed2").equals("null", false)) {
-                    arena.bed2 = LocationUtil.deserialize(section.getString("bed2"))
-                }
+                arena.bed1 = LocationUtil.deserialize(section.getString("bed1"))
+                arena.bed2 = LocationUtil.deserialize(section.getString("bed2"))
             }
 
             if (arena is StandaloneBedWarsArena) {
-                if (!section.getString("redSpawn").equals("null", false)) {
-                    arena.redSpawn = LocationUtil.deserialize(section.getString("redSpawn"))
-                }
+                arena.redSpawn = LocationUtil.deserialize(section.getString("redSpawn"))
+                arena.blueSpawn = LocationUtil.deserialize(section.getString("blueSpawn"))
+                arena.redBed = LocationUtil.deserialize(section.getString("redBed"))
+                arena.blueBed = LocationUtil.deserialize(section.getString("blueBed"))
+            }
 
-                if (!section.getString("blueSpawn").equals("null", false)) {
-                    arena.blueSpawn = LocationUtil.deserialize(section.getString("blueSpawn"))
-                }
+            if (arena is StandaloneBridgeArena) {
+                arena.redSpawn = LocationUtil.deserialize(section.getString("redSpawn"))
+                arena.blueSpawn = LocationUtil.deserialize(section.getString("blueSpawn"))
 
-                if (!section.getString("redBed").equals("null", false)) {
-                    arena.redBed = LocationUtil.deserialize(section.getString("redBed"))
-                }
+                arena.redPortal1 = LocationUtil.deserialize(section.getString("redPortal1"))
+                arena.redPortal2 = LocationUtil.deserialize(section.getString("redPortal2"))
 
-                if (!section.getString("blueBed").equals("null", false)) {
-                    arena.blueBed = LocationUtil.deserialize(section.getString("blueBed"))
-                }
+                arena.bluePortal1 = LocationUtil.deserialize(section.getString("bluePortal1"))
+                arena.bluePortal2 = LocationUtil.deserialize(section.getString("bluePortal2"))
+
+                arena.bluePortal = Cuboid(arena.bluePortal1, arena.bluePortal2)
+                arena.redPortal = Cuboid(arena.redPortal1, arena.redPortal2)
             }
 
             if (section.getConfigurationSection("duplicates") != null) {
@@ -98,58 +90,48 @@ object ArenaManager {
                         arena1 = MLGRushArena("$key$duplicateKey")
                     }
 
-                    arena1.duplicate = true
-
-                    if (arena1 is BedWarsArena) {
-                        if (!section1.getString("redSpawn").equals("null", false)) {
-                            arena1.redSpawn = LocationUtil.deserialize(section1.getString("redSpawn"))
-                        }
-
-                        if (!section1.getString("blueSpawn").equals("null", false)) {
-                            arena1.blueSpawn = LocationUtil.deserialize(section1.getString("blueSpawn"))
-                        }
-
-                        if (!section1.getString("redBed").equals("null", false)) {
-                            arena1.redBed = LocationUtil.deserialize(section1.getString("redBed"))
-                        }
-
-                        if (!section1.getString("blueBed").equals("null", false)) {
-                            arena1.blueBed = LocationUtil.deserialize(section1.getString("blueBed"))
-                        }
-
-                        arena.duplicates.add(arena1)
-
-                        continue
-                    }
-
-                    if (!section1.getString("l1").equals("null", false)) {
-                        arena1.l1 = LocationUtil.deserialize(section1.getString("l1"))
-                    }
-
-                    if (!section1.getString("l2").equals("null", false)) {
-                        arena1.l2 = LocationUtil.deserialize(section1.getString("l2"))
-                    }
-
-                    if (!section1.getString("min").equals("null", false)) {
-                        arena1.min = LocationUtil.deserialize(section1.getString("min"))
-                    }
-
-                    if (!section1.getString("max").equals("null", false)) {
-                        arena1.max = LocationUtil.deserialize(section1.getString("max"))
-                    }
+                    arena1.min = LocationUtil.deserialize(section1.getString("min"))
+                    arena1.max = LocationUtil.deserialize(section1.getString("max"))
 
                     if (arena1.min != null && arena1.max != null) {
                         arena1.bounds = Cuboid(arena1.min, arena1.max)
                     }
 
-                    if (arena1 is MLGRushArena) {
-                        if (!section1.getString("bed1").equals("null", false)) {
-                            arena1.bed1 = LocationUtil.deserialize(section1.getString("bed1"))
-                        }
+                    arena1.duplicate = true
 
-                        if (!section1.getString("bed2").equals("null", false)) {
-                            arena1.bed2 = LocationUtil.deserialize(section1.getString("bed2"))
-                        }
+                    if (arena1 is BedWarsArena) {
+                        arena1.redSpawn = LocationUtil.deserialize(section1.getString("redSpawn"))
+                        arena1.blueSpawn = LocationUtil.deserialize(section1.getString("blueSpawn"))
+                        arena1.redBed = LocationUtil.deserialize(section1.getString("redBed"))
+                        arena1.blueBed = LocationUtil.deserialize(section1.getString("blueBed"))
+
+                        arena.duplicates.add(arena1)
+                        continue
+                    }
+
+                    if (arena1 is BridgeArena) {
+                        arena1.redSpawn = LocationUtil.deserialize(section1.getString("redSpawn"))
+                        arena1.blueSpawn = LocationUtil.deserialize(section1.getString("blueSpawn"))
+
+                        arena1.redPortal1 = LocationUtil.deserialize(section1.getString("redPortal1"))
+                        arena1.redPortal2 = LocationUtil.deserialize(section1.getString("redPortal2"))
+
+                        arena1.bluePortal1 = LocationUtil.deserialize(section1.getString("bluePortal1"))
+                        arena1.bluePortal2 = LocationUtil.deserialize(section1.getString("bluePortal2"))
+
+                        arena1.bluePortal = Cuboid(arena1.bluePortal1, arena1.bluePortal2)
+                        arena1.redPortal = Cuboid(arena1.redPortal1, arena1.redPortal2)
+
+                        arena.duplicates.add(arena1)
+                        continue
+                    }
+
+                    arena1.l1 = LocationUtil.deserialize(section1.getString("l1"))
+                    arena1.l2 = LocationUtil.deserialize(section1.getString("l2"))
+
+                    if (arena1 is MLGRushArena) {
+                        arena1.bed1 = LocationUtil.deserialize(section1.getString("bed1"))
+                        arena1.bed2 = LocationUtil.deserialize(section1.getString("bed2"))
                     }
 
                     arena.duplicates.add(arena1)
@@ -172,6 +154,7 @@ object ArenaManager {
             if (kit.kitData.sumo && arena.arenaType != ArenaType.SUMO) continue
             if (kit.kitData.mlgRush && arena.arenaType != ArenaType.MLGRUSH) continue
             if (kit.kitData.bedFights && arena.arenaType != ArenaType.BEDFIGHT) continue
+            if (kit.kitData.bridge && arena.arenaType != ArenaType.BRIDGE) continue
 
             return arena
         }

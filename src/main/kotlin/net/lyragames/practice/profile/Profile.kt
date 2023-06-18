@@ -57,6 +57,7 @@ class Profile(val uuid: UUID, var name: String?) {
 
     var canBuild = false
     var enderPearlCooldown: Cooldown? = null
+    var arrowCooldown: Cooldown? = null
 
     val player: Player
         get() = Bukkit.getPlayer(uuid)

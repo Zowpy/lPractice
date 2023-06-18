@@ -1,31 +1,17 @@
 package net.lyragames.practice.match.impl
 
-import com.google.common.base.Joiner
-import mkremins.fanciful.FancyMessage
-import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.Cooldown
 import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
-import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
-import net.lyragames.practice.manager.StatisticManager
 import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
-import net.lyragames.practice.match.snapshot.MatchSnapshot
-import net.lyragames.practice.match.team.Team
 import net.lyragames.practice.profile.Profile
-import net.lyragames.practice.profile.ProfileState
-import net.lyragames.practice.profile.hotbar.Hotbar
-import net.lyragames.practice.utils.EloUtil
-import org.bukkit.Bukkit
-import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.event.block.BlockBreakEvent
-
 
 /**
  * This Project is property of Zowpy © 2022
@@ -39,37 +25,6 @@ import org.bukkit.event.block.BlockBreakEvent
 class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, arena, ranked) {
 
     private var round = 1
-
-    override fun start() {
-
-        for (matchPlayer in players) {
-            if (matchPlayer.offline) continue
-
-            val player = matchPlayer.player
-            val profile = Profile.getByUUID(player.uniqueId)
-
-            PlayerUtil.reset(player)
-            PlayerUtil.denyMovement(player)
-
-            player.teleport(matchPlayer.spawn)
-
-            CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
-
-            profile?.getKitStatistic(kit.name)?.generateBooks(player)
-
-            countdowns.add(Countdown(
-                PracticePlugin.instance,
-                player,
-                "&aMatch starting in <seconds> seconds!",
-                6
-            ) {
-                player.sendMessage(CC.GREEN + "Match started!")
-                matchState = MatchState.FIGHTING
-                started = System.currentTimeMillis()
-                PlayerUtil.allowMovement(player)
-            })
-        }
-    }
 
     fun handleBreak(event: BlockBreakEvent) {
 

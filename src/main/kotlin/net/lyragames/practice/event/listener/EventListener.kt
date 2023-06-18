@@ -257,6 +257,7 @@ object EventListener : Listener {
 
     @EventHandler
     fun onInventoryClick(event: InventoryClickEvent) {
+        if (event.clickedInventory == null) return
         if (event.clickedInventory.type != InventoryType.PLAYER) return
 
         val profile = Profile.getByUUID(event.whoClicked.uniqueId)

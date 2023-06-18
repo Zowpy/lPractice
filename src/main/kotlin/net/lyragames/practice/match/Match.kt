@@ -109,7 +109,9 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
 
         players.forEach {
-            player.showPlayer(it.player)
+            if (!it.offline) {
+                player.showPlayer(it.player)
+            }
         }
 
         PlayerUtil.reset(player)
@@ -133,17 +135,43 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
 
         players.forEach {
-            player.hidePlayer(it.player)
+            if (!it.offline) {
+                player.hidePlayer(it.player)
+            }
         }
 
-        PlayerUtil.reset(player)
+        if (player != null) {
+            PlayerUtil.reset(player)
+
+            Hotbar.giveHotbar(profile)
+
+            if (Constants.SPAWN != null) {
+                player.teleport(Constants.SPAWN)
+            }
+        }
 
         spectators.removeIf { it.uuid == player.uniqueId }
+    }
 
-        Hotbar.giveHotbar(profile)
+    private fun removeSpec(player: Player) {
+        val profile = Profile.getByUUID(player.uniqueId)
+        profile?.state = ProfileState.LOBBY
+        profile?.spectatingMatch = null
 
-        if (Constants.SPAWN != null) {
-            player.teleport(Constants.SPAWN)
+        players.forEach {
+            if (!it.offline) {
+                player.hidePlayer(it.player)
+            }
+        }
+
+        if (player != null) {
+            PlayerUtil.reset(player)
+
+            Hotbar.giveHotbar(profile!!)
+
+            if (Constants.SPAWN != null) {
+                player.teleport(Constants.SPAWN)
+            }
         }
     }
 
@@ -153,18 +181,22 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         profile?.spectatingMatch = null
 
         players.forEach {
-            player.hidePlayer(it.player)
+            if (!it.offline) {
+                player.hidePlayer(it.player)
+            }
         }
 
-        PlayerUtil.reset(player)
+        if (player != null) {
+            PlayerUtil.reset(player)
+
+            Hotbar.giveHotbar(profile!!)
+
+            if (Constants.SPAWN != null) {
+                player.teleport(Constants.SPAWN)
+            }
+        }
 
         spectators.removeIf { it.uuid == player.uniqueId }
-
-        Hotbar.giveHotbar(profile!!)
-
-        if (Constants.SPAWN != null) {
-            player.teleport(Constants.SPAWN)
-        }
     }
 
     open fun canHit(player: Player, target: Player): Boolean {
@@ -277,15 +309,17 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             sendTitleBar(winners)
             endMessage(winners, losers)
 
-            if (!spectators.isEmpty()) {
-                for (i in 0..spectators.size) {
+            if (spectators.isNotEmpty()) {
+                for (i in 0 until spectators.size) {
                     val spectator = spectators[i]
 
                     if (spectator.player == null) continue
 
-                    forceRemoveSpectator(spectator.player)
+                    removeSpec(spectator.player)
                 }
             }
+
+            spectators.clear()
 
             matches.remove(this)
             reset()

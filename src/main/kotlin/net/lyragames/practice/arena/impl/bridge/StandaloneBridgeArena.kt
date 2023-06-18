@@ -30,9 +30,12 @@ class StandaloneBridgeArena(name: String) : StandaloneArena(name) {
     var bluePortal1: Location? = null
     var bluePortal2: Location? = null
 
+    var bluePortal: Cuboid? = null
+    var redPortal: Cuboid? = null
+
     override val isSetup: Boolean
-        get() = min != null && max != null && redSpawn != null && redPortal1 != null && redPortal2 != null
-                && blueSpawn != null && bluePortal1 != null && bluePortal2 != null
+        get() = min != null && max != null && redSpawn != null && redPortal != null
+                && blueSpawn != null && bluePortal != null
 
     override fun save() {
         val configFile = PracticePlugin.instance.arenasFile
@@ -49,6 +52,14 @@ class StandaloneBridgeArena(name: String) : StandaloneArena(name) {
         configSection.set("max", LocationUtil.serialize(max))
         configSection.set("deadzone", deadzone)
         configSection.set("type", arenaType.name)
+
+        if (redPortal1 != null && redPortal2 != null) {
+            redPortal = Cuboid(redPortal1, redPortal2)
+        }
+
+        if (bluePortal1 != null && bluePortal2 != null) {
+            bluePortal = Cuboid(bluePortal1, bluePortal2)
+        }
 
         if (duplicates.isNotEmpty()) {
             var i = 1

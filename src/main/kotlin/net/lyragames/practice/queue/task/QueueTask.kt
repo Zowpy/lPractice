@@ -6,6 +6,8 @@ import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
+import net.lyragames.practice.arena.impl.bridge.BridgeArena
+import net.lyragames.practice.arena.impl.bridge.StandaloneBridgeArena
 import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.kit.Kit
@@ -13,6 +15,7 @@ import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.impl.BedFightMatch
+import net.lyragames.practice.match.impl.BridgeMatch
 import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
@@ -37,58 +40,6 @@ object QueueTask: BukkitRunnable() {
 
     override fun run() {
         if (Bukkit.getOnlinePlayers().isEmpty()) return
-
-      /*  for (queue in QueueManager.queues) {
-            if (queue.queuePlayers.isEmpty()) continue
-
-            if (queue.queuePlayers.size >= queue.requiredPlayers) {
-                val queuePlayers = queue.queuePlayers.subList(0, queue.requiredPlayers)
-
-                val arena = ArenaManager.getFreeArena()
-
-                if (arena == null) {
-                    queuePlayers.stream().map { Bukkit.getPlayer(it.uuid) }.forEach { it.sendMessage("${CC.RED}There is no free arenas!") }
-                    continue
-                }
-
-                val match = Match(queue.kit, arena, queue.ranked)
-
-                val pos = ThreadLocalRandom.current().nextInt(2)
-                var indexed = 0
-
-                for (queuePlayer in queuePlayers) {
-                    if (indexed >= queue.requiredPlayers) continue
-
-                    val player = Bukkit.getPlayer(queuePlayer.uuid) ?: continue
-
-                    val profile = Profile.getByUUID(queuePlayer.uuid)
-
-                    profile?.match = match.uuid
-                    profile?.state = ProfileState.MATCH
-
-                    if (indexed == 0) {
-                        if (pos == 1) {
-                            match.addPlayer(player, arena.l1!!)
-                        }else {
-                            match.addPlayer(player, arena.l2!!)
-                        }
-                    }else {
-                        if (pos == 1) {
-                            match.addPlayer(player, arena.l2!!)
-                        }else {
-                            match.addPlayer(player, arena.l1!!)
-                        }
-                    }
-
-                    indexed++
-                }
-
-                queue.queuePlayers.removeAll(queuePlayers)
-                Match.matches.add(match)
-
-                match.start()
-            }
-        } */
 
         try {
             for (queue in QueueManager.queues) {
@@ -146,6 +97,8 @@ object QueueTask: BukkitRunnable() {
                             match = MLGRushMatch(queue.kit, arena, queue.ranked)
                         }else if (queue.kit.kitData.bedFights) {
                             match = BedFightMatch(queue.kit, arena, queue.ranked)
+                        }else if (queue.kit.kitData.bridge) {
+                            match = BridgeMatch(queue.kit, arena, queue.ranked)
                         }
 
                         val profile = Profile.getByUUID(firstPlayer.uniqueId)
@@ -183,6 +136,12 @@ object QueueTask: BukkitRunnable() {
 
                             match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
                             match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
+                        }else if (arena is BridgeArena) {
+                            match.addPlayer(firstPlayer, arena.blueSpawn!!)
+                            match.addPlayer(secondPlayer, arena.redSpawn!!)
+                        }else if (arena is StandaloneBridgeArena) {
+                            match.addPlayer(firstPlayer, arena.blueSpawn!!)
+                            match.addPlayer(secondPlayer, arena.redSpawn!!)
                         } else {
                             match.addPlayer(firstPlayer, arena.l1!!)
                             match.addPlayer(secondPlayer, arena.l2!!)

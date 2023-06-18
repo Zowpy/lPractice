@@ -3,8 +3,6 @@ package net.lyragames.practice.manager
 import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
-import org.bukkit.Material
-
 
 /**
  * This Project is property of Zowpy & EliteAres © 2022
@@ -49,6 +47,7 @@ object KitManager {
             kit.kitData.bedFights = section.getBoolean("kitData.bedFights")
             kit.kitData.hunger = section.getBoolean("kitData.hunger")
             kit.kitData.regeneration = section.getBoolean("kitData.regeneration")
+            kit.kitData.bridge = section.getBoolean("kitData.bridge")
 
             Kit.kits.add(kit)
         }

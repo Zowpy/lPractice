@@ -42,10 +42,7 @@ import net.lyragames.practice.match.ffa.listener.FFAListener
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
-import net.lyragames.practice.task.EnderPearlCooldownTask
-import net.lyragames.practice.task.EventAnnounceTask
-import net.lyragames.practice.task.TNTEventBlockRemovalTask
-import net.lyragames.practice.task.TNTTagTask
+import net.lyragames.practice.task.*
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.ExperienceOrb
@@ -141,6 +138,7 @@ class PracticePlugin : LyraPlugin() {
         TNTEventBlockRemovalTask
         TNTTagTask
         EnderPearlCooldownTask
+        ArrowCooldownTask
 
         if (tablistFile.getBoolean("tablist.enabled")) {
             //ziggurat = Ziggurat(this, TablistAdapter())

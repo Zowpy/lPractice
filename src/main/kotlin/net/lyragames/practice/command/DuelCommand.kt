@@ -5,6 +5,8 @@ import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
 import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
+import net.lyragames.practice.arena.impl.bridge.BridgeArena
+import net.lyragames.practice.arena.impl.bridge.StandaloneBridgeArena
 import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.duel.procedure.DuelProcedure
@@ -12,6 +14,7 @@ import net.lyragames.practice.duel.procedure.menu.DuelSelectKitMenu
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.impl.BedFightMatch
+import net.lyragames.practice.match.impl.BridgeMatch
 import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.profile.Profile
@@ -68,6 +71,8 @@ object DuelCommand {
             match = MLGRushMatch(duelRequest.kit, duelRequest.arena, false)
         }else if (duelRequest.kit.kitData.bedFights) {
             match = BedFightMatch(duelRequest.kit, duelRequest.arena, false)
+        }else if (duelRequest.kit.kitData.bridge) {
+            match = BridgeMatch(duelRequest.kit, duelRequest.arena, false)
         }
 
         if (arena is StandaloneBedWarsArena) {
@@ -94,6 +99,12 @@ object DuelCommand {
 
             match.getMatchPlayer(player.uniqueId)?.bed = arena.bed1
             match.getMatchPlayer(target.uniqueId)?.bed = arena.bed2
+        }else if (arena is BridgeArena) {
+            match.addPlayer(player, arena.blueSpawn!!)
+            match.addPlayer(target, arena.redSpawn!!)
+        }else if (arena is StandaloneBridgeArena) {
+            match.addPlayer(player, arena.blueSpawn!!)
+            match.addPlayer(target, arena.redSpawn!!)
         }else {
             match.addPlayer(player, arena.l1!!)
             match.addPlayer(target, arena.l2!!)
