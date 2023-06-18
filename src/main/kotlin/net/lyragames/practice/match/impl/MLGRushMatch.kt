@@ -10,6 +10,7 @@ import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.event.block.BlockBreakEvent
 
@@ -84,6 +85,7 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
         player.respawning = true
 
         PlayerUtil.reset(player.player)
+        player.player.gameMode = GameMode.SPECTATOR
 
         player.player.allowFlight = true
         player.player.isFlying = true

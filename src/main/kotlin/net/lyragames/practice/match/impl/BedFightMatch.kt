@@ -14,6 +14,7 @@ import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.match.team.Team
 import net.lyragames.practice.profile.Profile
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -186,6 +187,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         }
 
         PlayerUtil.reset(player.player)
+        player.player.gameMode = GameMode.SPECTATOR
 
         player.player.allowFlight = true
         player.player.isFlying = true
