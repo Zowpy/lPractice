@@ -8,13 +8,11 @@ import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchType
 import net.lyragames.practice.match.impl.TeamMatch
-import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
-import org.bukkit.DyeColor
+import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemFlag
 import java.util.function.Consumer
 
@@ -60,8 +58,6 @@ class KitStatistic constructor(val kit: String) {
         var i = 0
         val kit = Kit.getByName(this.kit)
 
-        val match = Match.getByUUID(profile!!.match!!)
-
         val customItemStack = CustomItemStack(
             player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY).addFlags(ItemFlag.HIDE_ENCHANTS)
                 .name(CC.RED + "Default").build()
@@ -71,24 +67,29 @@ class KitStatistic constructor(val kit: String) {
         customItemStack.clicked = Consumer { event ->
             val player1 = event.player
 
-            if (match!!.getMatchType() == MatchType.TEAM || match.getMatchType() == MatchType.BEDFIGHTS) {
-                val team = (match as TeamMatch).getTeamByPlayer(player.uniqueId)
+            if (profile!!.state == ProfileState.MATCH) {
+                val match = Match.getByUUID(profile.match!!)
 
-                val content = kit!!.content.clone()
+                if (match!!.getMatchType() == MatchType.TEAM || match.getMatchType() == MatchType.BEDFIGHTS) {
+                    val team = (match as TeamMatch).getTeamByPlayer(player.uniqueId)
 
-                val toBeChanged = content.filter { it.type == Material.WOOL || it.type == Material.STAINED_CLAY }
+                    val content = kit!!.content.clone()
 
-                if (team!!.name.equals("Red", true)) {
-                    toBeChanged.forEach { it.durability = 14 }
+                    val toBeChanged = content.filter { it.type == Material.WOOL || it.type == Material.STAINED_CLAY }
+
+                    if (team!!.name.equals("Red", true)) {
+                        toBeChanged.forEach { it.durability = 14 }
+                    } else {
+                        toBeChanged.forEach { it.durability = 11 }
+                    }
+
+                    player1.inventory.contents = content
                 }else {
-                    toBeChanged.forEach { it.durability = 11 }
+                    player1.inventory.contents = kit!!.content
                 }
-
-                player1.inventory.contents = content
             }else {
                 player1.inventory.contents = kit!!.content
             }
-
 
             player1.inventory.armorContents = kit.armorContent
             player1.updateInventory()
@@ -98,7 +99,7 @@ class KitStatistic constructor(val kit: String) {
 
         player.inventory.setItem(8, customItemStack.itemStack)
 
-        for (editedKit in profile.getKitStatistic(kit?.name!!)?.editedKits!!) {
+        for (editedKit in profile!!.getKitStatistic(kit?.name!!)?.editedKits!!) {
             if (editedKit == null) continue
 
             val item = CustomItemStack(

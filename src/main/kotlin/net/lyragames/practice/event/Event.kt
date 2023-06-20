@@ -69,8 +69,10 @@ open class Event(val host: UUID, val eventMap: EventMap) {
     }
 
     open fun getNextPlayers(): MutableList<EventPlayer> {
-        return players.stream().filter { !it.dead && !it.offline && round - it.roundsPlayed <= 1 }
-            .collect(Collectors.toList()).subList(0, 2)
+        return players.sortedBy { it.roundsPlayed }.filter { !it.dead && !it.offline }
+            .subList(0, 2).toMutableList()
+        //return players.filter { !it.dead && !it.offline && round - it.roundsPlayed <= 1 }
+            //.subList(0, 2).toMutableList()
     }
 
     open fun endRound(winner: EventPlayer?) {

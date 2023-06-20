@@ -474,11 +474,11 @@ object MatchListener : Listener {
                 }
 
                 if (event.entity is Arrow) {
-                    /*if (match.matchState != MatchState.FIGHTING) {
+                    if (match.matchState != MatchState.FIGHTING) {
                         event.isCancelled = true
-                        shooter.inventory.addItem(ItemStack(Material.ARROW))
+                        shooter.updateInventory()
                         return
-                    }*/
+                    }
 
                     if (match.kit.kitData.bridge) {
                         profile.arrowCooldown = Cooldown(PracticePlugin.instance, 6) {
@@ -491,7 +491,7 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onSleep(event: PlayerBedEnterEvent) {
         event.isCancelled = true
     }
@@ -508,6 +508,7 @@ object MatchListener : Listener {
 
             if (event.hasBlock() && player.gameMode != GameMode.CREATIVE) {
                 if (event.clickedBlock.type == Material.CHEST || event.clickedBlock.type == Material.FURNACE
+                    || event.clickedBlock.type == Material.TRAPPED_CHEST || event.clickedBlock.type.name.contains("FENCE_GATE")
                     || event.clickedBlock.type.name.contains("DOOR") || event.clickedBlock.type == Material.WORKBENCH
                 ) {
                     event.isCancelled = true
@@ -515,7 +516,7 @@ object MatchListener : Listener {
             }
 
             if (profile?.state != ProfileState.SPECTATING && profile?.state != ProfileState.QUEUE && profile?.state != ProfileState.LOBBY) {
-                if (profile!!.state == ProfileState.MATCH) {
+                if (profile!!.state == ProfileState.MATCH && event.hasItem()) {
                     val match = Match.getByUUID(profile.match!!)
 
                     if (event.item.type == Material.BOW ||
@@ -524,13 +525,16 @@ object MatchListener : Listener {
                         if (match!!.matchState != MatchState.FIGHTING) {
                             event.isCancelled = true
                             event.setUseItemInHand(Event.Result.DENY)
+
+                            player.updateInventory()
                         }
                     }
                 }
 
-                if (player.itemInHand != null && player.itemInHand.type == Material.ENDER_PEARL) {
+                if (event.hasItem() && event.item.type == Material.ENDER_PEARL) {
                     if (profile.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
                         event.setUseItemInHand(Event.Result.ALLOW)
+
                         profile.enderPearlCooldown = Cooldown(PracticePlugin.instance, 16) {
                             player.sendMessage("${CC.PRIMARY}You can now use the enderpearl.")
                             profile.enderPearlCooldown = null
@@ -538,6 +542,7 @@ object MatchListener : Listener {
                     } else {
                         event.isCancelled = true
                         event.setUseItemInHand(Event.Result.DENY)
+
                         player.sendMessage(
                             "${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${
                                 profile.enderPearlCooldown?.timeRemaining?.let {

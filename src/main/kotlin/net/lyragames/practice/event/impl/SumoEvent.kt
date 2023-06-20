@@ -11,7 +11,6 @@ import net.lyragames.practice.event.player.EventPlayer
 import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.profile.Profile
-import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import org.bukkit.Bukkit
 import java.util.*

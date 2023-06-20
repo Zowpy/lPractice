@@ -8,9 +8,9 @@ import org.bukkit.Location
 object Constants {
 
     var SPAWN: Location? = LocationUtil.deserialize(PracticePlugin.instance.settingsFile.getString("SPAWN"))
-    var FFA_SPAWN: Location? = LocationUtil.deserialize(PracticePlugin.instance.ffaFile.getString("spawn-location"))
-    var MIN: Location? = LocationUtil.deserialize(PracticePlugin.instance.ffaFile.getString("safe-zone.min"))
-    var MAX: Location? = LocationUtil.deserialize(PracticePlugin.instance.ffaFile.getString("safe-zone.max"))
+    var FFA_SPAWN: Location? = LocationUtil.deserialize(PracticePlugin.instance.ffaFile.getString("SPAWN"))
+    var MIN: Location? = LocationUtil.deserialize(PracticePlugin.instance.ffaFile.getString("SAFE-ZONE.MIN"))
+    var MAX: Location? = LocationUtil.deserialize(PracticePlugin.instance.ffaFile.getString("SAFE-ZONE.MAX"))
     var SAFE_ZONE: Cuboid? = null
 
     fun load() {

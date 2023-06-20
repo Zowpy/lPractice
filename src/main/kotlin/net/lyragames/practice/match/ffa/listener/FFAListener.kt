@@ -2,7 +2,6 @@ package net.lyragames.practice.match.ffa.listener
 
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.manager.FFAManager
-import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.entity.Player
@@ -65,6 +64,11 @@ object FFAListener : Listener {
                 if (Constants.SAFE_ZONE != null && Constants.SAFE_ZONE!!.l1 != null && Constants.SAFE_ZONE!!.l2 != null) {
                     if (Constants.SAFE_ZONE!!.contains(player.location) || Constants.SAFE_ZONE!!.contains(damager.location)) {
                         event.isCancelled = true
+                    }else {
+                        val ffaPlayer = FFAManager.getByUUID(profile.ffa!!)!!.getFFAPlayer(player.uniqueId)
+
+                        ffaPlayer.lastDamager = damager.uniqueId
+                        ffaPlayer.lastDamaged = System.currentTimeMillis()
                     }
                 }
             }
@@ -85,6 +89,12 @@ object FFAListener : Listener {
             if (killer != null) {
                 ffa.handleDeath(ffaPlayer, ffa.getFFAPlayer(killer.uniqueId))
             }else {
+
+                if (System.currentTimeMillis() - ffaPlayer.lastDamaged <= 1000 && ffaPlayer.lastDamager != null) {
+                    ffa.handleDeath(ffaPlayer, ffa.getFFAPlayer(ffaPlayer.lastDamager!!))
+                    return
+                }
+
                 ffa.handleDeath(ffaPlayer, null)
             }
         }
@@ -109,10 +119,12 @@ object FFAListener : Listener {
             val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)
 
             if (profile!!.state == ProfileState.FFA) {
-                val ffa = FFAManager.getByUUID(profile.uuid)
+                val ffa = FFAManager.getByUUID(profile.ffa!!)
                 val kit = ffa!!.kit
 
-                event.isCancelled = !(kit.kitData.regeneration && event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN)
+                if (!kit.kitData.regeneration && event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN) {
+                    event.isCancelled = true
+                }
             }
         }
     }

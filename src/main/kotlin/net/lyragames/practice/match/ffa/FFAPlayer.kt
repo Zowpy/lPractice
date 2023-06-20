@@ -4,7 +4,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 
-
 /**
  * This Project is property of Zowpy © 2022
  * Redistribution of this Project is not allowed
@@ -14,11 +13,14 @@ import java.util.*
  * Project: lPractice
  */
 
-class FFAPlayer(val uuid: UUID, name: String) {
+class FFAPlayer(val uuid: UUID, val name: String) {
 
     val player: Player get() = Bukkit.getPlayer(uuid)
 
     var kills = 0
     var killStreak = 0
     var death = 0
+
+    var lastDamager: UUID? = null
+    var lastDamaged = 0L
 }

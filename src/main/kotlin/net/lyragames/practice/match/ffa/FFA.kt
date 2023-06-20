@@ -32,6 +32,10 @@ class FFA(val kit: Kit) {
         if (killer != null) {
             killer.kills++
             killer.killStreak++
+
+            sendMessage("${CC.SECONDARY}${ffaPlayer.name} ${CC.PRIMARY}has been killed by ${CC.SECONDARY}${killer.name}${CC.PRIMARY}.")
+        }else {
+            sendMessage("${CC.SECONDARY}${ffaPlayer.name} ${CC.PRIMARY}died from natural causes.")
         }
 
         setup(ffaPlayer)
