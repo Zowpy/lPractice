@@ -17,6 +17,7 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityPortalEnterEvent
 
 class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, arena, ranked) {
@@ -114,11 +115,16 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
                 val player = matchPlayer.player
                 val profile = Profile.getByUUID(player.uniqueId)
 
+                if (profile!!.arrowCooldown != null) {
+                    profile.arrowCooldown!!.cancel()
+                    profile.arrowCooldown = null
+                }
+
                 PlayerUtil.reset(player)
                 PlayerUtil.denyMovement(player)
 
                 player.teleport(matchPlayer.spawn)
-                profile?.getKitStatistic(kit.name)?.generateBooks(player)
+                profile.getKitStatistic(kit.name)?.generateBooks(player)
 
                 countdowns.add(Countdown(
                     PracticePlugin.instance,
@@ -132,6 +138,22 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
                 })
             }
 
+        }
+    }
+
+    fun handlePlace(event: BlockPlaceEvent) {
+        var found = false
+
+        for (team in teams) {
+            if (team.portal!!.contains(event.block.x, team.portal!!.y1, event.block.z)) {
+                event.isCancelled = true
+                found = true
+                break
+            }
+        }
+
+        if (!found) {
+            blocksPlaced.add(event.block)
         }
     }
 

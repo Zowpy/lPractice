@@ -11,6 +11,8 @@ import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchType
+import net.lyragames.practice.match.impl.BedFightMatch
+import net.lyragames.practice.match.impl.BridgeMatch
 import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.match.player.TeamMatchPlayer
@@ -76,7 +78,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
 
                 val symbol = "⬤"
 
-                return configFile.getStringList("scoreboard.bedfight").stream()
+                return configFile.getStringList("scoreboard.mlgrush").stream()
                     .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
                         .replace("<queuing>", QueueManager.inQueue().toString()))
                         .replace("<in_match>", Match.inMatch().toString())
@@ -85,6 +87,58 @@ class ScoreboardAdapter(private val configFile: ConfigFile): AssembleAdapter {
                         .replace("<time>", match.getTime())
                         .replace("<points>", "${StringUtils.repeat("${CC.GREEN}$symbol", points)}${StringUtils.repeat("${CC.GRAY}$symbol", 5 - points)}")
                         .replace("<opponent_points>", "${StringUtils.repeat("${CC.GREEN}$symbol", opponentPoints)}${StringUtils.repeat("${CC.GRAY}$symbol", 5 - opponentPoints)}")}.collect(Collectors.toList())
+            }
+
+            if (match is BridgeMatch) {
+
+                    val matchPlayer = match.getMatchPlayer(player.uniqueId) as TeamMatchPlayer
+
+                    val team = match.getTeam(matchPlayer.teamUniqueId)
+                    val opponentTeam = match.getOpponentTeam(team!!)
+
+                    val points = team.points
+                    val opponentPoints = opponentTeam!!.points
+
+                    val symbol = "⬤"
+
+                    return configFile.getStringList("scoreboard.bridge")
+                        .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                            .replace("<queuing>", QueueManager.inQueue().toString()))
+                            .replace("<in_match>", Match.inMatch().toString())
+                            .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
+                            .replace("<kit>", match.kit.name)
+                            .replace("<time>", match.getTime())
+                            .replace("<points>", "${StringUtils.repeat("${CC.GREEN}$symbol", points)}${StringUtils.repeat("${CC.GRAY}$symbol", 5 - points)}")
+                            .replace("<opponent_points>", "${StringUtils.repeat("${CC.GREEN}$symbol", opponentPoints)}${StringUtils.repeat("${CC.GRAY}$symbol", 5 - opponentPoints)}")}.toMutableList()
+            }
+
+            if (match is BedFightMatch) {
+
+                val alive = "✔"
+                val dead = "✘"
+
+                val matchPlayer = match.getMatchPlayer(player.uniqueId) as TeamMatchPlayer
+
+                val team = match.getTeam(matchPlayer.teamUniqueId)
+
+                var red = "";
+                var blue = "";
+
+                for (t in match.teams) {
+                    if (t.name.equals("Red", true)) {
+                        red = "${if (t.broken) CC.RED + dead else CC.GREEN + alive} ${if (t.uuid == team!!.uuid) "${CC.GRAY}YOU" else ""}"
+                    }else {
+                        blue = "${if (t.broken) CC.RED + dead else CC.GREEN + alive} ${if (t.uuid == team!!.uuid) "${CC.GRAY}YOU" else ""}"
+                    }
+                }
+
+                return configFile.getStringList("scoreboard.bedfight")
+                    .map { CC.translate(it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
+                        .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
+                        .replace("<kit>", match.kit.name)
+                        .replace("<time>", match.getTime())
+                        .replace("<red>", red)
+                        .replace("<blue>", blue)) }.toMutableList()
             }
 
             if (match.kit.kitData.boxing) {

@@ -107,6 +107,10 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
             .findFirst().orElse(null)
     }
 
+    fun getTeamByPlayer(uuid: UUID): Team? {
+        return teams.first { team -> team.players.any { it.uuid == uuid } }
+    }
+
     fun getTeam(uuid: UUID): Team? {
         return teams.stream().filter { it.uuid == uuid }
             .findFirst().orElse(null)

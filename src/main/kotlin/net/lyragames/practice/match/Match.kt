@@ -261,7 +261,13 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 val bukkitPlayer = matchPlayer.player
                 val profile = Profile.getByUUID(matchPlayer.uuid)
 
+                if (profile!!.arrowCooldown != null) {
+                    profile.arrowCooldown!!.cancel()
+                    profile.arrowCooldown = null
+                }
+
                 val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
+
                 snapshot.potionsThrown = matchPlayer.potionsThrown
                 snapshot.potionsMissed = matchPlayer.potionsMissed
                 snapshot.longestCombo = matchPlayer.longestCombo

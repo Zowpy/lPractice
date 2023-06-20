@@ -45,6 +45,7 @@ import net.lyragames.practice.queue.task.QueueTask
 import net.lyragames.practice.task.*
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
@@ -137,6 +138,7 @@ class PracticePlugin : LyraPlugin() {
         EventAnnounceTask
         TNTEventBlockRemovalTask
         TNTTagTask
+        MatchSnapshotExpireTask
         EnderPearlCooldownTask
         ArrowCooldownTask
 

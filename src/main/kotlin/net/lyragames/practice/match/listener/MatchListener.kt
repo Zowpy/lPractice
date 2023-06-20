@@ -29,6 +29,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
 
@@ -83,9 +84,14 @@ object MatchListener : Listener {
 
 
             if (match.kit.kitData.build || match.kit.kitData.mlgRush || match.kit.kitData.bedFights || match.kit.kitData.bridge) {
-                if (match.arena.max!!.y <= event.block.y) {
+                if (!match.arena.bounds.isInCuboid(event.blockPlaced.location)) {
                     event.isCancelled = true
                     player.sendMessage("${CC.RED}You cannot place blocks here.")
+                    return
+                }
+
+                if (match.kit.kitData.bridge) {
+                    (match as BridgeMatch).handlePlace(event)
                     return
                 }
 
@@ -155,7 +161,7 @@ object MatchListener : Listener {
             val match = Match.getByUUID(profile.match!!)
             if (match!!.kit.kitData.build) {
                 match.blocksPlaced.add(event.blockClicked)
-            }else {
+            } else {
                 event.isCancelled = true
             }
         }
@@ -180,7 +186,7 @@ object MatchListener : Listener {
             val match = Match.getByUUID(profile.match!!)
             if (match!!.kit.kitData.build && match.blocksPlaced.contains(event.blockClicked)) {
                 match.blocksPlaced.remove(event.blockClicked)
-            }else {
+            } else {
                 event.isCancelled = true
             }
         }
@@ -206,7 +212,7 @@ object MatchListener : Listener {
             }
 
             match.droppedItems.add(event.itemDrop)
-        }else {
+        } else {
             event.isCancelled = true
         }
     }
@@ -232,10 +238,10 @@ object MatchListener : Listener {
 
             if (match.droppedItems.contains(event.item)) {
                 match.droppedItems.remove(event.item)
-            }else {
+            } else {
                 event.isCancelled = true
             }
-        }else {
+        } else {
             event.isCancelled = true
         }
     }
@@ -276,7 +282,7 @@ object MatchListener : Listener {
 
                 if (!match.canHit(player, damager)) {
                     event.isCancelled = true
-                }else {
+                } else {
                     if (matchPlayer!!.dead || matchPlayer1!!.dead || matchPlayer.respawning || matchPlayer1.respawning) {
                         event.isCancelled = true
                         return
@@ -316,7 +322,7 @@ object MatchListener : Listener {
             } else {
                 event.isCancelled = true
             }
-        }else if (event.entity is Player && event.damager == null || event.damager !is Player) {
+        } else if (event.entity is Player && event.damager == null || event.damager !is Player) {
             val player = event.entity as Player
             val profile = Profile.getByUUID(player.uniqueId)
 
@@ -373,7 +379,7 @@ object MatchListener : Listener {
     fun onRespawn(event: PlayerRespawnEvent) {
         if (Constants.SPAWN != null) {
             event.respawnLocation = Constants.SPAWN
-        }else {
+        } else {
             event.respawnLocation = event.player.location
         }
     }
@@ -436,7 +442,9 @@ object MatchListener : Listener {
                 val match = Match.getByUUID(profile.match!!)
                 val kit = match!!.kit
 
-                event.isCancelled = !(kit.kitData.regeneration && event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN)
+                if (!kit.kitData.regeneration && event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN) {
+                    event.isCancelled = true
+                }
             }
         }
     }
@@ -454,21 +462,30 @@ object MatchListener : Listener {
             if (profile?.state == ProfileState.MATCH) {
                 val match = Match.getByUUID(profile.match!!)
 
-                if (match?.matchState == MatchState.STARTING) {
+                if (match?.matchState != MatchState.FIGHTING) {
                     event.isCancelled = true
-                } else if (match?.matchState == MatchState.FIGHTING) {
-                    if (event.entity is ThrownPotion) {
-                        match.getMatchPlayer(shooter.uniqueId)!!.potionsThrown++
-                    }
+                    return
+                }
 
-                    if (event.entity is Arrow) {
-                        if (match.kit.kitData.bridge) {
-                            profile.arrowCooldown = Cooldown(PracticePlugin.instance, 6) {
-                                shooter.inventory.addItem(ItemStack(Material.ARROW))
-                            }
+
+                if (event.entity is ThrownPotion) {
+                    match.getMatchPlayer(shooter.uniqueId)!!.potionsThrown++
+                }
+
+                if (event.entity is Arrow) {
+                    /*if (match.matchState != MatchState.FIGHTING) {
+                        event.isCancelled = true
+                        shooter.inventory.addItem(ItemStack(Material.ARROW))
+                        return
+                    }*/
+
+                    if (match.kit.kitData.bridge) {
+                        profile.arrowCooldown = Cooldown(PracticePlugin.instance, 6) {
+                            shooter.inventory.addItem(ItemStack(Material.ARROW))
                         }
                     }
                 }
+
             }
         }
     }
@@ -490,14 +507,24 @@ object MatchListener : Listener {
 
             if (event.hasBlock() && player.gameMode != GameMode.CREATIVE) {
                 if (event.clickedBlock.type == Material.CHEST || event.clickedBlock.type == Material.FURNACE
-                    || event.clickedBlock.type.name.contains("DOOR")) {
+                    || event.clickedBlock.type.name.contains("DOOR")
+                ) {
                     event.isCancelled = true
                 }
             }
 
             if (profile?.state != ProfileState.SPECTATING && profile?.state != ProfileState.QUEUE && profile?.state != ProfileState.LOBBY) {
+                if (profile!!.state == ProfileState.MATCH) {
+                    val match = Match.getByUUID(profile.match!!)
+
+                    if (match!!.matchState != MatchState.FIGHTING) {
+                        event.isCancelled = true
+                        event.setUseItemInHand(Event.Result.DENY)
+                    }
+                }
+
                 if (player.itemInHand != null && player.itemInHand.type == Material.ENDER_PEARL) {
-                    if (profile!!.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
+                    if (profile.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
                         event.setUseItemInHand(Event.Result.ALLOW)
                         profile.enderPearlCooldown = Cooldown(PracticePlugin.instance, 16) {
                             player.sendMessage("${CC.PRIMARY}You can now use the enderpearl.")
@@ -506,9 +533,13 @@ object MatchListener : Listener {
                     } else {
                         event.isCancelled = true
                         event.setUseItemInHand(Event.Result.DENY)
-                        player.sendMessage("${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${profile.enderPearlCooldown?.timeRemaining?.let {
-                            TimeUtil.millisToSeconds(it)
-                        }}")
+                        player.sendMessage(
+                            "${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${
+                                profile.enderPearlCooldown?.timeRemaining?.let {
+                                    TimeUtil.millisToSeconds(it)
+                                }
+                            }"
+                        )
                     }
                 }
             }
@@ -622,7 +653,7 @@ object MatchListener : Listener {
                             matchPlayer.lastDamager = null
 
                             match.handleDeath(matchPlayer)
-                        }else {
+                        } else {
                             player.teleport(match.arena.bounds.center)
                         }
                     }
@@ -658,6 +689,16 @@ object MatchListener : Listener {
                     currentEvent.endRound(currentEvent.getOpponent(eventPlayer!!))
                 }
             }
+        }
+    }
+
+    @EventHandler
+    fun onInventoryClick(event: InventoryClickEvent) {
+        val player = event.whoClicked as Player
+        val profile = Profile.getByUUID(player.uniqueId)
+
+        if (profile!!.state == ProfileState.SPECTATING) {
+            event.isCancelled = true
         }
     }
 
