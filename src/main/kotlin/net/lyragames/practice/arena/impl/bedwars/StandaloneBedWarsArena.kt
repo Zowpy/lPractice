@@ -13,7 +13,9 @@ import com.sk89q.worldedit.session.ClipboardHolder
 import net.lyragames.llib.utils.Cuboid
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.StandaloneArena
+import net.lyragames.practice.arena.type.ArenaType
 import org.bukkit.Location
 import java.util.concurrent.ThreadLocalRandom
 
@@ -33,6 +35,9 @@ class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
 
     var blueSpawn: Location? = null
     var redSpawn: Location? = null
+
+    override var arenaType = ArenaType.BEDFIGHT
+        get() = ArenaType.BEDFIGHT
 
     override val isSetup: Boolean
         get() = blueSpawn != null && redSpawn != null && min != null && max != null && redBed != null && blueBed != null

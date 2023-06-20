@@ -3,24 +3,11 @@ package net.lyragames.practice.queue.task
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
-import net.lyragames.practice.arena.Arena
-import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
-import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
-import net.lyragames.practice.arena.impl.bridge.BridgeArena
-import net.lyragames.practice.arena.impl.bridge.StandaloneBridgeArena
-import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
-import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
-import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaManager
+import net.lyragames.practice.manager.MatchManager
 import net.lyragames.practice.manager.QueueManager
-import net.lyragames.practice.match.Match
-import net.lyragames.practice.match.impl.BedFightMatch
-import net.lyragames.practice.match.impl.BridgeMatch
-import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.profile.Profile
-import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
@@ -32,7 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable
  * Project: lPractice
  */
 
-object QueueTask: BukkitRunnable() {
+object QueueTask : BukkitRunnable() {
 
     init {
         runTaskTimer(PracticePlugin.instance, 40L, 40L)
@@ -63,7 +50,8 @@ object QueueTask: BukkitRunnable() {
                         val secondPlayer = Bukkit.getPlayer(secondQueueProfile.uuid) ?: continue
 
                         if (secondQueueProfile.pingFactor != 0 && PlayerUtil.getPing(firstPlayer) > secondQueueProfile.pingFactor ||
-                                firstQueueProfile.pingFactor != 0 && PlayerUtil.getPing(secondPlayer) > firstQueueProfile.pingFactor) {
+                            firstQueueProfile.pingFactor != 0 && PlayerUtil.getPing(secondPlayer) > firstQueueProfile.pingFactor
+                        ) {
                             continue
                         }
 
@@ -91,67 +79,17 @@ object QueueTask: BukkitRunnable() {
                         queue.queuePlayers.remove(firstQueueProfile)
                         queue.queuePlayers.remove(secondQueueProfile)
 
-                        var match = Match(queue.kit, arena, queue.ranked)
-
-                        if (queue.kit.kitData.mlgRush) {
-                            match = MLGRushMatch(queue.kit, arena, queue.ranked)
-                        }else if (queue.kit.kitData.bedFights) {
-                            match = BedFightMatch(queue.kit, arena, queue.ranked)
-                        }else if (queue.kit.kitData.bridge) {
-                            match = BridgeMatch(queue.kit, arena, queue.ranked)
-                        }
-
                         val profile = Profile.getByUUID(firstPlayer.uniqueId)
                         val profile1 = Profile.getByUUID(secondPlayer.uniqueId)
 
-                        profile?.match = match.uuid
-                        profile?.matchObject = match
-                        profile?.state = ProfileState.MATCH
-
-                        profile1?.match = match.uuid
-                        profile1?.matchObject = match
-                        profile1?.state = ProfileState.MATCH
-
-                        if (arena is StandaloneBedWarsArena) {
-                            match.addPlayer(firstPlayer, arena.blueSpawn!!)
-                            match.addPlayer(secondPlayer, arena.redSpawn!!)
-
-                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.blueBed
-                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.redBed
-                        }else if (arena is BedWarsArena) {
-                            match.addPlayer(firstPlayer, arena.blueSpawn!!)
-                            match.addPlayer(secondPlayer, arena.redSpawn!!)
-
-                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.blueBed
-                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.redBed
-                        } else if (arena is StandaloneMLGRushArena) {
-                            match.addPlayer(firstPlayer, arena.l1!!)
-                            match.addPlayer(secondPlayer, arena.l2!!)
-
-                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
-                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
-                        }else if (arena is MLGRushArena) {
-                            match.addPlayer(firstPlayer, arena.l1!!)
-                            match.addPlayer(secondPlayer, arena.l2!!)
-
-                            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
-                            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
-                        }else if (arena is BridgeArena) {
-                            match.addPlayer(firstPlayer, arena.blueSpawn!!)
-                            match.addPlayer(secondPlayer, arena.redSpawn!!)
-                        }else if (arena is StandaloneBridgeArena) {
-                            match.addPlayer(firstPlayer, arena.blueSpawn!!)
-                            match.addPlayer(secondPlayer, arena.redSpawn!!)
-                        } else {
-                            match.addPlayer(firstPlayer, arena.l1!!)
-                            match.addPlayer(secondPlayer, arena.l2!!)
-                        }
-
-                        generateMessage(firstPlayer, secondPlayer, queue.ranked, arena, queue.kit)
-
-                        Match.matches.add(match)
-
-                        match.start()
+                        val match = MatchManager.createMatch(
+                            queue.kit,
+                            arena,
+                            queue.ranked,
+                            false,
+                            firstPlayer,
+                            secondPlayer
+                        )
 
                         for (uuid in profile?.followers!!) {
                             val playerProfile = Profile.getByUUID(uuid)
@@ -173,33 +111,7 @@ object QueueTask: BukkitRunnable() {
                     }
                 }
             }
-        }catch (ignored: ConcurrentModificationException) {}
-    }
-
-    private fun generateMessage(firstPlayer: Player, secondPlayer: Player, ranked: Boolean, arena: Arena, kit: Kit) {
-        firstPlayer.sendMessage(" ")
-        secondPlayer.sendMessage(" ")
-
-        firstPlayer.sendMessage("${CC.PRIMARY}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"} Match")
-        secondPlayer.sendMessage("${CC.PRIMARY}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"} Match")
-
-        firstPlayer.sendMessage("${CC.PRIMARY} ⚫ Map: ${CC.SECONDARY}${arena.name}")
-        firstPlayer.sendMessage("${CC.PRIMARY} ⚫ Opponent: ${CC.RED}${secondPlayer.name}")
-        firstPlayer.sendMessage("${CC.PRIMARY} ⚫ Ping: ${CC.RED}${PlayerUtil.getPing(secondPlayer)} ms")
-
-        secondPlayer.sendMessage("${CC.PRIMARY} ⚫ Map: ${CC.SECONDARY}${arena.name}")
-        secondPlayer.sendMessage("${CC.PRIMARY} ⚫ Opponent: ${CC.RED}${firstPlayer.name}")
-        secondPlayer.sendMessage("${CC.PRIMARY} ⚫ Ping: ${CC.RED}${PlayerUtil.getPing(firstPlayer)} ms")
-
-        if (ranked) {
-            val profile = Profile.getByUUID(firstPlayer.uniqueId)
-            val profile1 = Profile.getByUUID(secondPlayer.uniqueId)
-
-            secondPlayer.sendMessage("${CC.PRIMARY} ⚫ ELO: ${CC.SECONDARY}${profile?.getKitStatistic(kit.name)?.elo}")
-            firstPlayer.sendMessage("${CC.PRIMARY} ⚫ ELO: ${CC.SECONDARY}${profile1?.getKitStatistic(kit.name)?.elo}")
+        } catch (ignored: ConcurrentModificationException) {
         }
-
-        firstPlayer.sendMessage(" ")
-        secondPlayer.sendMessage(" ")
     }
 }

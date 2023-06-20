@@ -1,6 +1,7 @@
 package net.lyragames.practice.arena.impl.bedwars
 
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.type.ArenaType
 import org.bukkit.Location
 
 
@@ -20,4 +21,7 @@ class BedWarsArena(name: String) : Arena(name) {
 
     var blueSpawn: Location? = null
     var redSpawn: Location? = null
+
+    override var arenaType = ArenaType.BEDFIGHT
+        get() = ArenaType.BEDFIGHT
 }

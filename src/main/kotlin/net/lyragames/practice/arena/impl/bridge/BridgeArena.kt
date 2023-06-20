@@ -2,6 +2,7 @@ package net.lyragames.practice.arena.impl.bridge
 
 import net.lyragames.llib.utils.Cuboid
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.type.ArenaType
 import org.bukkit.Location
 
 class BridgeArena(name: String) : Arena(name) {
@@ -16,4 +17,7 @@ class BridgeArena(name: String) : Arena(name) {
 
     var bluePortal: Cuboid? = null
     var redPortal: Cuboid? = null
+
+    override var arenaType = ArenaType.BRIDGE
+        get() = ArenaType.BRIDGE
 }

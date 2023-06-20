@@ -14,6 +14,7 @@ import net.lyragames.llib.utils.Cuboid
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.impl.StandaloneArena
+import net.lyragames.practice.arena.type.ArenaType
 import org.bukkit.Location
 import java.util.concurrent.ThreadLocalRandom
 
@@ -30,6 +31,9 @@ class StandaloneMLGRushArena(name: String) : StandaloneArena(name) {
 
     var bed1: Location? = null
     var bed2: Location? = null
+
+    override var arenaType = ArenaType.MLGRUSH
+        get() = ArenaType.MLGRUSH
 
     override val isSetup: Boolean
         get() = l1 != null && l2 != null && min != null && max != null && bed1 != null && bed2 != null
@@ -69,6 +73,8 @@ class StandaloneMLGRushArena(name: String) : StandaloneArena(name) {
     }
 
     override fun duplicate(world: org.bukkit.World, times: Int) {
+        if (duplicate) return
+
         for (i in 0 until times) {
             val random = ThreadLocalRandom.current().nextDouble(10.0) + 1
             val offsetMultiplier = ThreadLocalRandom.current().nextDouble(10000.0) + 1

@@ -1,6 +1,7 @@
 package net.lyragames.practice.arena.impl.mlgrush
 
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.arena.type.ArenaType
 import org.bukkit.Location
 
 
@@ -17,4 +18,7 @@ class MLGRushArena(name: String) : Arena(name) {
 
     var bed1: Location? = null
     var bed2: Location? = null
+
+    override var arenaType = ArenaType.MLGRUSH
+        get() = ArenaType.MLGRUSH
 }

@@ -20,7 +20,8 @@ open class Arena(val name: String) {
     var l2: Location? = null
     var min: Location? = null
     var max: Location? = null
-    var arenaType = ArenaType.NORMAL
+
+    open var arenaType = ArenaType.NORMAL
 
     var deadzone = 0
     var free = true

@@ -4,15 +4,10 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.menu.Button
 import net.lyragames.menu.ItemBuilder
 import net.lyragames.menu.Menu
-import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaManager
-import net.lyragames.practice.match.Match
-import net.lyragames.practice.match.impl.TeamMatch
+import net.lyragames.practice.manager.MatchManager
 import net.lyragames.practice.party.Party
-import net.lyragames.practice.profile.Profile
-import net.lyragames.practice.profile.ProfileState
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
@@ -58,23 +53,8 @@ class PartySplitKitSelect(private val party: Party): Menu() {
                             return
                         }
 
-                        val match = TeamMatch(kit, arena, false)
-                        match.friendly = true
-
-                        for (uuid in party.players) {
-                            val partyPlayer = Bukkit.getPlayer(uuid) ?: continue
-                            val profile = Profile.getByUUID(uuid)
-
-                            profile?.match = match.uuid
-                            profile?.matchObject = match
-                            profile?.state = ProfileState.MATCH
-                            match.addPlayer(partyPlayer, arena.l1!!)
-                        }
-
-                        Match.matches.add(match)
-
                         player.closeInventory()
-                        match.start()
+                        MatchManager.createTeamMatch(kit, arena, false, true, party.players)
                     }
                 }
             }

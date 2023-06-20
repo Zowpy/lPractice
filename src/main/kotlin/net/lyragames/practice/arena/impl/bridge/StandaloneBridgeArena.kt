@@ -15,6 +15,7 @@ import net.lyragames.llib.utils.Cuboid
 import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.impl.StandaloneArena
+import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.utils.LocationHelper
 import org.bukkit.Location
 import org.bukkit.World
@@ -32,6 +33,9 @@ class StandaloneBridgeArena(name: String) : StandaloneArena(name) {
 
     var bluePortal: Cuboid? = null
     var redPortal: Cuboid? = null
+
+    override var arenaType = ArenaType.BRIDGE
+        get() = ArenaType.BRIDGE
 
     override val isSetup: Boolean
         get() = min != null && max != null && redSpawn != null && redPortal != null

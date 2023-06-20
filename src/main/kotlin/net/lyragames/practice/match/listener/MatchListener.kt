@@ -32,6 +32,7 @@ import org.bukkit.event.entity.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.Potion
 
 /**
  * This Project is property of Zowpy © 2022
@@ -507,7 +508,7 @@ object MatchListener : Listener {
 
             if (event.hasBlock() && player.gameMode != GameMode.CREATIVE) {
                 if (event.clickedBlock.type == Material.CHEST || event.clickedBlock.type == Material.FURNACE
-                    || event.clickedBlock.type.name.contains("DOOR")
+                    || event.clickedBlock.type.name.contains("DOOR") || event.clickedBlock.type == Material.WORKBENCH
                 ) {
                     event.isCancelled = true
                 }
@@ -517,9 +518,13 @@ object MatchListener : Listener {
                 if (profile!!.state == ProfileState.MATCH) {
                     val match = Match.getByUUID(profile.match!!)
 
-                    if (match!!.matchState != MatchState.FIGHTING) {
-                        event.isCancelled = true
-                        event.setUseItemInHand(Event.Result.DENY)
+                    if (event.item.type == Material.BOW ||
+                        (event.item.type == Material.POTION && Potion.fromItemStack(event.item).isSplash)
+                    ) {
+                        if (match!!.matchState != MatchState.FIGHTING) {
+                            event.isCancelled = true
+                            event.setUseItemInHand(Event.Result.DENY)
+                        }
                     }
                 }
 
