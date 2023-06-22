@@ -25,7 +25,7 @@ object FFAListener : Listener {
         if (profile?.state == ProfileState.FFA) {
             val ffa = FFAManager.getByUUID(profile.ffa!!) ?: return
 
-            ffa.droppedItems.add(event.itemDrop)
+            ffa.handleDrop(event)
         }
     }
 
@@ -39,7 +39,7 @@ object FFAListener : Listener {
 
             if (ffa.droppedItems.contains(event.item)) {
                 ffa.droppedItems.remove(event.item)
-            }else {
+            } else {
                 event.isCancelled = true
             }
         }
@@ -64,10 +64,10 @@ object FFAListener : Listener {
                 if (Constants.SAFE_ZONE != null && Constants.SAFE_ZONE!!.l1 != null && Constants.SAFE_ZONE!!.l2 != null) {
                     if (Constants.SAFE_ZONE!!.contains(player.location) || Constants.SAFE_ZONE!!.contains(damager.location)) {
                         event.isCancelled = true
-                    }else {
+                    } else {
                         val ffaPlayer = FFAManager.getByUUID(profile.ffa!!)!!.getFFAPlayer(player.uniqueId)
 
-                        ffaPlayer.lastDamager = damager.uniqueId
+                        ffaPlayer!!.lastDamager = damager.uniqueId
                         ffaPlayer.lastDamaged = System.currentTimeMillis()
                     }
                 }
@@ -87,10 +87,10 @@ object FFAListener : Listener {
             val killer = player.killer
 
             if (killer != null) {
-                ffa.handleDeath(ffaPlayer, ffa.getFFAPlayer(killer.uniqueId))
-            }else {
+                ffa.handleDeath(ffaPlayer!!, ffa.getFFAPlayer(killer.uniqueId))
+            } else {
 
-                if (System.currentTimeMillis() - ffaPlayer.lastDamaged <= 1000 && ffaPlayer.lastDamager != null) {
+                if (System.currentTimeMillis() - ffaPlayer!!.lastDamaged <= 1000 && ffaPlayer.lastDamager != null) {
                     ffa.handleDeath(ffaPlayer, ffa.getFFAPlayer(ffaPlayer.lastDamager!!))
                     return
                 }
@@ -135,14 +135,9 @@ object FFAListener : Listener {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.state == ProfileState.FFA) {
+            val ffa = FFAManager.getByUUID(profile.ffa!!)
 
-            if (profile.ffa != null) {
-                val ffa = FFAManager.getByUUID(profile.ffa!!)
-
-                ffa?.players?.removeIf { it.uuid == player.uniqueId }
-                profile.state = ProfileState.LOBBY
-                profile.ffa = null
-            }
+            ffa!!.handleLeave(ffa.getFFAPlayer(player.uniqueId)!!, true)
         }
     }
 }

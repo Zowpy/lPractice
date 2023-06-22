@@ -26,6 +26,7 @@ import net.lyragames.practice.database.Mongo
 import net.lyragames.practice.database.MongoCredentials
 import net.lyragames.practice.duel.DuelRequest
 import net.lyragames.practice.duel.gson.DuelRequestGsonAdapter
+import net.lyragames.practice.entity.EntityHider
 import net.lyragames.practice.event.listener.EventListener
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.EventMapProvider
@@ -140,6 +141,9 @@ class PracticePlugin : LyraPlugin() {
         MatchSnapshotExpireTask
         EnderPearlCooldownTask
         ArrowCooldownTask
+        FFAItemClearTask
+
+        //EntityHider(this, EntityHider.Policy.WHITELIST).init()
 
         if (tablistFile.getBoolean("tablist.enabled")) {
             //ziggurat = Ziggurat(this, TablistAdapter())

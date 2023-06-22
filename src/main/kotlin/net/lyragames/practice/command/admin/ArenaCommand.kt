@@ -247,6 +247,9 @@ object ArenaCommand {
             Arena.arenas.add(newArena)
 
             newArena.save()
+        }else {
+            arena.arenaType = type
+            arena.save()
         }
 
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s type to ${CC.SECONDARY}${type.name}${CC.PRIMARY}!")

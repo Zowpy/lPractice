@@ -1,11 +1,16 @@
 package net.lyragames.practice.listener
 
+import net.lyragames.practice.profile.Profile
+import org.bukkit.entity.ItemFrame
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBurnEvent
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.block.LeavesDecayEvent
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.hanging.HangingBreakEvent
+import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 
 object WorldListener : Listener {
@@ -33,6 +38,28 @@ object WorldListener : Listener {
     @EventHandler
     fun blockPhysics(event: BlockPhysicsEvent) {
         event.isCancelled = true
+    }
+
+    @EventHandler
+    fun frame(event: EntityDamageByEntityEvent) {
+        if (event.entity is ItemFrame) {
+            val profile = Profile.getByUUID((event.damager as Player).uniqueId)
+
+            if (!profile!!.canBuild) {
+                event.isCancelled = true
+            }
+        }
+    }
+
+    @EventHandler
+    fun frame(event: PlayerInteractEntityEvent) {
+        if (event.rightClicked is ItemFrame) {
+            val profile = Profile.getByUUID(event.player.uniqueId)
+
+            if (!profile!!.canBuild) {
+                event.isCancelled = true
+            }
+        }
     }
 
     /*@EventHandler

@@ -74,10 +74,11 @@ class EntityHider(plugin: PracticePlugin, policy: Policy) {
     private val bukkitListener: Listener
     private val protocolListener: PacketAdapter
     private val policy: Policy
+
     @SneakyThrows
     fun init() {
         manager.addPacketListener(protocolListener)
-        plugin.getServer().getPluginManager().registerEvents(bukkitListener, plugin)
+        plugin.server.pluginManager.registerEvents(bukkitListener, plugin)
         itemOwner = EntityItem::class.java.getDeclaredField("f")
         itemOwner?.isAccessible = true
     }

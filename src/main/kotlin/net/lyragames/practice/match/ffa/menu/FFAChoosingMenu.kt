@@ -59,9 +59,10 @@ class FFAChoosingMenu: Menu() {
                         }
 
                         val ffaPlayer = FFAPlayer(player.uniqueId, player.name)
-                        ffa?.players?.add(ffaPlayer)
+                        ffa!!.players.add(ffaPlayer)
 
-                        ffa?.setup(ffaPlayer)
+                        ffa.setup(ffaPlayer)
+                        ffa.firstSetup(ffaPlayer)
 
                         player.closeInventory()
                         player.sendMessage("${CC.GREEN}Successfully joined FFA!")

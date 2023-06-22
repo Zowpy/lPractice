@@ -135,7 +135,7 @@ object MatchListener : Listener {
                 return
             }
 
-            if (match.kit.kitData.build || match.kit.kitData.bridge && match.blocksPlaced.contains(event.block)) {
+            if ((match.kit.kitData.build || match.kit.kitData.bridge) && match.blocksPlaced.contains(event.block)) {
                 match.blocksPlaced.remove(event.block)
             } else {
                 event.isCancelled = true
@@ -185,6 +185,7 @@ object MatchListener : Listener {
 
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
+
             if (match!!.kit.kitData.build && match.blocksPlaced.contains(event.blockClicked)) {
                 match.blocksPlaced.remove(event.blockClicked)
             } else {
@@ -213,8 +214,6 @@ object MatchListener : Listener {
             }
 
             match.droppedItems.add(event.itemDrop)
-        } else {
-            event.isCancelled = true
         }
     }
 
@@ -242,8 +241,6 @@ object MatchListener : Listener {
             } else {
                 event.isCancelled = true
             }
-        } else {
-            event.isCancelled = true
         }
     }
 
@@ -370,7 +367,17 @@ object MatchListener : Listener {
 
     @EventHandler
     fun onSpawn(event: EntitySpawnEvent) {
-        if (event.entity.type == EntityType.PLAYER) return
+        /*if (event.entity.type == EntityType.PLAYER
+            || event.entity.type == EntityType.PAINTING
+            || event.entity.type == EntityType.ITEM_FRAME
+            || event.entity.type == EntityType.DROPPED_ITEM
+            || event.entity.type == EntityType.ARMOR_STAND
+            || event.entity.type == EntityType.FAKE_PLAYER
+            || event.entity.type == EntityType.FISHING_HOOK
+            || event.entity.type == EntityType.) return */
+
+        if (event.entity.type == EntityType.PLAYER || !event.entity.type.isAlive
+            || !event.entity.type.isSpawnable) return
 
         event.isCancelled = true
         event.entity.remove()
@@ -510,6 +517,7 @@ object MatchListener : Listener {
                 if (event.clickedBlock.type == Material.CHEST || event.clickedBlock.type == Material.FURNACE
                     || event.clickedBlock.type == Material.TRAPPED_CHEST || event.clickedBlock.type.name.contains("FENCE_GATE")
                     || event.clickedBlock.type.name.contains("DOOR") || event.clickedBlock.type == Material.WORKBENCH
+                    || event.clickedBlock.type == Material.ITEM_FRAME
                 ) {
                     event.isCancelled = true
                 }
