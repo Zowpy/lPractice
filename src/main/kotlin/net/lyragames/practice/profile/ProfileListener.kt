@@ -1,17 +1,22 @@
 package net.lyragames.practice.profile
 
+import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
-import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
+import net.lyragames.practice.manager.FFAManager
+import net.lyragames.practice.manager.QueueManager
+import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy
 import org.bukkit.Bukkit
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
-
+import org.bukkit.event.player.PlayerQuitEvent
 
 /**
  * This Project is property of Zowpy © 2022
@@ -59,5 +64,63 @@ object ProfileListener: Listener {
             event.player.hidePlayer(player)
             player.hidePlayer(event.player)
         }
+
+        val entityPlayer = (event.player as CraftPlayer).handle
+
+        for (ffa in FFAManager.ffaMatches) {
+            for (item in ffa.droppedItems) {
+                val destroy = PacketPlayOutEntityDestroy(item.entityId)
+
+                entityPlayer.playerConnection.sendPacket(destroy)
+            }
+        }
+    }
+
+    @EventHandler
+    fun onQuit(event: PlayerQuitEvent) {
+        val player = event.player
+        val profile = Profile.getByUUID(player.uniqueId)
+
+        if (profile?.state == ProfileState.QUEUE) {
+
+            if (profile.queuePlayer != null) {
+
+                val queue = QueueManager.getQueue(player.uniqueId)
+                queue?.queuePlayers?.remove(profile.queuePlayer)
+
+                profile.state = ProfileState.LOBBY
+                profile.queuePlayer = null
+            }
+
+        }
+
+        if (profile?.state == ProfileState.MATCH) {
+
+            if (profile.match != null) {
+
+                val match = Match.getByUUID(profile.match!!)
+
+                match?.handleQuit(match.getMatchPlayer(player.uniqueId)!!)
+            }
+        }
+
+        if (profile?.state == ProfileState.SPECTATING) {
+
+            if (profile.spectatingMatch != null) {
+
+                val match = Match.getByUUID(profile.spectatingMatch!!)
+
+                match?.removeSpectator(player)
+            }
+        }
+
+        if (profile?.state == ProfileState.FFA) {
+            val ffa = FFAManager.getByUUID(profile.ffa!!)
+
+            ffa!!.handleLeave(ffa.getFFAPlayer(player.uniqueId)!!, true)
+        }
+
+        CustomItemStack.getCustomItemStacks().removeIf { it.uuid == player.uniqueId }
+        Profile.profiles.remove(profile)
     }
 }

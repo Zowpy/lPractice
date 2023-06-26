@@ -13,7 +13,6 @@ import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerPickupItemEvent
-import org.bukkit.event.player.PlayerQuitEvent
 
 object FFAListener : Listener {
 
@@ -126,18 +125,6 @@ object FFAListener : Listener {
                     event.isCancelled = true
                 }
             }
-        }
-    }
-
-    @EventHandler
-    fun onQuit(event: PlayerQuitEvent) {
-        val player = event.player
-        val profile = Profile.getByUUID(player.uniqueId)
-
-        if (profile?.state == ProfileState.FFA) {
-            val ffa = FFAManager.getByUUID(profile.ffa!!)
-
-            ffa!!.handleLeave(ffa.getFFAPlayer(player.uniqueId)!!, true)
         }
     }
 }

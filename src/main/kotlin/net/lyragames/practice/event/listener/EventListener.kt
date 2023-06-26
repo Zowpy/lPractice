@@ -317,10 +317,25 @@ object EventListener : Listener {
                     return
                 }
 
+                if (currentEvent.type == EventType.SUMO ||
+                    currentEvent.type == EventType.TNT_RUN ||
+                    currentEvent.type == EventType.TNT_TAG
+                ) {
+                    if (event.cause == EntityDamageEvent.DamageCause.FALL) {
+                        event.isCancelled = true
+                    }
+                }
+
                 if (currentEvent.type == EventType.BRACKETS) {
                     val bracketEvent = currentEvent as BracketsEvent
 
-                    event.isCancelled = !(bracketEvent.kit.kitData.fallDamage && bracketEvent.isPlaying(profile.uuid))
+                    if (bracketEvent.kit.kitData.fallDamage && event.cause == EntityDamageEvent.DamageCause.FALL) {
+                        event.isCancelled = true
+                    }
+
+                    if (!bracketEvent.isPlaying(profile.uuid)) {
+                        event.isCancelled = true
+                    }
                 }
             }
         }

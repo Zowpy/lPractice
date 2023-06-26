@@ -1,7 +1,5 @@
 package net.lyragames.practice.match.ffa
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
@@ -11,6 +9,7 @@ import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.utils.wrapper.WrapperPlayServerSpawnEntity
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityMetadata
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity
@@ -101,12 +100,11 @@ class FFA(val kit: Kit) {
         if (!offline) {
             val player = ffaPlayer.player
             val profile = Profile.getByUUID(ffaPlayer.uuid)
+            val entityPlayer = (player as CraftPlayer).handle
 
             for (item in droppedItems) {
-                val packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_DESTROY)
-                packet.integerArrays.write(0, intArrayOf(item.entityId))
-
-                ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet)
+                val destroy = PacketPlayOutEntityDestroy(item.entityId)
+                entityPlayer.playerConnection.sendPacket(destroy)
             }
 
             PlayerUtil.reset(player)
@@ -142,10 +140,8 @@ class FFA(val kit: Kit) {
             for (player in Bukkit.getOnlinePlayers()) {
                 if (inFFA(player.uniqueId)) continue
 
-                val packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_DESTROY)
-                packet.integerArrays.write(0, intArrayOf(item.entityId))
-
-                ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet)
+                val destroy = PacketPlayOutEntityDestroy(item.entityId)
+                (player as CraftPlayer).handle.playerConnection.sendPacket(destroy)
             }
         }, 1L)
     }

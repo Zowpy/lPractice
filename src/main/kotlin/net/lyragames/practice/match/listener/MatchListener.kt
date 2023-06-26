@@ -594,48 +594,6 @@ object MatchListener : Listener {
     }
 
     @EventHandler
-    fun onQuit(event: PlayerQuitEvent) {
-        val player = event.player
-        val profile = Profile.getByUUID(player.uniqueId)
-
-        if (profile?.state == ProfileState.QUEUE) {
-
-            if (profile.queuePlayer != null) {
-
-                val queue = QueueManager.getQueue(player.uniqueId)
-                queue?.queuePlayers?.remove(profile.queuePlayer)
-
-                profile.state = ProfileState.LOBBY
-                profile.queuePlayer = null
-            }
-
-        }
-
-        if (profile?.state == ProfileState.MATCH) {
-
-            if (profile.match != null) {
-
-                val match = Match.getByUUID(profile.match!!)
-
-                match?.handleQuit(match.getMatchPlayer(player.uniqueId)!!)
-            }
-        }
-
-        if (profile?.state == ProfileState.SPECTATING) {
-
-            if (profile.spectatingMatch != null) {
-
-                val match = Match.getByUUID(profile.spectatingMatch!!)
-
-                match?.removeSpectator(player)
-            }
-        }
-
-        CustomItemStack.getCustomItemStacks().removeIf { it.uuid == player.uniqueId }
-        Profile.profiles.remove(profile)
-    }
-
-    @EventHandler
     fun onMove(event: PlayerMoveEvent) {
         if (event.to == event.from) return
 
@@ -686,9 +644,7 @@ object MatchListener : Listener {
                 val match = Match.getByUUID(profile.match!!)
 
                 if (match?.kit?.kitData?.sumo!!) {
-                    if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
-                        match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
-                    }
+                    match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
                 }
 
             } else if (profile.state == ProfileState.EVENT) {
