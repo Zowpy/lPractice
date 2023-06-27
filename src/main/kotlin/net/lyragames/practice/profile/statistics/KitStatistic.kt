@@ -14,8 +14,8 @@ import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
 import java.util.function.Consumer
-
 
 /**
  * This Project is property of Zowpy © 2022
@@ -41,7 +41,7 @@ class KitStatistic constructor(val kit: String) {
     var editedKits: MutableList<EditedKit?> = mutableListOf(null, null, null, null)
 
     fun replaceKit(index: Int, loadout: EditedKit?) {
-        editedKits.set(index, loadout)
+        editedKits[index] = loadout
     }
 
     fun deleteKit(loadout: EditedKit?) {
@@ -58,63 +58,54 @@ class KitStatistic constructor(val kit: String) {
         var i = 0
         val kit = Kit.getByName(this.kit)
 
+        if (editedKits.isEmpty() || editedKits.none { it != null }) {
+            giveContents(player, profile!!, kit!!.content, kit.armorContent)
+            return
+        }
+
+        if (profile!!.state == ProfileState.MATCH) {
+            val match = Match.getByUUID(profile.match!!)
+            val matchPlayer = match!!.getMatchPlayer(profile.uuid)
+
+            if (matchPlayer!!.selectedKitArmor != null || matchPlayer.selectedKitContent != null) {
+                giveContents(player, profile, matchPlayer.selectedKitContent!!, matchPlayer.selectedKitArmor!!)
+                return
+            }
+        }
+
         val customItemStack = CustomItemStack(
-            player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY).addFlags(ItemFlag.HIDE_ENCHANTS)
+            player.uniqueId, ItemBuilder(Material.BOOK)
+                .enchantment(Enchantment.DURABILITY)
+                .addFlags(ItemFlag.HIDE_ENCHANTS)
                 .name(CC.RED + "Default").build()
         )
+
         customItemStack.isRightClick = true
         customItemStack.isRemoveOnClick = true
-        customItemStack.clicked = Consumer { event ->
-            val player1 = event.player
-
-            if (profile!!.state == ProfileState.MATCH) {
-                val match = Match.getByUUID(profile.match!!)
-
-                if (match!!.getMatchType() == MatchType.TEAM || match.getMatchType() == MatchType.BEDFIGHTS) {
-                    val team = (match as TeamMatch).getTeamByPlayer(player.uniqueId)
-
-                    val content = kit!!.content.clone()
-
-                    val toBeChanged = content.filter { it.type == Material.WOOL || it.type == Material.STAINED_CLAY }
-
-                    if (team!!.name.equals("Red", true)) {
-                        toBeChanged.forEach { it.durability = 14 }
-                    } else {
-                        toBeChanged.forEach { it.durability = 11 }
-                    }
-
-                    player1.inventory.contents = content
-                }else {
-                    player1.inventory.contents = kit!!.content
-                }
-            }else {
-                player1.inventory.contents = kit!!.content
-            }
-
-            player1.inventory.armorContents = kit.armorContent
-            player1.updateInventory()
+        customItemStack.clicked = Consumer {
+            giveContents(player, profile, kit!!.content, kit.armorContent, true)
         }
 
         customItemStack.create()
 
         player.inventory.setItem(8, customItemStack.itemStack)
 
-        for (editedKit in profile!!.getKitStatistic(kit?.name!!)?.editedKits!!) {
+        for (editedKit in profile.getKitStatistic(kit?.name!!)?.editedKits!!) {
             if (editedKit == null) continue
 
             val item = CustomItemStack(
-                player.uniqueId, ItemBuilder(Material.BOOK).enchantment(Enchantment.DURABILITY).addFlags(ItemFlag.HIDE_ENCHANTS)
-                    .name(CC.RED + editedKit.name).build()
+                player.uniqueId,
+                ItemBuilder(Material.BOOK)
+                    .enchantment(Enchantment.DURABILITY)
+                    .addFlags(ItemFlag.HIDE_ENCHANTS)
+                    .name(CC.RED + editedKit.name)
+                    .build()
             )
 
             item.isRightClick = true
             item.isRemoveOnClick = true
-            item.clicked = Consumer { event ->
-                val player1 = event.player
-
-                player1.inventory.contents = editedKit.content
-                player1.inventory.armorContents = editedKit.armorContent
-                player1.updateInventory()
+            item.clicked = Consumer {
+                giveContents(player, profile, editedKit.content!!, editedKit.armorContent!!, true)
             }
 
             item.create()
@@ -122,6 +113,42 @@ class KitStatistic constructor(val kit: String) {
 
             if (i++ == 8) i++
         }
+    }
+
+    private fun giveContents(player: Player, profile: Profile, contents: Array<ItemStack>, armorContent: Array<ItemStack>, edit: Boolean = false) {
+        if (profile.state == ProfileState.MATCH) {
+            val match = Match.getByUUID(profile.match!!)
+
+            if (edit) {
+                val matchPlayer = match!!.getMatchPlayer(player.uniqueId)
+
+                matchPlayer!!.selectedKitContent = contents
+                matchPlayer.selectedKitArmor = armorContent
+            }
+
+            if (match!!.getMatchType() == MatchType.TEAM || match.getMatchType() == MatchType.BEDFIGHTS) {
+                val team = (match as TeamMatch).getTeamByPlayer(player.uniqueId)
+
+                val content = contents.clone()
+
+                val toBeChanged = content.filter { it.type == Material.WOOL || it.type == Material.STAINED_CLAY }
+
+                if (team!!.name.equals("Red", true)) {
+                    toBeChanged.forEach { it.durability = 14 }
+                } else {
+                    toBeChanged.forEach { it.durability = 11 }
+                }
+
+                player.inventory.contents = content
+            }else {
+                player.inventory.contents = contents
+            }
+        }else {
+            player.inventory.contents = contents
+        }
+
+        player.inventory.armorContents = armorContent
+        player.updateInventory()
     }
 
     fun getKitCount(): Int {

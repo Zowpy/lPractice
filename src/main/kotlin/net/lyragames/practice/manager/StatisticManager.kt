@@ -36,6 +36,8 @@ object StatisticManager {
             loserProfile.getKitStatistic(kit.name)?.elo = loserProfile.getKitStatistic(kit.name)?.elo?.plus(elo?.let { EloUtil.getNewRating(it, kitStatistic.elo, false) }!!)!!
             kitStatistic.elo =+ EloUtil.getNewRating(kitStatistic.elo, loserProfile.getKitStatistic(kit.name)?.elo!!, true)
 
+            loserProfile.save()
+
             if (kitStatistic.elo >= kitStatistic.peakELO) {
                 kitStatistic.peakELO = kitStatistic.elo
             }
@@ -58,6 +60,7 @@ object StatisticManager {
 
         val kitStatistic = profile.getKitStatistic(kit.name)!!
 
+        kitStatistic.losses++
         kitStatistic.currentStreak = 0
 
         if (ranked) {

@@ -16,6 +16,9 @@ import java.util.*
 
 object QueueManager {
 
+    val unrankedQueues: MutableList<Queue> = mutableListOf()
+    val rankedQueues: MutableList<Queue> = mutableListOf()
+
     val queues: MutableList<Queue> = mutableListOf()
 
     fun load() {
@@ -26,6 +29,8 @@ object QueueManager {
             if (kit.kitData.ranked) {
                 val queue1 = Queue(kit, true)
                 queues.add(queue1)
+
+                //rankedQueues.add(queue1)
             }
         }
     }

@@ -27,12 +27,16 @@ import org.bukkit.inventory.ItemStack
 class QueueButton(private val queue: Queue, private val ranked: Boolean): Button() {
 
     override fun getButtonItem(player: Player?): ItemStack {
+        val playing = Match.matches.stream().filter {
+            it!!.kit.name.equals(queue.kit.name, false) && it.ranked == ranked
+        }.count() * 2
+
         return ItemBuilder(queue.kit.displayItem.clone())
-            .name(CC.BOLD + CC.YELLOW + queue.kit.name).addFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS)
+            .amount(if (playing <= 0) 1 else playing.toInt())
+            .name(CC.BOLD + CC.YELLOW + queue.kit.name)
+            .addFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS)
             .lore(arrayListOf(
-                "${CC.PRIMARY}Playing: ${CC.SECONDARY}${Match.matches.stream().filter { 
-                    it!!.kit.name.equals(queue.kit.name, false) && it.ranked == ranked
-                }.count() * 2}",
+                "${CC.PRIMARY}Playing: ${CC.SECONDARY}$playing",
                 "${CC.PRIMARY}Queuing: ${CC.GREEN}${queue.queuePlayers.size}",
                 "",
                 "${CC.PRIMARY}Click to play!"

@@ -13,7 +13,8 @@ import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.match.team.Team
 import net.lyragames.practice.profile.Profile
-import org.bukkit.GameMode
+import net.lyragames.practice.utils.countdown.TitleCountdown
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -52,6 +53,10 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         val team = findTeam()
         val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid)
 
+        val blue = team.name == "Blue"
+
+        teamMatchPlayer.coloredName = if (blue) "${CC.BLUE}${player.name}" else "${CC.RED}${player.name}"
+
         team.players.add(teamMatchPlayer)
 
         players.stream().map { it.player }.forEach {
@@ -80,11 +85,23 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         val team = getTeam(matchPlayer.teamUniqueId)
         val oppositeTeam = getOpponentTeam(team!!)
 
-        if (oppositeTeam!!.portal!!.contains(event.location)) {
-            val titleBar = TitleBar("${CC.SECONDARY}${player.name}${CC.PRIMARY} scored!", false)
-            players.forEach { if (!it.offline) titleBar.sendPacket(it.player) }
+        val blue = team.name == "Blue"
 
+        if (oppositeTeam!!.portal!!.contains(event.location)) {
             team.points++
+
+            val titleBar = TitleBar("${matchPlayer.coloredName}${CC.PRIMARY} scored!", false)
+            val subTitle = TitleBar(
+                "${CC.BLUE}${if (blue) team.points else oppositeTeam.points} ${CC.GRAY}- ${CC.RED}${if (blue) oppositeTeam.points else team.points}",
+                true
+            )
+
+            players.forEach {
+                if (!it.offline) {
+                    titleBar.sendPacket(it.player)
+                    subTitle.sendPacket(it.player)
+                }
+            }
 
             threshold = System.currentTimeMillis()
 
@@ -100,17 +117,10 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
 
             countdowns.forEach { it.cancel() }
 
-            reset()
             matchState = MatchState.STARTING
 
             for (matchPlayer in players) {
                 if (matchPlayer.offline) continue
-
-                if (matchPlayer.respawnCountdown != null) {
-                    matchPlayer.respawnCountdown?.cancel()
-                    matchPlayer.respawnCountdown?.consumer?.accept(true)
-                    matchPlayer.respawnCountdown = null
-                }
 
                 val player = matchPlayer.player
                 val profile = Profile.getByUUID(player.uniqueId)
@@ -137,7 +147,6 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
                     PlayerUtil.allowMovement(player)
                 })
             }
-
         }
     }
 
@@ -157,61 +166,38 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         }
     }
 
-    override fun handleDeath(player: MatchPlayer) {
-        if (player.offline) {
-            sendMessage("&c${player.name} ${CC.PRIMARY}has disconnected!")
-        } else if (player.lastDamager == null && !player.offline) {
-            sendMessage("&c${player.name} ${CC.PRIMARY}fell in the void!")
+    override fun handleDeath(matchPlayer: MatchPlayer) {
+        if (matchPlayer.offline) {
+            sendMessage("&c${matchPlayer.coloredName} ${CC.PRIMARY}has disconnected!")
+        } else if (matchPlayer.lastDamager == null && !matchPlayer.offline) {
+            sendMessage("&c${matchPlayer.coloredName} ${CC.PRIMARY}was killed!")
         } else {
-            val matchPlayer = getMatchPlayer(player.lastDamager!!)
+            val killer = getMatchPlayer(matchPlayer.lastDamager!!)
 
-            sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
+            sendMessage("${matchPlayer.coloredName} ${CC.PRIMARY}has been killed by " + killer?.coloredName + "${CC.PRIMARY}!")
         }
 
-        player.respawning = true
+        val profile = Profile.getByUUID(matchPlayer.uuid)
 
-        PlayerUtil.reset(player.player)
+        matchPlayer.respawning = true
 
-        player.player.gameMode = GameMode.SPECTATOR
+        Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
+            matchPlayer.player.teleport(matchPlayer.spawn)
+            PlayerUtil.reset(matchPlayer.player)
 
-        player.player.allowFlight = true
-        player.player.isFlying = true
+            profile?.getKitStatistic(kit.name)?.generateBooks(matchPlayer.player)
 
-        players.stream().forEach { if (!it.offline) it.player.hidePlayer(player.player) }
-
-        player.player.teleport(arena.bounds.center)
-
-        val countdown = Countdown(
-            PracticePlugin.instance,
-            player.player,
-            "${CC.PRIMARY}Respawning in ${CC.SECONDARY}<seconds>${CC.PRIMARY}!",
-            6
-        ) {
-            val profile = Profile.getByUUID(player.uuid)
-            player.player.teleport(player.spawn)
-
-            PlayerUtil.reset(player.player)
-
-            profile?.getKitStatistic(kit.name)?.generateBooks(player.player)
-
-            player.respawning = false
-
-            players.stream().forEach { if (!it.offline) it.player.showPlayer(player.player) }
-
-            player.respawnCountdown = null
-        }
-
-        countdowns.add(countdown)
-        player.respawnCountdown = countdown
+            matchPlayer.respawning = false
+        }, 2L)
     }
 
 
     override fun handleQuit(matchPlayer: MatchPlayer) {
         matchPlayer.offline = true
 
-        if (teams.stream().anyMatch { team -> team.players.stream().noneMatch { !it.offline } }) {
-            val team = teams.stream().filter { team -> team.players.stream().noneMatch { !it.dead && !it.offline } }
-                .findFirst().orElse(null)
+        if (teams.any { team -> team.players.none { !it.offline } }) {
+            val team = teams.firstOrNull { team -> team.players.none { !it.dead && !it.offline } }
+
             team!!.players.map { getMatchPlayer(it.uuid)!! }.toMutableList().let { end(it) }
         }
     }

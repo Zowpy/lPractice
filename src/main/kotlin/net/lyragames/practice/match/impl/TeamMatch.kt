@@ -94,6 +94,12 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
         }
     }
 
+    fun end(winner: Team) {
+        val oppositeTeam = getOpponentTeam(winner)
+
+        end(oppositeTeam!!.players.map { it }.toMutableList())
+    }
+
     override fun canHit(player: Player, target: Player): Boolean {
         val teamMatchPlayer = getMatchPlayer(player.uniqueId) as TeamMatchPlayer
         val teamMatchPlayer1 = getMatchPlayer(target.uniqueId) as TeamMatchPlayer

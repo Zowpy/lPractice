@@ -1,6 +1,5 @@
 package net.lyragames.practice.match.listener
 
-import net.lyragames.llib.item.CustomItemStack
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.Cooldown
 import net.lyragames.llib.utils.TimeUtil
@@ -9,7 +8,6 @@ import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.manager.EventManager
-import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.impl.BedFightMatch
@@ -21,7 +19,10 @@ import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.entity.*
+import org.bukkit.entity.Arrow
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
+import org.bukkit.entity.ThrownPotion
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -29,7 +30,6 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
-import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.Potion
@@ -42,6 +42,7 @@ import org.bukkit.potion.Potion
  * Created: 1/27/2022
  * Project: lPractice
  */
+
 object MatchListener : Listener {
 
     // TODO: Clean this class.
@@ -51,24 +52,7 @@ object MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
-            return
-        }
-
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
-            if (player.gameMode != GameMode.CREATIVE && profile.canBuild) {
-                event.isCancelled = true
-            }
-            return
-        }
-
-        if (profile?.state == ProfileState.FFA) {
-            event.isCancelled = true
-            return
-        }
-
-        if (profile?.match != null) {
+        if (profile?.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
 
             if (match?.matchState != MatchState.FIGHTING) {
@@ -82,7 +66,6 @@ object MatchListener : Listener {
                 event.isCancelled = true
                 return
             }
-
 
             if (match.kit.kitData.build || match.kit.kitData.mlgRush || match.kit.kitData.bedFights || match.kit.kitData.bridge) {
                 if (!match.arena.bounds.isInCuboid(event.blockPlaced.location)) {
@@ -103,24 +86,10 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onBreak(event: BlockBreakEvent) {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
-
-        if (profile?.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
-        }
-
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE) {
-            if (!profile.canBuild) {
-                event.isCancelled = true
-            }
-        }
-
-        if (profile?.state == ProfileState.FFA) {
-            event.isCancelled = true
-        }
 
         if (profile!!.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
@@ -148,18 +117,9 @@ object MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
-            return
-        }
-
-        if (profile?.state == ProfileState.FFA) {
-            event.isCancelled = true
-            return
-        }
-
         if (profile?.match != null) {
             val match = Match.getByUUID(profile.match!!)
+
             if (match!!.kit.kitData.build) {
                 match.blocksPlaced.add(event.blockClicked)
             } else {
@@ -173,17 +133,7 @@ object MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
-            return
-        }
-
-        if (profile?.state == ProfileState.FFA) {
-            event.isCancelled = true
-            return
-        }
-
-        if (profile?.match != null) {
+        if (profile?.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
 
             if (match!!.kit.kitData.build && match.blocksPlaced.contains(event.blockClicked)) {
@@ -199,12 +149,7 @@ object MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
-            return
-        }
-
-        if (profile?.match != null) {
+        if (profile?.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
             val matchPlayer = match?.getMatchPlayer(player.uniqueId)
 
@@ -222,12 +167,7 @@ object MatchListener : Listener {
         val player = event.player
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
-            return
-        }
-
-        if (profile?.match != null) {
+        if (profile?.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
             val matchPlayer = match?.getMatchPlayer(player.uniqueId)
 
@@ -246,16 +186,6 @@ object MatchListener : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onHit(event: EntityDamageByEntityEvent) {
-
-        if (event.entity is Player) {
-            val profile = Profile.getByUUID(event.entity.uniqueId)
-
-            if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.QUEUE || profile?.state == ProfileState.SPECTATING) {
-                event.isCancelled = true
-                return
-            }
-        }
-
         if (event.entity is Player && event.damager is Player) {
             val player = event.entity as Player
             val damager = event.damager as Player
@@ -304,6 +234,11 @@ object MatchListener : Listener {
                             val team = match.getTeam((matchPlayer1 as TeamMatchPlayer).teamUniqueId)
 
                             team!!.hits++
+
+                            if (team.hits >= 200) {
+                                match.end(team)
+                                return
+                            }
                         }
 
                         if (matchPlayer1.hits >= 100) {
@@ -324,26 +259,20 @@ object MatchListener : Listener {
             val player = event.entity as Player
             val profile = Profile.getByUUID(player.uniqueId)
 
-            if (profile?.state == ProfileState.FFA || profile?.state == ProfileState.EVENT) {
-                return
-            }
-
-            if (profile?.match != null) {
+            if (profile?.state == ProfileState.MATCH) {
                 val match = Match.getByUUID(profile.match!!)
                 val matchPlayer = match!!.getMatchPlayer(player.uniqueId)
 
-                if (match is MLGRushMatch && (matchPlayer?.dead!! || matchPlayer.respawning)) {
+                if (matchPlayer?.dead!! || matchPlayer.respawning) {
                     event.isCancelled = true
                     return
                 }
 
-                matchPlayer?.lastDamager = null
+                matchPlayer.lastDamager = null
 
                 if (event.finalDamage >= player.health) {
-                    if (matchPlayer != null) {
-                        match.handleDeath(matchPlayer)
-                        event.isCancelled = true
-                    }
+                    match.handleDeath(matchPlayer)
+                    event.isCancelled = true
                 }
             }
         }
@@ -366,24 +295,6 @@ object MatchListener : Listener {
     }
 
     @EventHandler
-    fun onSpawn(event: EntitySpawnEvent) {
-        /*if (event.entity.type == EntityType.PLAYER
-            || event.entity.type == EntityType.PAINTING
-            || event.entity.type == EntityType.ITEM_FRAME
-            || event.entity.type == EntityType.DROPPED_ITEM
-            || event.entity.type == EntityType.ARMOR_STAND
-            || event.entity.type == EntityType.FAKE_PLAYER
-            || event.entity.type == EntityType.FISHING_HOOK
-            || event.entity.type == EntityType.) return */
-
-        if (event.entity.type == EntityType.PLAYER || !event.entity.type.isAlive
-            || !event.entity.type.isSpawnable) return
-
-        event.isCancelled = true
-        event.entity.remove()
-    }
-
-    @EventHandler
     fun onRespawn(event: PlayerRespawnEvent) {
         if (Constants.SPAWN != null) {
             event.respawnLocation = Constants.SPAWN
@@ -396,10 +307,6 @@ object MatchListener : Listener {
     fun onHunger(event: FoodLevelChangeEvent) {
         val profile = Profile.getByUUID(event.entity.uniqueId)
 
-        if (profile?.state == ProfileState.LOBBY || profile?.state == ProfileState.SPECTATING || profile?.state == ProfileState.QUEUE) {
-            event.isCancelled = true
-        }
-
         if (profile?.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!) ?: return
 
@@ -409,17 +316,12 @@ object MatchListener : Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     fun onDamage(event: EntityDamageEvent) {
         if (event.entity is Player) {
             val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)
 
-            if (profile!!.state == ProfileState.LOBBY || profile.state == ProfileState.QUEUE || profile.state == ProfileState.SPECTATING) {
-                event.isCancelled = true
-                return
-            }
-
-            if (profile.state == ProfileState.MATCH) {
+            if (profile!!.state == ProfileState.MATCH) {
                 val match = Match.getByUUID(profile.match!!)
                 val kit = match!!.kit
 
@@ -463,10 +365,6 @@ object MatchListener : Listener {
             val shooter = event.entity.shooter as Player
             val profile = Profile.getByUUID(shooter.uniqueId)
 
-            if (profile?.state == ProfileState.FFA) {
-                return
-            }
-
             if (profile?.state == ProfileState.MATCH) {
                 val match = Match.getByUUID(profile.match!!)
 
@@ -474,7 +372,6 @@ object MatchListener : Listener {
                     event.isCancelled = true
                     return
                 }
-
 
                 if (event.entity is ThrownPotion) {
                     match.getMatchPlayer(shooter.uniqueId)!!.potionsThrown++
@@ -488,19 +385,17 @@ object MatchListener : Listener {
                     }
 
                     if (match.kit.kitData.bridge) {
-                        profile.arrowCooldown = Cooldown(PracticePlugin.instance, 6) {
-                            shooter.inventory.addItem(ItemStack(Material.ARROW))
+                        profile.arrowCooldown = Cooldown(PracticePlugin.instance, 5) {
+                            if (shooter.inventory.getItem(8) == null || shooter.inventory.getItem(8).type == Material.AIR) {
+                                shooter.inventory.setItem(8, ItemStack(Material.ARROW))
+                            } else {
+                                shooter.inventory.addItem(ItemStack(Material.ARROW))
+                            }
                         }
                     }
                 }
-
             }
         }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    fun onSleep(event: PlayerBedEnterEvent) {
-        event.isCancelled = true
     }
 
     @EventHandler
@@ -590,89 +485,6 @@ object MatchListener : Listener {
                     }
                 }
             }
-        }
-    }
-
-    @EventHandler
-    fun onMove(event: PlayerMoveEvent) {
-        if (event.to == event.from) return
-
-        val player = event.player
-
-        val profile = Profile.getByUUID(player.uniqueId)
-
-        if (profile!!.state == ProfileState.LOBBY || profile.state == ProfileState.QUEUE) {
-            if (event.to.y <= 2) {
-                if (Constants.SPAWN != null) {
-                    event.player.teleport(Constants.SPAWN)
-                }
-            }
-
-            return
-        }
-
-        if (profile.match != null) {
-            val match = Match.getByUUID(profile.match!!)
-
-            if (match != null) {
-                if (match.kit.kitData.mlgRush || match.kit.kitData.bedFights || match.kit.kitData.bridge) {
-
-                    if (event.to.y <= match.arena.deadzone) {
-                        val matchPlayer = match.getMatchPlayer(player.uniqueId)
-
-                        if (matchPlayer!!.respawning) {
-                            player.teleport(match.arena.bounds.center)
-                            return
-                        }
-
-                        if (!matchPlayer.dead && match.matchState == MatchState.FIGHTING) {
-                            matchPlayer.lastDamager = null
-
-                            match.handleDeath(matchPlayer)
-                        } else {
-                            player.teleport(match.arena.bounds.center)
-                        }
-                    }
-                }
-            }
-        }
-
-        if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
-
-            if (profile.match != null) {
-
-                val match = Match.getByUUID(profile.match!!)
-
-                if (match?.kit?.kitData?.sumo!!) {
-                    match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
-                }
-
-            } else if (profile.state == ProfileState.EVENT) {
-
-                val currentEvent = EventManager.event ?: return
-                if (currentEvent.state != EventState.FIGHTING) return
-
-                if (currentEvent.type == EventType.SUMO) {
-
-                    val eventPlayer = currentEvent.getPlayer(player.uniqueId)
-
-                    if (currentEvent.playingPlayers.stream().noneMatch { it.uuid == player.uniqueId }) return
-
-                    eventPlayer?.dead = true
-
-                    currentEvent.endRound(currentEvent.getOpponent(eventPlayer!!))
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    fun onInventoryClick(event: InventoryClickEvent) {
-        val player = event.whoClicked as Player
-        val profile = Profile.getByUUID(player.uniqueId)
-
-        if (profile!!.state == ProfileState.SPECTATING) {
-            event.isCancelled = true
         }
     }
 

@@ -37,6 +37,8 @@ import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.KitProvider
 import net.lyragames.practice.kit.editor.listener.KitEditorListener
 import net.lyragames.practice.kit.serializer.EditKitSerializer
+import net.lyragames.practice.listener.MoveListener
+import net.lyragames.practice.listener.PreventionListener
 import net.lyragames.practice.listener.WorldListener
 import net.lyragames.practice.manager.*
 import net.lyragames.practice.match.ffa.listener.FFAListener
@@ -159,6 +161,8 @@ class PracticePlugin : LyraPlugin() {
         server.pluginManager.registerEvents(FFAListener, this)
         server.pluginManager.registerEvents(EventListener, this)
         server.pluginManager.registerEvents(KitEditorListener, this)
+        server.pluginManager.registerEvents(PreventionListener, this)
+        server.pluginManager.registerEvents(MoveListener, this)
         server.pluginManager.registerEvents(ItemListener(), this)
 
     }

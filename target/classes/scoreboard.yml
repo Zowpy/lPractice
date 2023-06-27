@@ -64,7 +64,7 @@ scoreboard:
     - ""
     - "&eTime Elapsed: &a<time>"
     - ""
-    - "&eYour Hits: &a<hits> <combo>"
+    - "&eYour Hits: &a<hits> <diff>"
     - "&eTheir Hits: &a<opponent-hits>"
     - ""
     - "&7&olyra.gg"
