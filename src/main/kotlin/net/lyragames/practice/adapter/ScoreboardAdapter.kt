@@ -159,7 +159,6 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
             if (match is BedFightMatch) {
 
                 val alive = "✔"
-                val dead = "✘"
 
                 val matchPlayer = match.getMatchPlayer(player.uniqueId) as TeamMatchPlayer
 
@@ -171,10 +170,10 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
                 for (t in match.teams) {
                     if (t.name.equals("Red", true)) {
                         red =
-                            "${if (t.broken) CC.RED + dead else CC.GREEN + alive} ${if (t.uuid == team!!.uuid) "${CC.GRAY}YOU" else ""}"
+                            "${if (t.broken) "${CC.RED}${t.alivePlayers()}" else "${CC.GREEN}$alive"} ${if (t.uuid == team!!.uuid) "${CC.GRAY}YOU" else ""}"
                     } else {
                         blue =
-                            "${if (t.broken) CC.RED + dead else CC.GREEN + alive} ${if (t.uuid == team!!.uuid) "${CC.GRAY}YOU" else ""}"
+                            "${if (t.broken) "${CC.BLUE}${t.alivePlayers()}" else "${CC.GREEN}$alive"} ${if (t.uuid == team!!.uuid) "${CC.GRAY}YOU" else ""}"
                     }
                 }
 

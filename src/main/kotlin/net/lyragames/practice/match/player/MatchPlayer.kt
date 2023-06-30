@@ -1,6 +1,7 @@
 package net.lyragames.practice.match.player
 
 import net.lyragames.llib.utils.Countdown
+import net.lyragames.practice.utils.countdown.ICountdown
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -41,6 +42,6 @@ open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location) {
 
     // bed fights & mlgrush
     var points = 0
-    var bed: Location? = null
-    var respawnCountdown: Countdown? = null
+    var bedLocations: MutableList<Location> = mutableListOf()
+    var respawnCountdown: ICountdown? = null
 }

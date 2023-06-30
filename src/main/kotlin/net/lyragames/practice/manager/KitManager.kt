@@ -45,9 +45,11 @@ object KitManager {
             kit.kitData.mlgRush = section.getBoolean("kitData.mlgRush")
             kit.kitData.ffa = section.getBoolean("kitData.ffa")
             kit.kitData.bedFights = section.getBoolean("kitData.bedFights")
+            kit.kitData.fireballFight = section.getBoolean("kitData.fireballFight", false)
             kit.kitData.hunger = section.getBoolean("kitData.hunger")
             kit.kitData.regeneration = section.getBoolean("kitData.regeneration")
             kit.kitData.bridge = section.getBoolean("kitData.bridge")
+            kit.kitData.fallDamage = section.getBoolean("kitData.fallDamage")
 
             Kit.kits.add(kit)
         }

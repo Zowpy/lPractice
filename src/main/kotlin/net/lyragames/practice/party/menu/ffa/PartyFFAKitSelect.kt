@@ -4,7 +4,6 @@ import net.lyragames.llib.utils.CC
 import net.lyragames.menu.Button
 import net.lyragames.menu.ItemBuilder
 import net.lyragames.menu.Menu
-import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.match.Match
@@ -37,7 +36,7 @@ class PartyFFAKitSelect(private val party: Party): Menu() {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
 
         for (kit in Kit.kits) {
-            if (kit.kitData.boxing || kit.kitData.bedFights || kit.kitData.mlgRush || kit.kitData.bridge) continue
+            if (kit.kitData.boxing || kit.kitData.bedFights || kit.kitData.mlgRush || kit.kitData.bridge || kit.kitData.fireballFight) continue
 
             toReturn[toReturn.size] = object : Button() {
 

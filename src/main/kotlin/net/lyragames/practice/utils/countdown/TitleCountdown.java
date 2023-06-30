@@ -1,14 +1,16 @@
 package net.lyragames.practice.utils.countdown;
 
-import net.lyragames.llib.title.TitleBar;
+import lombok.Getter;
 import net.lyragames.llib.utils.CC;
 import net.lyragames.practice.PracticePlugin;
+import net.lyragames.practice.utils.title.TitleBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.function.Consumer;
 
-public class TitleCountdown extends BukkitRunnable {
+@Getter
+public class TitleCountdown extends BukkitRunnable implements ICountdown {
 
     private final Player player;
     private final String message, title, subtitle;
@@ -28,36 +30,32 @@ public class TitleCountdown extends BukkitRunnable {
 
     public void run() {
         --this.seconds;
-        if (this.seconds != 0) {
-            this.player.sendMessage(CC.translate(this.message.replace("<seconds>", this.seconds + "")));
+        if (seconds != 0) {
+            if (player == null) {
+                cancel();
+                return;
+            }
 
-            TitleBar titleBar = new TitleBar(CC.translate(title), false);
-            TitleBar subtitleBar = new TitleBar(CC.translate(subtitle), true);
+            player.sendMessage(CC.translate(message.replace("<seconds>", seconds + "")));
 
+            TitleBar.sendTitleBar(
+                    player,
+                    CC.translate(title.replace("<seconds>", seconds + "")),
+                    subtitle == null ? null : CC.translate(subtitle.replace("<seconds>", seconds + "")), 0, 20, 0);
+
+
+            /*TitleBar titleBar = new TitleBar(CC.translate(title.replace("<seconds>", seconds + "")), false);
             titleBar.sendPacket(player);
-            subtitleBar.sendPacket(player);
+
+            if (subtitle != null && !subtitle.isEmpty()) {
+                TitleBar subtitleBar = new TitleBar(CC.translate(subtitle.replace("<seconds>", seconds + "")), true);
+                subtitleBar.sendPacket(player);
+            } */
         }
 
         if (this.seconds <= 0) {
             this.consumer.accept(true);
             this.cancel();
         }
-
-    }
-
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    public String getMessage() {
-        return this.message;
-    }
-
-    public Consumer<Boolean> getConsumer() {
-        return this.consumer;
-    }
-
-    public int getSeconds() {
-        return this.seconds;
     }
 }

@@ -42,6 +42,7 @@ class Kit(val name: String) {
         dataSection.set("mlgRush", kitData.mlgRush)
         dataSection.set("bedFights", kitData.bedFights)
         dataSection.set("bridge", kitData.bridge)
+        dataSection.set("fireballFight", kitData.fireballFight)
         dataSection.set("hunger", kitData.hunger)
         dataSection.set("regeneration", kitData.regeneration)
         dataSection.set("fallDamage", kitData.fallDamage)

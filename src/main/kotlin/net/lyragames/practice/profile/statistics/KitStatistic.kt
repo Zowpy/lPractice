@@ -10,6 +10,7 @@ import net.lyragames.practice.match.MatchType
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -59,7 +60,7 @@ class KitStatistic constructor(val kit: String) {
         val kit = Kit.getByName(this.kit)
 
         if (editedKits.isEmpty() || editedKits.none { it != null }) {
-            giveContents(player, profile!!, kit!!.content, kit.armorContent)
+            giveContents(player, profile!!, kit!!.content, kit.armorContent, false)
             return
         }
 
@@ -68,7 +69,7 @@ class KitStatistic constructor(val kit: String) {
             val matchPlayer = match!!.getMatchPlayer(profile.uuid)
 
             if (matchPlayer!!.selectedKitArmor != null || matchPlayer.selectedKitContent != null) {
-                giveContents(player, profile, matchPlayer.selectedKitContent!!, matchPlayer.selectedKitArmor!!)
+                giveContents(player, profile, matchPlayer.selectedKitContent!!, matchPlayer.selectedKitArmor!!, false)
                 return
             }
         }
@@ -115,7 +116,13 @@ class KitStatistic constructor(val kit: String) {
         }
     }
 
-    private fun giveContents(player: Player, profile: Profile, contents: Array<ItemStack>, armorContent: Array<ItemStack>, edit: Boolean = false) {
+    private fun giveContents(
+        player: Player,
+        profile: Profile,
+        contents: Array<ItemStack>,
+        armorContent: Array<ItemStack>,
+        edit: Boolean
+    ) {
         if (profile.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
 
@@ -129,7 +136,7 @@ class KitStatistic constructor(val kit: String) {
             if (match!!.getMatchType() == MatchType.TEAM || match.getMatchType() == MatchType.BEDFIGHTS) {
                 val team = (match as TeamMatch).getTeamByPlayer(player.uniqueId)
 
-                val content = contents.clone()
+                val content = contents.filterNotNull().map { it.clone() }.toTypedArray()
 
                 val toBeChanged = content.filter { it.type == Material.WOOL || it.type == Material.STAINED_CLAY }
 
@@ -140,14 +147,25 @@ class KitStatistic constructor(val kit: String) {
                 }
 
                 player.inventory.contents = content
-            }else {
-                player.inventory.contents = contents
+
+                val armorContents = armorContent.filterNotNull().map { it.clone() }.toTypedArray()
+
+                val armorToChange = armorContents.filter { it.type.name.contains("LEATHER") }
+
+                if (team.name.equals("Red", true)) {
+                    armorToChange.forEach { it.durability = 14 }
+                } else {
+                    armorToChange.forEach { it.durability = 11 }
+                }
+
+                player.inventory.armorContents = armorContents
+                return
             }
-        }else {
-            player.inventory.contents = contents
         }
 
+        player.inventory.contents = contents
         player.inventory.armorContents = armorContent
+
         player.updateInventory()
     }
 

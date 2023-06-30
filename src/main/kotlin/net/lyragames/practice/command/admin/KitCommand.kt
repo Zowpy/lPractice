@@ -6,7 +6,7 @@ import me.vaperion.blade.command.annotation.Sender
 import net.lyragames.llib.utils.CC
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
-import net.lyragames.practice.kit.admin.AdminKitEditMenu
+import net.lyragames.practice.kit.admin.KitSettingsMenu
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.statistics.KitStatistic
@@ -125,6 +125,6 @@ object KitCommand {
     @Permission("lpractice.command.kit.edit")
     @Command(value = ["kit edit"], description = "edit a kit!")
     fun edit(@Sender player: Player, kit: Kit) {
-        AdminKitEditMenu(kit).openMenu(player)
+        KitSettingsMenu(kit).openMenu(player)
     }
 }

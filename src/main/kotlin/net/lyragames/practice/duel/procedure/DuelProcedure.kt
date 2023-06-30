@@ -22,6 +22,8 @@ class DuelProcedure(var uuid: UUID, var target: UUID) {
     var arena: Arena? = null
 
     fun create(): DuelRequest {
+        duelProcedures.remove(this)
+
         return DuelRequest(uuid, target, kit!!, arena!!)
     }
 

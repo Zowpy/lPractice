@@ -7,5 +7,6 @@ enum class ArenaType {
     MLGRUSH,
     BEDFIGHT,
     BRIDGE,
+    FIREBALL_FIGHT,
     BUILD;
 }

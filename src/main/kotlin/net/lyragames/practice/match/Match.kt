@@ -3,9 +3,7 @@ package net.lyragames.practice.match
 import com.google.common.base.Joiner
 import mkremins.fanciful.FancyMessage
 import net.lyragames.llib.item.CustomItemStack
-import net.lyragames.llib.title.TitleBar
 import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.PracticePlugin
@@ -22,6 +20,9 @@ import net.lyragames.practice.match.spectator.MatchSpectator
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.countdown.ICountdown
+import net.lyragames.practice.utils.countdown.TitleCountdown
+import net.lyragames.practice.utils.title.TitleBar
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -53,7 +54,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val droppedItems: MutableList<Item> = mutableListOf()
     val snapshots: MutableList<MatchSnapshot> = mutableListOf()
     val spectators: MutableList<MatchSpectator> = mutableListOf()
-    val countdowns: MutableList<Countdown> = mutableListOf()
+    val countdowns: MutableList<ICountdown> = mutableListOf()
 
     open fun start() {
 
@@ -71,15 +72,16 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             player.teleport(matchPlayer.spawn)
             profile?.getKitStatistic(kit.name)?.generateBooks(player)
 
-            countdowns.add(Countdown(
-                PracticePlugin.instance,
+            countdowns.add(TitleCountdown(
                 player,
-                "&aMatch starting in <seconds> seconds!",
+                "${CC.SECONDARY}<seconds>${CC.PRIMARY}...",
+                "${CC.SECONDARY}<seconds>",
+                null,
                 6
             ) {
-                PlayerUtil.allowMovement(player)
-                player.sendMessage(CC.GREEN + "Match started!")
+                player.sendMessage("${CC.PRIMARY}Match started!")
                 matchState = MatchState.FIGHTING
+                PlayerUtil.allowMovement(player)
                 started = System.currentTimeMillis()
             })
         }
@@ -397,9 +399,9 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     private fun sendTitleBar(winners: MutableList<MatchPlayer>) {
         val winnerString = Joiner.on(", ").join(winners.map { it.name }.toList())
 
-        val titleBar = TitleBar("${CC.GREEN}$winnerString${CC.YELLOW} won!", false)
-
-        players.forEach { if (!it.offline) titleBar.sendPacket(it.player) }
+        players.forEach {
+            if (it.offline) return@forEach
+            TitleBar.sendTitleBar(it.player, "${CC.SECONDARY}$winnerString${CC.PRIMARY} won!", null, 10, 40, 10) }
     }
 
     fun getTime(): String {
@@ -414,7 +416,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         return TimeUtil.millisToTimer(System.currentTimeMillis() - started)
     }
 
-    fun reset() {
+    open fun reset() {
         blocksPlaced.forEach { it.type = Material.AIR }
         droppedItems.forEach { it.remove() }
     }

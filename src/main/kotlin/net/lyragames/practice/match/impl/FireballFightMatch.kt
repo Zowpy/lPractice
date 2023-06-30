@@ -1,10 +1,9 @@
 package net.lyragames.practice.match.impl
 
-import net.lyragames.llib.title.TitleBar
 import net.lyragames.llib.utils.CC
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.arena.Arena
-import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
+import net.lyragames.practice.arena.impl.fireball.StandaloneFireBallFightArena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
@@ -21,16 +20,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.material.Bed
 
-/**
- * This Project is property of Zowpy © 2022
- * Redistribution of this Project is not allowed
- *
- * @author Zowpy
- * Created: 3/31/2022
- * Project: lPractice
- */
-
-class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, arena, ranked) {
+class FireballFightMatch(kit: Kit, arena: Arena, ranked: Boolean): TeamMatch(kit, arena, ranked) {
 
     private val bedBroken: MutableMap<Block, Pair<Boolean, BlockFace>> = mutableMapOf()
 
@@ -38,7 +28,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         teams.clear()
 
         val team1 = Team("Red")
-        team1.spawn = (arena as StandaloneBedWarsArena).redSpawn
+        team1.spawn = (arena as StandaloneFireBallFightArena).redSpawn
         team1.bedLocation = arena.redBed
         team1.color = CC.RED
         team1.coloredName = "${CC.RED}Red"
@@ -46,8 +36,8 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         val team2 = Team("Blue")
         team2.spawn = arena.blueSpawn
         team2.bedLocation = arena.blueBed
-        team2.coloredName = "${CC.BLUE}Blue"
         team2.color = CC.BLUE
+        team2.coloredName = "${CC.BLUE}Blue"
 
         teams.add(team1)
         teams.add(team2)
@@ -207,6 +197,10 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
         countdowns.add(countdown)
         player.respawnCountdown = countdown
+    }
+
+    private fun end(player: TeamMatchPlayer) {
+        end(getTeam(player.teamUniqueId)!!.players.map { getMatchPlayer(it.uuid)!! }.toMutableList())
     }
 
     override fun handleQuit(matchPlayer: MatchPlayer) {

@@ -11,11 +11,11 @@ import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
 import net.lyragames.practice.arena.impl.bridge.BridgeArena
 import net.lyragames.practice.arena.impl.bridge.StandaloneBridgeArena
+import net.lyragames.practice.arena.impl.fireball.StandaloneFireBallFightArena
 import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.arena.menu.ArenaManageMenu
 import net.lyragames.practice.arena.type.ArenaType
-import net.lyragames.practice.kit.admin.AdminKitEditMenu
 import org.bukkit.entity.Player
 
 
@@ -35,7 +35,7 @@ object ArenaCommand {
     fun help(@Sender player: Player) {
         player.sendMessage("${CC.PRIMARY}Arena Commands:")
         player.sendMessage(CC.translate("&7&m---------------------"))
-        player.sendMessage("${CC.SECONDARY}/arena create <name>")
+        player.sendMessage("${CC.SECONDARY}/arena create <name> <type>")
         player.sendMessage("${CC.SECONDARY}/arena type <name> <type> ${CC.GRAY}- Sumo, MLGRush, BedFight, Bridge, Build and Normal")
         player.sendMessage("${CC.SECONDARY}/arena delete <arena>")
         player.sendMessage("${CC.SECONDARY}/arena pos1 <arena>")
@@ -67,17 +67,24 @@ object ArenaCommand {
 
     @Command(value = ["arena create"], description = "create a new arena")
     @Permission("lpractice.command.arena.create")
-    fun create(@Sender player: Player, name: String) {
+    fun create(@Sender player: Player, name: String, type: ArenaType) {
         if (Arena.getByName(name) != null) {
             player.sendMessage(CC.RED + "That arena already exists!")
             return
         }
 
-        val arena = StandaloneArena(name)
+        val arena = when (type) {
+            ArenaType.FIREBALL_FIGHT -> StandaloneFireBallFightArena(name)
+            ArenaType.BRIDGE -> StandaloneBridgeArena(name)
+            ArenaType.MLGRUSH -> StandaloneMLGRushArena(name)
+            ArenaType.BEDFIGHT -> StandaloneBedWarsArena(name)
+            else -> StandaloneArena(name)
+        }
+
         arena.save()
         Arena.arenas.add(arena)
 
-        player.sendMessage("${CC.PRIMARY}Successfully created ${CC.SECONDARY}$name${CC.PRIMARY}!")
+        player.sendMessage("${CC.PRIMARY}Successfully created ${CC.SECONDARY}$name${CC.PRIMARY} arena with ${CC.SECONDARY}${type.name}${CC.PRIMARY} type!")
     }
 
     @Command(value = ["arena delete"], description = "delete an arena")
@@ -284,10 +291,11 @@ object ArenaCommand {
     @Command(value = ["arena redBed", "arena rb"], description = "set an arena's red bed")
     @Permission("lpractice.command.arena.setup")
     fun redBed(@Sender player: Player, arena: Arena) {
-        if (arena.arenaType != ArenaType.BEDFIGHT) {
-            player.sendMessage("${CC.RED}This command is only supported for Bed Fights arenas!")
+        if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.FIREBALL_FIGHT) {
+            player.sendMessage("${CC.RED}This command is only supported for Bed Fights & Fireball Fight arenas!")
             return
         }
+
         (arena as StandaloneBedWarsArena).redBed = player.location
         arena.save()
 
@@ -297,10 +305,11 @@ object ArenaCommand {
     @Command(value = ["arena blueBed", "arena bb"], description = "set an arena's blue bed")
     @Permission("lpractice.command.arena.setup")
     fun blueBed(@Sender player: Player, arena: Arena) {
-        if (arena.arenaType != ArenaType.BEDFIGHT) {
-            player.sendMessage("${CC.RED}This command is only supported for Bed Fights arenas!")
+        if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.FIREBALL_FIGHT) {
+            player.sendMessage("${CC.RED}This command is only supported for Bed Fights & Fireball Fight arenas!")
             return
         }
+
         (arena as StandaloneBedWarsArena).blueBed = player.location
         arena.save()
 
@@ -311,12 +320,12 @@ object ArenaCommand {
     @Permission("lpractice.command.arena.setup")
     fun redPos(@Sender player: Player, arena: Arena) {
 
-        if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.BRIDGE) {
-            player.sendMessage("${CC.RED}This command is only supported for Bed Fights & Bridge arenas!")
+        if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.BRIDGE && arena.arenaType != ArenaType.FIREBALL_FIGHT) {
+            player.sendMessage("${CC.RED}This command is only supported for Bed Fights, Bridge and Fireball Fight arenas!")
             return
         }
 
-        if (arena.arenaType == ArenaType.BEDFIGHT) {
+        if (arena.arenaType == ArenaType.BEDFIGHT || arena.arenaType == ArenaType.FIREBALL_FIGHT) {
             (arena as StandaloneBedWarsArena).redSpawn = player.location
         }else {
             (arena as StandaloneBridgeArena).redSpawn = player.location
@@ -331,12 +340,12 @@ object ArenaCommand {
     @Permission("lpractice.command.arena.setup")
     fun bluePos(@Sender player: Player, arena: Arena) {
 
-        if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.BRIDGE) {
-            player.sendMessage("${CC.RED}This command is only supported for Bed Fights & Bridge arenas!")
+        if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.BRIDGE && arena.arenaType != ArenaType.FIREBALL_FIGHT) {
+            player.sendMessage("${CC.RED}This command is only supported for Bed Fights, Bridge and Fireball Fight arenas!")
             return
         }
 
-        if (arena.arenaType == ArenaType.BEDFIGHT) {
+        if (arena.arenaType == ArenaType.BEDFIGHT || arena.arenaType == ArenaType.FIREBALL_FIGHT) {
             (arena as StandaloneBedWarsArena).blueSpawn = player.location
         }else {
             (arena as StandaloneBridgeArena).blueSpawn = player.location

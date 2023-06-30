@@ -10,9 +10,12 @@ import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
 import net.lyragames.practice.arena.impl.bridge.BridgeArena
 import net.lyragames.practice.arena.impl.bridge.StandaloneBridgeArena
+import net.lyragames.practice.arena.impl.fireball.FireBallFightArena
+import net.lyragames.practice.arena.impl.fireball.StandaloneFireBallFightArena
 import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.match.impl.FireballFightMatch
 
 /**
  * This Project is property of Zowpy © 2022
@@ -31,16 +34,14 @@ object ArenaManager {
         if (configFile.getConfigurationSection("arenas") == null) return
 
         for (key in configFile.getConfigurationSection("arenas").getKeys(false)) {
-            var arena = StandaloneArena(key)
-
             val section = configFile.getConfigurationSection("arenas.$key")
 
-            if (section.getString("type").equals("MLGRUSH", true)) {
-                arena = StandaloneMLGRushArena(key)
-            }else if (section.getString("type").equals("BEDFIGHT", true)) {
-                arena = StandaloneBedWarsArena(key)
-            }else if (section.getString("type").equals("BRIDGE", true)) {
-                arena = StandaloneBridgeArena(key)
+            val arena = when(ArenaType.valueOf(section.getString("type").uppercase())) {
+                ArenaType.MLGRUSH -> StandaloneMLGRushArena(key)
+                ArenaType.BEDFIGHT -> StandaloneBedWarsArena(key)
+                ArenaType.BRIDGE -> StandaloneBridgeArena(key)
+                ArenaType.FIREBALL_FIGHT -> StandaloneFireBallFightArena(key)
+                else -> StandaloneArena(key)
             }
 
             arena.deadzone = section.getInt("deadzone")
@@ -61,6 +62,13 @@ object ArenaManager {
             }
 
             if (arena is StandaloneBedWarsArena) {
+                arena.redSpawn = LocationUtil.deserialize(section.getString("redSpawn"))
+                arena.blueSpawn = LocationUtil.deserialize(section.getString("blueSpawn"))
+                arena.redBed = LocationUtil.deserialize(section.getString("redBed"))
+                arena.blueBed = LocationUtil.deserialize(section.getString("blueBed"))
+            }
+
+            if (arena is StandaloneFireBallFightArena) {
                 arena.redSpawn = LocationUtil.deserialize(section.getString("redSpawn"))
                 arena.blueSpawn = LocationUtil.deserialize(section.getString("blueSpawn"))
                 arena.redBed = LocationUtil.deserialize(section.getString("redBed"))
@@ -100,6 +108,16 @@ object ArenaManager {
                     arena1.duplicate = true
 
                     if (arena1 is BedWarsArena) {
+                        arena1.redSpawn = LocationUtil.deserialize(section1.getString("redSpawn"))
+                        arena1.blueSpawn = LocationUtil.deserialize(section1.getString("blueSpawn"))
+                        arena1.redBed = LocationUtil.deserialize(section1.getString("redBed"))
+                        arena1.blueBed = LocationUtil.deserialize(section1.getString("blueBed"))
+
+                        arena.duplicates.add(arena1)
+                        continue
+                    }
+
+                    if (arena1 is FireBallFightArena) {
                         arena1.redSpawn = LocationUtil.deserialize(section1.getString("redSpawn"))
                         arena1.blueSpawn = LocationUtil.deserialize(section1.getString("blueSpawn"))
                         arena1.redBed = LocationUtil.deserialize(section1.getString("redBed"))
@@ -155,6 +173,7 @@ object ArenaManager {
             if (kit.kitData.mlgRush && arena.arenaType != ArenaType.MLGRUSH) continue
             if (kit.kitData.bedFights && arena.arenaType != ArenaType.BEDFIGHT) continue
             if (kit.kitData.bridge && arena.arenaType != ArenaType.BRIDGE) continue
+            if (kit.kitData.fireballFight && arena.arenaType != ArenaType.FIREBALL_FIGHT) continue
 
             return arena
         }

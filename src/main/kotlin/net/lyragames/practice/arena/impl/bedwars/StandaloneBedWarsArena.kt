@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom
  * Project: lPractice
  */
 
-class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
+open class StandaloneBedWarsArena(name: String) : StandaloneArena(name) {
 
     var redBed: Location? = null
     var blueBed: Location? = null

@@ -14,7 +14,7 @@ import org.bukkit.Location
  * Project: lPractice
  */
 
-class BedWarsArena(name: String) : Arena(name) {
+open class BedWarsArena(name: String) : Arena(name) {
 
     var redBed: Location? = null
     var blueBed: Location? = null

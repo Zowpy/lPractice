@@ -37,7 +37,7 @@ object MoveListener: Listener {
             val match = Match.getByUUID(profile.match!!)
 
             if (match != null) {
-                if (match.kit.kitData.mlgRush || match.kit.kitData.bedFights || match.kit.kitData.bridge) {
+                if (match.kit.kitData.mlgRush || match.kit.kitData.bedFights || match.kit.kitData.bridge || match.kit.kitData.fireballFight) {
 
                     if (event.to.y <= match.arena.deadzone) {
                         val matchPlayer = match.getMatchPlayer(player.uniqueId)

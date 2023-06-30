@@ -41,6 +41,7 @@ import net.lyragames.practice.listener.MoveListener
 import net.lyragames.practice.listener.PreventionListener
 import net.lyragames.practice.listener.WorldListener
 import net.lyragames.practice.manager.*
+import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.ffa.listener.FFAListener
 import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
@@ -165,6 +166,12 @@ class PracticePlugin : LyraPlugin() {
         server.pluginManager.registerEvents(MoveListener, this)
         server.pluginManager.registerEvents(ItemListener(), this)
 
+    }
+
+    override fun onDisable() {
+        for (match in Match.matches) {
+            match!!.reset()
+        }
     }
 
     private fun loadMongo() {

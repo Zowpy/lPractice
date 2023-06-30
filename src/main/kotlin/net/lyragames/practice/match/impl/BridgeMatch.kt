@@ -1,8 +1,6 @@
 package net.lyragames.practice.match.impl
 
-import net.lyragames.llib.title.TitleBar
 import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.Countdown
 import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
@@ -13,7 +11,9 @@ import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.match.team.Team
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.utils.countdown.Countdown
 import net.lyragames.practice.utils.countdown.TitleCountdown
+import net.lyragames.practice.utils.title.TitleBar
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -32,6 +32,8 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         val team1 = Team("Red")
         team1.spawn = (arena as StandaloneBridgeArena).redSpawn
         team1.portal = arena.redPortal
+        team1.color = CC.RED
+        team1.coloredName = "${CC.RED}Red"
 
         for (block in arena.redPortal!!.blocks) {
             block.type = Material.ENDER_PORTAL
@@ -40,6 +42,8 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         val team2 = Team("Blue")
         team2.spawn = arena.blueSpawn
         team2.portal = arena.bluePortal
+        team2.color = CC.BLUE
+        team2.coloredName = "${CC.BLUE}Blue"
 
         for (block in arena.bluePortal!!.blocks) {
             block.type = Material.ENDER_PORTAL
@@ -53,9 +57,7 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         val team = findTeam()
         val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid)
 
-        val blue = team.name == "Blue"
-
-        teamMatchPlayer.coloredName = if (blue) "${CC.BLUE}${player.name}" else "${CC.RED}${player.name}"
+        teamMatchPlayer.coloredName = "${team.color}${player.name}"
 
         team.players.add(teamMatchPlayer)
 
@@ -90,17 +92,15 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         if (oppositeTeam!!.portal!!.contains(event.location)) {
             team.points++
 
-            val titleBar = TitleBar("${matchPlayer.coloredName}${CC.PRIMARY} scored!", false)
-            val subTitle = TitleBar(
-                "${CC.BLUE}${if (blue) team.points else oppositeTeam.points} ${CC.GRAY}- ${CC.RED}${if (blue) oppositeTeam.points else team.points}",
-                true
-            )
-
             players.forEach {
-                if (!it.offline) {
-                    titleBar.sendPacket(it.player)
-                    subTitle.sendPacket(it.player)
-                }
+                if (it.offline) return@forEach
+
+                TitleBar.sendTitleBar(
+                    it.player,
+                    "${matchPlayer.coloredName}${CC.PRIMARY} scored!",
+                    "${CC.BLUE}${if (blue) team.points else oppositeTeam.points} ${CC.GRAY}- ${CC.RED}${if (blue) oppositeTeam.points else team.points}",
+                    10, 80, 10
+                )
             }
 
             threshold = System.currentTimeMillis()
@@ -137,9 +137,8 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
                 profile.getKitStatistic(kit.name)?.generateBooks(player)
 
                 countdowns.add(Countdown(
-                    PracticePlugin.instance,
                     player,
-                    "${CC.PRIMARY}Round ${CC.SECONDARY}$round ${CC.PRIMARY}starting in ${CC.SECONDARY}<seconds>${CC.PRIMARY} seconds!",
+                    "${CC.SECONDARY}<seconds>${CC.PRIMARY}...",
                     6
                 ) {
                     player.sendMessage("${CC.PRIMARY}Round started!")
@@ -174,10 +173,15 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         } else {
             val killer = getMatchPlayer(matchPlayer.lastDamager!!)
 
-            sendMessage("${matchPlayer.coloredName} ${CC.PRIMARY}has been killed by " + killer?.coloredName + "${CC.PRIMARY}!")
+            sendMessage("${matchPlayer.coloredName} ${CC.PRIMARY}was killed by " + killer?.coloredName + "${CC.PRIMARY}!")
         }
 
         val profile = Profile.getByUUID(matchPlayer.uuid)
+
+        if (profile!!.arrowCooldown != null) {
+            profile.arrowCooldown!!.cancel()
+            profile.arrowCooldown = null
+        }
 
         matchPlayer.respawning = true
 
@@ -185,10 +189,10 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
             matchPlayer.player.teleport(matchPlayer.spawn)
             PlayerUtil.reset(matchPlayer.player)
 
-            profile?.getKitStatistic(kit.name)?.generateBooks(matchPlayer.player)
+            profile.getKitStatistic(kit.name)?.generateBooks(matchPlayer.player)
 
             matchPlayer.respawning = false
-        }, 2L)
+        }, 5L)
     }
 
 

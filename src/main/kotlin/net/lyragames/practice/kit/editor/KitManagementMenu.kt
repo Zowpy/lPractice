@@ -175,8 +175,6 @@ class KitManagementMenu(val kit: Kit): Menu() {
                 kit.armorContent = profile.kitEditorData?.kit?.armorContent
             }
 
-            kit.originalKit = profile.kitEditorData?.kit?.name
-
             profile.getKitStatistic(kit.name)?.replaceKit(index, kit)
 
             profile.kitEditorData?.selectedKit = kit

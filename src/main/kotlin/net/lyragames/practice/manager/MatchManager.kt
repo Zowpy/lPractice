@@ -7,14 +7,9 @@ import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
 import net.lyragames.practice.arena.impl.bridge.BridgeArena
 import net.lyragames.practice.arena.impl.bridge.StandaloneBridgeArena
-import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
-import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.Match
-import net.lyragames.practice.match.impl.BedFightMatch
-import net.lyragames.practice.match.impl.BridgeMatch
-import net.lyragames.practice.match.impl.MLGRushMatch
-import net.lyragames.practice.match.impl.TeamMatch
+import net.lyragames.practice.match.impl.*
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.Bukkit
@@ -24,14 +19,12 @@ import java.util.*
 object MatchManager {
 
     fun createMatch(kit: Kit, arena: Arena, ranked: Boolean, friendly: Boolean, firstPlayer: Player, secondPlayer: Player): Match {
-        var match = Match(kit, arena, ranked)
-
-        if (kit.kitData.mlgRush) {
-            match = MLGRushMatch(kit, arena, ranked)
-        }else if (kit.kitData.bedFights) {
-            match = BedFightMatch(kit, arena, ranked)
-        }else if (kit.kitData.bridge) {
-            match = BridgeMatch(kit, arena, ranked)
+        val match = when {
+            kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
+            kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
+            kit.kitData.bridge -> BridgeMatch(kit, arena, ranked)
+            kit.kitData.fireballFight -> FireballFightMatch(kit, arena, ranked)
+            else -> Match(kit, arena, ranked)
         }
 
         match.friendly = friendly
@@ -50,28 +43,10 @@ object MatchManager {
         if (arena is StandaloneBedWarsArena) {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
-
-            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.blueBed
-            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.redBed
         }else if (arena is BedWarsArena) {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
-
-            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.blueBed
-            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.redBed
-        } else if (arena is StandaloneMLGRushArena) {
-            match.addPlayer(firstPlayer, arena.l1!!)
-            match.addPlayer(secondPlayer, arena.l2!!)
-
-            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
-            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
-        }else if (arena is MLGRushArena) {
-            match.addPlayer(firstPlayer, arena.l1!!)
-            match.addPlayer(secondPlayer, arena.l2!!)
-
-            match.getMatchPlayer(firstPlayer.uniqueId)?.bed = arena.bed1
-            match.getMatchPlayer(secondPlayer.uniqueId)?.bed = arena.bed2
-        }else if (arena is BridgeArena) {
+        } else if (arena is BridgeArena) {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
         }else if (arena is StandaloneBridgeArena) {
@@ -121,7 +96,14 @@ object MatchManager {
     }
 
     fun createTeamMatch(kit: Kit, arena: Arena, ranked: Boolean, friendly: Boolean, players: MutableList<UUID>) {
-        val match = TeamMatch(kit, arena, ranked)
+        val match = when {
+            kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
+            kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
+            kit.kitData.bridge -> BridgeMatch(kit, arena, ranked)
+            kit.kitData.fireballFight -> FireballFightMatch(kit, arena, ranked)
+            else -> TeamMatch(kit, arena, ranked)
+        }
+
         match.friendly = friendly
 
         for (uuid in players) {
@@ -129,11 +111,12 @@ object MatchManager {
 
             val profile = Profile.getByUUID(uuid)
 
-            profile!!.match = match.uuid
+            profile!!.kitEditorData = null
+            profile.match = match.uuid
             profile.matchObject = match
             profile.state = ProfileState.MATCH
 
-            match.addPlayer(partyPlayer, arena.l1!!)
+            match.addPlayer(partyPlayer, partyPlayer.location)
         }
 
         Match.matches.add(match)
@@ -142,7 +125,14 @@ object MatchManager {
     }
 
     fun createTeamMatch(kit: Kit, arena: Arena, ranked: Boolean, friendly: Boolean, firstTeam: MutableList<UUID>, secondTeam: MutableList<UUID>) {
-        val match = TeamMatch(kit, arena, ranked)
+        val match = when {
+            kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
+            kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
+            kit.kitData.bridge -> BridgeMatch(kit, arena, ranked)
+            kit.kitData.fireballFight -> FireballFightMatch(kit, arena, ranked)
+            else -> TeamMatch(kit, arena, ranked)
+        }
+
         match.friendly = friendly
 
         val team1 = match.teams[0]
@@ -151,9 +141,10 @@ object MatchManager {
         for (uuid in firstTeam) {
             val profileParty = Profile.getByUUID(uuid)
 
-            profileParty?.state = ProfileState.MATCH
-            profileParty?.match = match.uuid
-            profileParty?.matchObject = match
+            profileParty!!.kitEditorData = null
+            profileParty.state = ProfileState.MATCH
+            profileParty.match = match.uuid
+            profileParty.matchObject = match
 
             match.addPlayer(Bukkit.getPlayer(uuid), team1)
         }
@@ -161,9 +152,10 @@ object MatchManager {
         for (uuid in secondTeam) {
             val profileParty = Profile.getByUUID(uuid)
 
-            profileParty?.state = ProfileState.MATCH
-            profileParty?.match = match.uuid
-            profileParty?.matchObject = match
+            profileParty!!.kitEditorData = null
+            profileParty.state = ProfileState.MATCH
+            profileParty.match = match.uuid
+            profileParty.matchObject = match
 
             match.addPlayer(Bukkit.getPlayer(uuid), team2)
         }

@@ -34,20 +34,17 @@ class QueueMenu(val ranked: Boolean): Menu() {
     override fun getButtons(player: Player?): MutableMap<Int, Button> {
         val toReturn: MutableMap<Int, Button> = mutableMapOf()
 
+        val queues = QueueManager.queues
+            .filter { it.ranked == ranked && it.kit.kitData.enabled }
+
         var queueIndex = 0
 
         for (i in 0 until 45) {
             if (BLACKLISTED_SLOTS.contains(i)) continue
-            //if (QueueManager.queues.size <= queueIndex) break
+            if (queueIndex >= queues.size) break
 
-            val queue = QueueManager.queues[queueIndex]
-
-            if (!queue.kit.kitData.enabled) continue
-            if (ranked != queue.ranked) continue
-
+            toReturn[i] = QueueButton(queues[queueIndex], ranked)
             queueIndex++
-
-            toReturn[i] = QueueButton(queue, ranked)
         }
 
         for (int in BLACKLISTED_SLOTS) {

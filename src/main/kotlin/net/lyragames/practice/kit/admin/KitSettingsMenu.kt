@@ -26,7 +26,7 @@ import org.bukkit.inventory.ItemStack
  * Project: lPractice
  */
 
-class AdminKitEditMenu(private val kit: Kit) : Menu() {
+class KitSettingsMenu(private val kit: Kit) : Menu() {
 
     override fun getTitle(player: Player): String {
         return "${CC.PRIMARY}Editing ${kit.name}"
@@ -305,7 +305,8 @@ class AdminKitEditMenu(private val kit: Kit) : Menu() {
                             kit.kitData.sumo ||
                             kit.kitData.mlgRush ||
                             kit.kitData.boxing ||
-                            kit.kitData.bedFights)) {
+                            kit.kitData.bedFights ||
+                            kit.kitData.fireballFight)) {
                     player.sendMessage("${CC.RED}You cannot toggle FFA with this kit.")
                     return
                 }
@@ -410,6 +411,29 @@ class AdminKitEditMenu(private val kit: Kit) : Menu() {
 
             override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
                 kit.kitData.bridge = !kit.kitData.bridge
+                kit.save()
+            }
+
+            override fun shouldUpdate(player: Player?, slot: Int, clickType: ClickType?): Boolean {
+                return true
+            }
+        }
+
+        toReturn[14] = object : Button() {
+
+            override fun getButtonItem(p0: Player?): ItemStack {
+                return ItemBuilder(Material.FIREBALL)
+                    .name("${CC.SECONDARY}Fireball Fight")
+                    .lore(
+                        listOf(
+                            if (kit.kitData.fireballFight) "${CC.GREEN}⚫ Enabled" else "${CC.RED}⚫ Enabled",
+                            if (!kit.kitData.fireballFight) "${CC.GREEN}⚫ Disabled" else "${CC.RED}⚫ Disabled"
+                        )
+                    ).build()
+            }
+
+            override fun clicked(player: Player?, slot: Int, clickType: ClickType?, hotbarButton: Int) {
+                kit.kitData.fireballFight = !kit.kitData.fireballFight
                 kit.save()
             }
 

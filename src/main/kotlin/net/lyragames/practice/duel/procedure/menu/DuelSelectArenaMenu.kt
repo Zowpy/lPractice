@@ -49,6 +49,7 @@ class DuelSelectArenaMenu : PaginatedMenu() {
             if (arena.arenaType == ArenaType.MLGRUSH && !duelProcedure.kit!!.kitData.mlgRush) continue
             if (arena.arenaType == ArenaType.BEDFIGHT && !duelProcedure.kit!!.kitData.bedFights) continue
             if (arena.arenaType == ArenaType.BRIDGE && !duelProcedure.kit!!.kitData.bridge) continue
+            if (arena.arenaType == ArenaType.FIREBALL_FIGHT && !duelProcedure.kit!!.kitData.fireballFight) continue
 
             val kitData = duelProcedure.kit!!.kitData
 
@@ -56,7 +57,8 @@ class DuelSelectArenaMenu : PaginatedMenu() {
                         || kitData.bedFights
                         || kitData.mlgRush
                         || kitData.sumo
-                        || kitData.bridge)) continue
+                        || kitData.bridge
+                        || kitData.fireballFight)) continue
 
             //if (arena.arenaType != ArenaType.NORMAL) continue
 

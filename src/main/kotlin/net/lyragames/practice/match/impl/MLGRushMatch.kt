@@ -10,8 +10,12 @@ import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.utils.LocationHelper
+import net.lyragames.practice.utils.countdown.TitleCountdown
 import org.bukkit.GameMode
+import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 
 /**
@@ -48,27 +52,38 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
         }
 
         if (event.block.type == Material.BED || event.block.type == Material.BED_BLOCK) {
+            if (player.bedLocations.contains(event.block.location)) {
+                player.player.sendMessage("${CC.RED}You cannot break your own bed.")
+                event.isCancelled = true
+                return
+            }
+
             for (matchPlayer in players) {
-                for (x in event.block.x - 2 until event.block.x + 2) {
-                    for (y in event.block.y - 2 until event.block.y + 2) {
-                        for (z in event.block.z - 2 until event.block.z + 2) {
-                            if (matchPlayer.bed?.blockX == x && matchPlayer.bed?.blockY == y && matchPlayer.bed?.blockZ == z) {
-
-                                if (player?.bed?.blockX == x && player.bed?.blockY == y && player.bed?.blockZ == z) {
-                                    player.player.sendMessage("${CC.RED}You cannot break your own bed.")
-                                    event.isCancelled = true
-                                    break
-                                }
-
-                                event.isCancelled = true
-                                player.points++
-                                resetMatch(player as TeamMatchPlayer)
-                            }
-                        }
-                    }
+                if (matchPlayer.bedLocations.contains(event.block.location)) {
+                    event.isCancelled = true
+                    player.points++
+                    resetMatch(player as TeamMatchPlayer)
                 }
             }
         }
+    }
+
+    override fun addPlayer(player: Player, location: Location) {
+        val team = findTeam()
+        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid)
+
+        val blue = team.name == "Blue"
+
+        teamMatchPlayer.coloredName = if (blue) "${CC.BLUE}${player.name}" else "${CC.RED}${player.name}"
+        teamMatchPlayer.bedLocations = LocationHelper.findBedLocations(team.bedLocation!!)
+
+        team.players.add(teamMatchPlayer)
+
+        players.stream().map { it.player }.forEach {
+            it.showPlayer(player)
+            player.showPlayer(it)
+        }
+        players.add(teamMatchPlayer)
     }
 
     override fun handleDeath(player: MatchPlayer) {
@@ -94,7 +109,12 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
         player.player.teleport(player.spawn.clone().add(0.0, 5.0, 0.0))
 
-        player.respawnCountdown = Countdown(PracticePlugin.instance, player.player, "${CC.PRIMARY}Respawning in ${CC.SECONDARY}<seconds>${CC.PRIMARY}!", 6) {
+        val countdown = TitleCountdown(
+            player.player,
+            "${CC.PRIMARY}Respawning in ${CC.SECONDARY}<seconds>${CC.PRIMARY}!",
+            "${CC.RED}YOU DIED!",
+            "${CC.YELLOW}Respawning in ${CC.SECONDARY}<seconds>${CC.PRIMARY}...",
+            4) {
             val profile = Profile.getByUUID(player.uuid)
             player.player.teleport(player.spawn)
 
@@ -103,11 +123,13 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
             profile?.getKitStatistic(kit.name)?.generateBooks(player.player)
 
             player.respawning = false
+            player.respawnCountdown = null
 
             players.stream().forEach { if (!it.offline) it.player.showPlayer(player.player) }
-
-            player.respawnCountdown = null
         }
+
+        countdowns.add(countdown)
+        player.respawnCountdown = countdown
     }
 
     private fun resetMatch(winner: TeamMatchPlayer) {
@@ -126,7 +148,6 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
                 if (matchPlayer.respawnCountdown != null) {
                     matchPlayer.respawnCountdown?.cancel()
-                    matchPlayer.respawnCountdown?.consumer?.accept(true)
                     matchPlayer.respawnCountdown = null
                 }
 
@@ -139,10 +160,11 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
                 player.teleport(matchPlayer.spawn)
                 profile?.getKitStatistic(kit.name)?.generateBooks(player)
 
-                countdowns.add(Countdown(
-                    PracticePlugin.instance,
+                countdowns.add(TitleCountdown(
                     player,
-                    "${CC.PRIMARY}Round ${CC.SECONDARY}$round ${CC.PRIMARY}starting in ${CC.SECONDARY}<seconds>${CC.PRIMARY} seconds!",
+                    "${CC.SECONDARY}<seconds>${CC.PRIMARY}...",
+                    "${CC.SECONDARY}<seconds>",
+                    null,
                     6
                 ) {
                     player.sendMessage("${CC.PRIMARY}Round started!")
@@ -163,8 +185,8 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
        // handleDeath(matchPlayer)
 
-        if (teams.stream().anyMatch { team -> team.players.stream().noneMatch { !it.offline } }) {
-            end(players.stream().filter { !it.offline }.findAny().orElse(null) as TeamMatchPlayer)
+        if (teams.any { team -> team.players.none { !it.offline } }) {
+            end(players.firstOrNull { !it.offline } as TeamMatchPlayer)
         }
     }
 }

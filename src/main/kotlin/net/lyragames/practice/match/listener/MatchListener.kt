@@ -5,24 +5,15 @@ import net.lyragames.llib.utils.Cooldown
 import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
-import net.lyragames.practice.event.EventState
-import net.lyragames.practice.event.EventType
-import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
-import net.lyragames.practice.match.impl.BedFightMatch
-import net.lyragames.practice.match.impl.BridgeMatch
-import net.lyragames.practice.match.impl.MLGRushMatch
-import net.lyragames.practice.match.impl.TeamMatch
+import net.lyragames.practice.match.impl.*
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.entity.Arrow
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
-import org.bukkit.entity.ThrownPotion
+import org.bukkit.entity.*
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -32,6 +23,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.potion.Potion
 
 /**
@@ -67,7 +59,7 @@ object MatchListener : Listener {
                 return
             }
 
-            if (match.kit.kitData.build || match.kit.kitData.mlgRush || match.kit.kitData.bedFights || match.kit.kitData.bridge) {
+            if (match.kit.kitData.build || match.kit.kitData.mlgRush || match.kit.kitData.bedFights || match.kit.kitData.bridge || match.kit.kitData.fireballFight) {
                 if (!match.arena.bounds.isInCuboid(event.blockPlaced.location)) {
                     event.isCancelled = true
                     player.sendMessage("${CC.RED}You cannot place blocks here.")
@@ -76,6 +68,15 @@ object MatchListener : Listener {
 
                 if (match.kit.kitData.bridge) {
                     (match as BridgeMatch).handlePlace(event)
+                    return
+                }
+
+                if (event.block.type == Material.TNT) {
+                    event.block.type = Material.AIR
+
+                    val tnt = player.location.world.spawn(event.block.location, TNTPrimed::class.java) as TNTPrimed
+                    tnt.fuseTicks = 4 * 20
+                    tnt.setMetadata("match", FixedMetadataValue(PracticePlugin.instance, match.uuid.toString()))
                     return
                 }
 
@@ -94,12 +95,22 @@ object MatchListener : Listener {
         if (profile!!.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
 
-            if (match!!.kit.kitData.mlgRush && match is MLGRushMatch) {
+            if (match!!.matchState != MatchState.FIGHTING) {
+                event.isCancelled = true
+                return
+            }
+
+            if (match.kit.kitData.mlgRush && match is MLGRushMatch) {
                 match.handleBreak(event)
                 return
             }
 
             if (match.kit.kitData.bedFights && match is BedFightMatch) {
+                match.handleBreak(event)
+                return
+            }
+
+            if (match.kit.kitData.fireballFight && match is FireballFightMatch) {
                 match.handleBreak(event)
                 return
             }
@@ -186,6 +197,11 @@ object MatchListener : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onHit(event: EntityDamageByEntityEvent) {
+        if (event.damager is Explosive) {
+            event.damage = 0.0
+            return
+        }
+
         if (event.entity is Player && event.damager is Player) {
             val player = event.entity as Player
             val damager = event.damager as Player
@@ -319,6 +335,13 @@ object MatchListener : Listener {
     @EventHandler
     fun onDamage(event: EntityDamageEvent) {
         if (event.entity is Player) {
+
+            if (event.cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
+                || event.cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) {
+                event.damage = 0.0
+                return
+            }
+
             val profile = Profile.getByUUID((event.entity as Player).player.uniqueId)
 
             if (profile!!.state == ProfileState.MATCH) {
@@ -424,12 +447,38 @@ object MatchListener : Listener {
 
                     if (event.item.type == Material.BOW ||
                         (event.item.type == Material.POTION && Potion.fromItemStack(event.item).isSplash)
-                    ) {
+                        || event.item.type == Material.FIREBALL) {
                         if (match!!.matchState != MatchState.FIGHTING) {
                             event.isCancelled = true
                             event.setUseItemInHand(Event.Result.DENY)
 
                             player.updateInventory()
+                            return
+                        }
+
+                        if (event.item.type == Material.FIREBALL) {
+
+                            event.isCancelled = true
+
+                            if (profile.fireBallCooldown != null && !profile.fireBallCooldown!!.hasExpired()) {
+                                player.sendMessage("${CC.SECONDARY}Fireball cooldown: ${CC.PRIMARY}${TimeUtil.millisToSeconds(profile.fireBallCooldown!!.timeRemaining)}")
+                            }else {
+                                val fireBall = player.launchProjectile(Fireball::class.java)
+                                fireBall.velocity = player.location.direction.multiply(1.4)
+                                fireBall.setIsIncendiary(false)
+                                fireBall.setMetadata("match", FixedMetadataValue(PracticePlugin.instance, match.uuid.toString()))
+
+                                if (player.itemInHand.amount - 1 <= 0) {
+                                    player.inventory.removeItem(player.itemInHand)
+                                }else {
+
+                                    player.itemInHand.amount = player.itemInHand.amount - 1
+                                    player.updateInventory()
+                                }
+
+                                profile.fireBallCooldown = Cooldown(PracticePlugin.instance, 1) {}
+                            }
+
                         }
                     }
                 }
@@ -447,7 +496,7 @@ object MatchListener : Listener {
                         event.setUseItemInHand(Event.Result.DENY)
 
                         player.sendMessage(
-                            "${CC.RED}Enderpearl cooldown: ${CC.YELLOW}${
+                            "${CC.SECONDARY}Enderpearl cooldown: ${CC.PRIMARY}${
                                 profile.enderPearlCooldown?.timeRemaining?.let {
                                     TimeUtil.millisToSeconds(it)
                                 }

@@ -44,11 +44,11 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
         player.dead = true
 
         if (player.lastDamager == null) {
-            sendMessage("&c" + player.name + " ${CC.PRIMARY}has died from natural causes!")
+            sendMessage("${player.coloredName}${CC.PRIMARY}was killed!")
         }else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c" + player.name + " ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
+            sendMessage("${player.coloredName} ${CC.PRIMARY}was killed by ${matchPlayer?.coloredName}${CC.PRIMARY}!")
         }
 
         val losingTeam = teams.stream().filter { team -> !team.players.stream().anyMatch { !it.dead } }.findAny().orElse(null)
@@ -129,7 +129,11 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
 
     override fun addPlayer(player: Player, location: Location) {
         val team = findTeam()
-        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid!!)
+        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid)
+
+        val blue = team.name == "Blue"
+
+        teamMatchPlayer.coloredName = if (blue) "${CC.BLUE}${player.name}" else "${CC.RED}${player.name}"
 
         team.players.add(teamMatchPlayer)
 
