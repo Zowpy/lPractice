@@ -158,11 +158,11 @@ object Hotbar {
 
     private fun createCustomItem(player: Player, itemStack: ItemStack, consumer: Consumer<PlayerInteractEvent>): CustomItemStack {
         val customItemStack = CustomItemStack(player.uniqueId, itemStack)
-        customItemStack.isRightClick = true
+        customItemStack.rightClick = true
         customItemStack.clicked
         customItemStack.clicked = consumer
 
-        if (!CustomItemStack.getCustomItemStacks().contains(customItemStack)) {
+        if (!CustomItemStack.customItemStacks.contains(customItemStack)) {
             customItemStack.create()
         }
 
@@ -171,12 +171,12 @@ object Hotbar {
 
     private fun createCustomItem(player: Player, itemStack: ItemStack, remove: Boolean, consumer: Consumer<PlayerInteractEvent>): CustomItemStack {
         val customItemStack = CustomItemStack(player.uniqueId, itemStack)
-        customItemStack.isRightClick = true
+        customItemStack.rightClick = true
         customItemStack.clicked
         customItemStack.clicked = consumer
-        customItemStack.isRemoveOnClick = remove
+        customItemStack.removeOnClick = remove
 
-        if (!CustomItemStack.getCustomItemStacks().contains(customItemStack)) {
+        if (!CustomItemStack.customItemStacks.contains(customItemStack)) {
             customItemStack.create()
         }
 

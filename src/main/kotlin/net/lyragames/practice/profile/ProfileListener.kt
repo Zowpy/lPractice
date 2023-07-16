@@ -120,7 +120,7 @@ object ProfileListener: Listener {
             ffa!!.handleLeave(ffa.getFFAPlayer(player.uniqueId)!!, true)
         }
 
-        CustomItemStack.getCustomItemStacks().removeIf { it.uuid == player.uniqueId }
+        CustomItemStack.customItemStacks.removeIf { it.uuid == player.uniqueId }
         Profile.profiles.remove(profile)
     }
 }

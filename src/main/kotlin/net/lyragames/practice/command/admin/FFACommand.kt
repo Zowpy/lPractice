@@ -42,7 +42,7 @@ object FFACommand {
         player.sendMessage("${CC.GREEN}Successfully set ffa min location!")
 
         if (Constants.MIN != null && Constants.MAX != null) {
-            Constants.SAFE_ZONE = Cuboid(Constants.MIN, Constants.MAX)
+            Constants.SAFE_ZONE = Cuboid(Constants.MIN!!, Constants.MAX!!)
         }
     }
 
@@ -56,7 +56,7 @@ object FFACommand {
         player.sendMessage("${CC.GREEN}Successfully set ffa max location!")
 
         if (Constants.MIN != null && Constants.MAX != null) {
-            Constants.SAFE_ZONE = Cuboid(Constants.MIN, Constants.MAX)
+            Constants.SAFE_ZONE = Cuboid(Constants.MIN!!, Constants.MAX!!)
         }
     }
 }

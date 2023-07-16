@@ -113,7 +113,6 @@ class PracticePlugin : JavaPlugin() {
             .register(DuelCommand)
             .register(LeaveCommand)
             .register(MatchSnapshotCommand)
-            .register(PartyCommand)
             .register(EventMapCommand)
             .register(EventCommand)
             .register(SpectateCommand)
@@ -124,6 +123,7 @@ class PracticePlugin : JavaPlugin() {
             .register(BuildCommand)
             .register(ArenaRatingCommand)
             .register(SpawnCommand)
+            .register(PartyCommand)
             .endRegister()
 
         Constants.load()

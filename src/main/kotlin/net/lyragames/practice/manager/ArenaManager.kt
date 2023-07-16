@@ -52,7 +52,7 @@ object ArenaManager {
             arena.max = LocationUtil.deserialize(section.getString("max"))
 
             if (arena.min != null && arena.max != null) {
-                arena.bounds = Cuboid(arena.min, arena.max)
+                arena.bounds = Cuboid(arena.min!!, arena.max!!)
             }
 
             if (arena is StandaloneMLGRushArena) {
@@ -84,8 +84,8 @@ object ArenaManager {
                 arena.bluePortal1 = LocationUtil.deserialize(section.getString("bluePortal1"))
                 arena.bluePortal2 = LocationUtil.deserialize(section.getString("bluePortal2"))
 
-                arena.bluePortal = Cuboid(arena.bluePortal1, arena.bluePortal2)
-                arena.redPortal = Cuboid(arena.redPortal1, arena.redPortal2)
+                arena.bluePortal = Cuboid(arena.bluePortal1!!, arena.bluePortal2!!)
+                arena.redPortal = Cuboid(arena.redPortal1!!, arena.redPortal2!!)
             }
 
             if (section.getConfigurationSection("duplicates") != null) {
@@ -101,7 +101,7 @@ object ArenaManager {
                     arena1.max = LocationUtil.deserialize(section1.getString("max"))
 
                     if (arena1.min != null && arena1.max != null) {
-                        arena1.bounds = Cuboid(arena1.min, arena1.max)
+                        arena1.bounds = Cuboid(arena1.min!!, arena1.max!!)
                     }
 
                     arena1.duplicate = true
@@ -136,8 +136,8 @@ object ArenaManager {
                         arena1.bluePortal1 = LocationUtil.deserialize(section1.getString("bluePortal1"))
                         arena1.bluePortal2 = LocationUtil.deserialize(section1.getString("bluePortal2"))
 
-                        arena1.bluePortal = Cuboid(arena1.bluePortal1, arena1.bluePortal2)
-                        arena1.redPortal = Cuboid(arena1.redPortal1, arena1.redPortal2)
+                        arena1.bluePortal = Cuboid(arena1.bluePortal1!!, arena1.bluePortal2!!)
+                        arena1.redPortal = Cuboid(arena1.redPortal1!!, arena1.redPortal2!!)
 
                         arena.duplicates.add(arena1)
                         continue

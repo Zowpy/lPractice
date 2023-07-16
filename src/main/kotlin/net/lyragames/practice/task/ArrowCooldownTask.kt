@@ -14,17 +14,24 @@ object ArrowCooldownTask: BukkitRunnable() {
 
     override fun run() {
         for (profile in Profile.profiles) {
-            if (profile?.state == ProfileState.MATCH && Match.getByUUID(profile.match!!)!!.kit.kitData.bridge) {
-                if (profile.arrowCooldown != null && !profile.arrowCooldown?.hasExpired()!!) {
-                    val player = profile.player
+            if (profile?.state == ProfileState.MATCH && profile.match != null) {
 
-                    val seconds = (profile.arrowCooldown?.timeRemaining?.toInt()?.div(1000))
+                val match = Match.getByUUID(profile.match!!)
 
-                    if (seconds != null) {
-                        player.level = seconds
+                if (match == null) continue
+
+                if (match.kit.kitData.bridge) {
+                    if (profile.arrowCooldown != null && !profile.arrowCooldown?.hasExpired()!!) {
+                        val player = profile.player
+
+                        val seconds = (profile.arrowCooldown?.timeRemaining?.toInt()?.div(1000))
+
+                        if (seconds != null) {
+                            player.level = seconds
+                        }
+
+                        player.exp = profile.arrowCooldown?.timeRemaining?.div(6000.0f) ?: 0f
                     }
-
-                    player.exp = profile.arrowCooldown?.timeRemaining?.div(6000.0f) ?: 0f
                 }
             }
         }

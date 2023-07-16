@@ -7,9 +7,20 @@ import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.menu.EventHostMenu
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.utils.CC
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object EventCommand {
+
+    @Command(name = "event")
+    fun help(@Sender player: CommandSender) {
+        player.sendMessage("${CC.SECONDARY}Event Help")
+        player.sendMessage(CC.CHAT_BAR)
+        player.sendMessage("${CC.PRIMARY}/event join")
+        player.sendMessage("${CC.PRIMARY}/event host")
+        player.sendMessage("${CC.PRIMARY}/event start")
+        player.sendMessage(CC.CHAT_BAR)
+    }
 
     @Command(name = "event host")
     fun host(@Sender player: Player) {

@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
 
 object PartyCommand {
 
-    @Command(name = "party", aliases = ["p", "party help", "p help"])
+    @Command(name = "party", aliases = ["p"])
     fun help(@Sender player: Player) {
         player.sendMessage("${CC.PRIMARY}Party Commands:")
         player.sendMessage(CC.translate("&7&m---------------------"))

@@ -123,7 +123,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s min location!")
 
         if (arena.max != null) {
-            arena.bounds = Cuboid(arena.min, arena.max)
+            arena.bounds = Cuboid(arena.min!!, arena.max!!)
         }
     }
 
@@ -136,7 +136,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s max location!")
 
         if (arena.min != null) {
-            arena.bounds = Cuboid(arena.min, arena.max)
+            arena.bounds = Cuboid(arena.min!!, arena.max!!)
         }
     }
 
@@ -173,7 +173,7 @@ object ArenaCommand {
                     newDuplicate.deadzone = duplicate.deadzone
                     newDuplicate.duplicate = true
 
-                    newDuplicate.bounds = Cuboid(newDuplicate.min, newDuplicate.max)
+                    newDuplicate.bounds = Cuboid(newDuplicate.min!!, newDuplicate.max!!)
                     newDuplicate.arenaType = ArenaType.BEDFIGHT
 
                     arena.duplicates.removeIf { it.name.equals(duplicate.name, false) }
@@ -206,7 +206,7 @@ object ArenaCommand {
                     newDuplicate.deadzone = duplicate.deadzone
                     newDuplicate.duplicate = true
 
-                    newDuplicate.bounds = Cuboid(newDuplicate.min, newDuplicate.max)
+                    newDuplicate.bounds = Cuboid(newDuplicate.min!!, newDuplicate.max!!)
                     newDuplicate.arenaType = ArenaType.BEDFIGHT
 
                     arena.duplicates.removeIf { it.name.equals(duplicate.name, false) }
@@ -242,7 +242,7 @@ object ArenaCommand {
                     newDuplicate.deadzone = duplicate.deadzone
                     newDuplicate.duplicate = true
 
-                    newDuplicate.bounds = Cuboid(newDuplicate.min, newDuplicate.max)
+                    newDuplicate.bounds = Cuboid(newDuplicate.min!!, newDuplicate.max!!)
                     newDuplicate.arenaType = ArenaType.BRIDGE
 
                     arena.duplicates.removeIf { it.name.equals(duplicate.name, false) }

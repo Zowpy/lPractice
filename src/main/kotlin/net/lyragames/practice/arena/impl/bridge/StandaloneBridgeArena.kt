@@ -58,11 +58,11 @@ class StandaloneBridgeArena(name: String) : StandaloneArena(name) {
         configSection.set("type", arenaType.name)
 
         if (redPortal1 != null && redPortal2 != null) {
-            redPortal = Cuboid(redPortal1, redPortal2)
+            redPortal = Cuboid(redPortal1!!, redPortal2!!)
         }
 
         if (bluePortal1 != null && bluePortal2 != null) {
-            bluePortal = Cuboid(bluePortal1, bluePortal2)
+            bluePortal = Cuboid(bluePortal1!!, bluePortal2!!)
         }
 
         if (duplicates.isNotEmpty()) {
@@ -104,7 +104,7 @@ class StandaloneBridgeArena(name: String) : StandaloneArena(name) {
             arena.min = LocationHelper.getLocation(world, min!!).add(offsetX, 0.0, offsetZ)
             arena.max = LocationHelper.getLocation(world, max!!).add(offsetX, 0.0, offsetZ)
 
-            arena.bounds = Cuboid(arena.min, arena.max)
+            arena.bounds = Cuboid(arena.min!!, arena.max!!)
 
             arena.duplicate = true
             arena.deadzone = deadzone

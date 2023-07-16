@@ -152,7 +152,7 @@ class BridgeMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, aren
         var found = false
 
         for (team in teams) {
-            if (team.portal!!.contains(event.block.x, team.portal!!.y1, event.block.z)) {
+            if (team.portal!!.contains(event.block.x, team.portal!!.lowerY, event.block.z)) {
                 event.isCancelled = true
                 found = true
                 break

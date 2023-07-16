@@ -80,8 +80,8 @@ class KitStatistic constructor(val kit: String) {
                 .name(CC.RED + "Default").build()
         )
 
-        customItemStack.isRightClick = true
-        customItemStack.isRemoveOnClick = true
+        customItemStack.rightClick = true
+        customItemStack.removeOnClick = true
         customItemStack.clicked = Consumer {
             giveContents(player, profile, kit!!.content, kit.armorContent, true)
         }
@@ -102,8 +102,8 @@ class KitStatistic constructor(val kit: String) {
                     .build()
             )
 
-            item.isRightClick = true
-            item.isRemoveOnClick = true
+            item.rightClick = true
+            item.removeOnClick = true
             item.clicked = Consumer {
                 giveContents(player, profile, editedKit.content!!, editedKit.armorContent!!, true)
             }

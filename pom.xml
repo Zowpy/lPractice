@@ -156,6 +156,44 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+
+                            <relocations>
+                                <relocation>
+                                    <pattern>me.zowpy.menu</pattern>
+
+                                    <shadedPattern>net.lyragames.practice.utils.menu</shadedPattern>
+                                </relocation>
+
+                                <relocation>
+                                    <pattern>me.zowpy.command</pattern>
+
+                                    <shadedPattern>net.lyragames.practice.utils.command</shadedPattern>
+                                </relocation>
+
+                                <relocation>
+                                    <pattern>io.github.thatkawaiisam.assemble</pattern>
+
+                                    <shadedPattern>net.lyragames.practice.utils.assemble</shadedPattern>
+                                </relocation>
+                            </relocations>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <resources>

@@ -5,7 +5,6 @@ import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.profile.Profile
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.entity.Fireball
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
@@ -66,14 +65,14 @@ object WorldListener : Listener {
                 return
             }
 
-            event.blockList().forEach {
+            /*event.blockList().forEach {
 
                 if (match.blocksPlaced.contains(it)) {
                     match.droppedItems.add(it.location.world.dropItemNaturally(it.location, it.state.data.toItemStack(1)))
                     it.type = Material.AIR
                 }
 
-            }
+            }*/
 
             event.blockList().removeIf { !match.blocksPlaced.contains(it) }
         }

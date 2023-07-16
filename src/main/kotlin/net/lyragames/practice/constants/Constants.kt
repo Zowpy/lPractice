@@ -15,7 +15,7 @@ object Constants {
 
     fun load() {
         if (MIN != null && MAX != null) {
-            SAFE_ZONE = Cuboid(MIN, MAX)
+            SAFE_ZONE = Cuboid(MIN!!, MAX!!)
         }
     }
 }

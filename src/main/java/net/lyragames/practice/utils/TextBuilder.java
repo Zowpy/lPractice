@@ -47,7 +47,7 @@ public class TextBuilder {
     }
 
     public TextBuilder setCommand(String command) {
-        latest.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+        latest.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
         return this;
     }
 

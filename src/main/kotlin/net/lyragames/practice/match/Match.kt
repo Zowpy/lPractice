@@ -65,7 +65,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             val player = matchPlayer.player
             val profile = Profile.getByUUID(player.uniqueId)
 
-            CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
+            CustomItemStack.customItemStacks.removeIf { it.uuid == matchPlayer.uuid }
 
             PlayerUtil.reset(player)
             PlayerUtil.denyMovement(player)
@@ -258,7 +258,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                     bukkitPlayer.teleport(Constants.SPAWN)
                 }
 
-                CustomItemStack.getCustomItemStacks().removeIf { it.uuid == matchPlayer.uuid }
+                CustomItemStack.customItemStacks.removeIf { it.uuid == matchPlayer.uuid }
 
                 Hotbar.giveHotbar(profile)
 
