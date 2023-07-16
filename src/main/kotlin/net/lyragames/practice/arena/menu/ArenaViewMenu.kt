@@ -1,7 +1,7 @@
 package net.lyragames.practice.arena.menu
 
-import net.lyragames.menu.Button
-import net.lyragames.menu.Menu
+import me.zowpy.menu.Menu
+import me.zowpy.menu.buttons.Button
 import org.bukkit.entity.Player
 
 

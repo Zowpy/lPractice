@@ -1,11 +1,11 @@
 package net.lyragames.practice.arena.rating.menu
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.menu.Button
-import net.lyragames.menu.ItemBuilder
-import net.lyragames.menu.Menu
+import me.zowpy.menu.Menu
+import me.zowpy.menu.buttons.Button
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.manager.ArenaRatingManager
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

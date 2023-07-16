@@ -1,10 +1,9 @@
 package net.lyragames.practice.event.map.impl
 
-import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.type.EventMapType
-import org.bukkit.Location
+import net.lyragames.practice.utils.LocationUtil
 
 
 /**

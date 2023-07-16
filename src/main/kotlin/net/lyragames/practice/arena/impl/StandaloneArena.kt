@@ -15,10 +15,10 @@ import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.session.ClipboardHolder
 import com.sk89q.worldedit.world.World
 import com.sk89q.worldedit.world.registry.WorldData
-import net.lyragames.llib.utils.Cuboid
-import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.utils.Cuboid
+import net.lyragames.practice.utils.LocationUtil
 import org.bukkit.Location
 import java.util.concurrent.ThreadLocalRandom
 

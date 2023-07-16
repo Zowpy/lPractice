@@ -1,8 +1,8 @@
 package net.lyragames.practice.arena.impl.bridge
 
-import net.lyragames.llib.utils.Cuboid
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.type.ArenaType
+import net.lyragames.practice.utils.Cuboid
 import org.bukkit.Location
 
 class BridgeArena(name: String) : Arena(name) {

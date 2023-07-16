@@ -1,12 +1,12 @@
 package net.lyragames.practice.duel.procedure.menu
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ItemBuilder
-import net.lyragames.menu.Button
-import net.lyragames.menu.pagination.PaginatedMenu
+import me.zowpy.menu.buttons.Button
+import me.zowpy.menu.pagination.PaginatedMenu
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.duel.procedure.DuelProcedure
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType

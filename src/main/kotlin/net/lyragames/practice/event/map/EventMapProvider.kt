@@ -1,15 +1,13 @@
 package net.lyragames.practice.event.map
 
-import me.vaperion.blade.command.argument.BladeProvider
-import me.vaperion.blade.command.container.BladeParameter
-import me.vaperion.blade.command.context.BladeContext
-import me.vaperion.blade.command.exception.BladeExitMessage
+import me.zowpy.command.provider.Provider
+import me.zowpy.command.provider.exception.CommandExitException
 import net.lyragames.practice.manager.EventMapManager
 
-object EventMapProvider: BladeProvider<EventMap> {
+object EventMapProvider: Provider<EventMap> {
 
-    override fun provide(p0: BladeContext, p1: BladeParameter, p2: String?): EventMap {
-        return p2?.let { EventMapManager.getByName(it) } ?: throw BladeExitMessage("That specific event map doesn't exist!")
+    override fun provide(p0: String?): EventMap {
+        return p0?.let { EventMapManager.getByName(it) } ?: throw CommandExitException("That specific event map doesn't exist!")
     }
 
 }

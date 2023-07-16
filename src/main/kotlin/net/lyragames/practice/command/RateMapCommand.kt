@@ -1,20 +1,20 @@
 package net.lyragames.practice.command
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Name
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Named
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.rating.ArenaRating
 import net.lyragames.practice.manager.ArenaRatingManager
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.utils.CC
 import org.bukkit.entity.Player
 import java.util.*
 
 object RateMapCommand {
 
-    @Command(value = ["ratemap"])
-    fun rate(@Sender player: Player, @Name("arena") arena: Arena, @Name("stars") int: Int) {
+    @Command(name = "ratemap")
+    fun rate(@Sender player: Player, @Named("arena") arena: Arena, @Named("stars") int: Int) {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (!profile?.settings?.mapRating!!) {

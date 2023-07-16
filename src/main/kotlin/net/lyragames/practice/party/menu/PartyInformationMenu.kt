@@ -1,12 +1,12 @@
 package net.lyragames.practice.party.menu
 
 import com.google.common.base.Joiner
-import net.lyragames.llib.utils.CC
-import net.lyragames.menu.Button
-import net.lyragames.menu.ItemBuilder
-import net.lyragames.menu.Menu
+import me.zowpy.menu.Menu
+import me.zowpy.menu.buttons.Button
 import net.lyragames.practice.party.Party
 import net.lyragames.practice.party.PartyType
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player

@@ -1,15 +1,13 @@
 package net.lyragames.practice.event.listener
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.practice.event.Event
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.BracketsEvent
 import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.manager.EventManager
-import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler

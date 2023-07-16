@@ -1,9 +1,9 @@
 package net.lyragames.practice.arena.menu
 
-import net.lyragames.menu.Button
-import net.lyragames.menu.ItemBuilder
-import net.lyragames.menu.Menu
+import me.zowpy.menu.Menu
+import me.zowpy.menu.buttons.Button
 import net.lyragames.practice.arena.Arena
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType

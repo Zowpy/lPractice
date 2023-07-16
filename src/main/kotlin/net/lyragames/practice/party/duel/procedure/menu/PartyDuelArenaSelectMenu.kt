@@ -1,13 +1,13 @@
 package net.lyragames.practice.party.duel.procedure.menu
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ItemBuilder
-import net.lyragames.menu.Button
-import net.lyragames.menu.pagination.PaginatedMenu
+import me.zowpy.menu.buttons.Button
+import me.zowpy.menu.pagination.PaginatedMenu
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import net.lyragames.practice.party.duel.procedure.PartyDuelProcedure
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -46,7 +46,7 @@ class PartyDuelArenaSelectMenu: PaginatedMenu() {
         for (arena in Arena.arenas) {
             if (!arena.isSetup || arena.duplicate) continue
             if (kit?.kitData?.build!! && arena.arenaType != ArenaType.BUILD) continue
-            if (kit?.kitData?.sumo!! && arena.arenaType != ArenaType.SUMO) continue
+            if (kit.kitData.sumo && arena.arenaType != ArenaType.SUMO) continue
             if (kit.kitData.mlgRush && arena.arenaType != ArenaType.MLGRUSH) continue
             if (kit.kitData.bedFights && arena.arenaType != ArenaType.BEDFIGHT) continue
             if (arena.arenaType != ArenaType.NORMAL) continue

@@ -1,8 +1,8 @@
 package net.lyragames.practice.manager
 
-import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.utils.InventoryUtil
 
 /**
  * This Project is property of Zowpy & EliteAres © 2022

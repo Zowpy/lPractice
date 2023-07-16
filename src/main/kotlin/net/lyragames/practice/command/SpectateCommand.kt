@@ -1,17 +1,18 @@
 package net.lyragames.practice.command
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Named
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
 import org.bukkit.entity.Player
 
 object SpectateCommand {
 
-    @Command(value = ["spectate", "s", "spec"], description = "spectate a player's match")
-    fun spectate(@Sender player: Player, target: Player) {
+    @Command(name = "spectate", aliases = ["s", "spec"])
+    fun spectate(@Sender player: Player, @Named("player") target: Player) {
         val targetProfile = Profile.getByUUID(target.uniqueId)
         val profile = Profile.getByUUID(player.uniqueId)
 

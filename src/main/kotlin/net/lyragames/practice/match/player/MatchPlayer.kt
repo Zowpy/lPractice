@@ -1,6 +1,5 @@
 package net.lyragames.practice.match.player
 
-import net.lyragames.llib.utils.Countdown
 import net.lyragames.practice.utils.countdown.ICountdown
 import org.bukkit.Bukkit
 import org.bukkit.Location

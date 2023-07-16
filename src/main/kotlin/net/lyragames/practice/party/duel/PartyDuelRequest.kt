@@ -1,11 +1,10 @@
 package net.lyragames.practice.party.duel
 
-import mkremins.fanciful.FancyMessage
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.PartyManager
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.TextBuilder
 import org.bukkit.Bukkit
 import java.util.*
 
@@ -37,13 +36,15 @@ class PartyDuelRequest(val partyUUID: UUID, val issuer: UUID) {
 
         party?.duelRequests?.add(this)
 
-        FancyMessage()
-            .text("${CC.SECONDARY}${sender.name}${CC.PRIMARY}'s party has sent your party a duel request with kit ${CC.SECONDARY}${kit?.name}${CC.PRIMARY} on")
+        val message = TextBuilder()
+            .setText("${CC.SECONDARY}${sender.name}${CC.PRIMARY}'s party has sent your party a duel request with kit ${CC.SECONDARY}${kit?.name}${CC.PRIMARY} on")
             .then()
-            .text(" arena ${CC.SECONDARY}${arena?.name}${CC.PRIMARY}.")
+            .setText(" arena ${CC.SECONDARY}${arena?.name}${CC.PRIMARY}.")
             .then()
-            .text("${CC.SECONDARY} [Click to accept]")
-            .command("/partyduel accept ${sender.name}")
-            .send(leader)
+            .setText("${CC.SECONDARY} [Click to accept]")
+            .setCommand("/partyduel accept ${sender.name}")
+            .build()
+
+        leader.spigot().sendMessage(message)
     }
 }

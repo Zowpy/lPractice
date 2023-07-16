@@ -1,10 +1,10 @@
 package net.lyragames.practice.command.admin
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
 import org.bukkit.entity.Player
 
 
@@ -19,15 +19,27 @@ import org.bukkit.entity.Player
 
 object FollowCommand {
 
-    @Command(value = ["follow"], description = "follow a player")
+    @Command(name = "follow")
     fun follow(@Sender player: Player, target: Player) {
+        if (true) {
+            player.sendMessage("${CC.RED}This command is currently disabled!")
+            return
+        }
+
         val profile = Profile.getByUUID(target.uniqueId)
         val profile1 = Profile.getByUUID(player.uniqueId)
 
         if (profile1?.state != ProfileState.LOBBY) return
-        profile?.followers?.add(player.uniqueId)
-        profile1?.following = true
+
+        if (profile!!.followers.contains(player.uniqueId)) {
+            player.sendMessage("${CC.RED}You are already following ${target.name}.")
+            return
+        }
+
+        profile.followers.add(player.uniqueId)
+        profile1.following = true
 
         player.sendMessage("${CC.PRIMARY}Started following ${CC.SECONDARY}${target.name}")
     }
+
 }

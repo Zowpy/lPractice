@@ -1,12 +1,12 @@
 package net.lyragames.practice.queue.task
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.manager.MatchManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.PlayerUtil
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
 

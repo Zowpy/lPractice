@@ -1,14 +1,14 @@
 package net.lyragames.practice.kit.editor
 
 import lombok.AllArgsConstructor
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ItemBuilder
-import net.lyragames.menu.Button
-import net.lyragames.menu.Menu
-import net.lyragames.menu.buttons.BackButton
+import me.zowpy.menu.Menu
+import me.zowpy.menu.buttons.Button
+import me.zowpy.menu.buttons.impl.BackButton
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -136,7 +136,7 @@ class KitManagementMenu(val kit: Kit): Menu() {
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType?, hotbarSlot: Int) {
-            currentlyOpenedMenus[player.name]?.isClosedByMenu = true
+            currentlyOpenedMenus[player.uniqueId]?.isClosedByMenu = true
             player.closeInventory()
            // player.sendMessage(Locale.KIT_EDITOR_START_RENAMING.format(kitLoadout.getCustomName()))
             val profile = Profile.getByUUID(player.uniqueId)

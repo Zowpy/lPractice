@@ -1,9 +1,9 @@
 package net.lyragames.practice.arena
 
-import net.lyragames.llib.utils.Cuboid
-import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.type.ArenaType
+import net.lyragames.practice.utils.Cuboid
+import net.lyragames.practice.utils.LocationUtil
 import org.bukkit.Location
 
 /**

@@ -1,11 +1,11 @@
 package net.lyragames.practice.kit.editor.listener
 
-import net.lyragames.llib.utils.CC
 import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.kit.editor.KitManagementMenu
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player

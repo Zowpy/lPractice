@@ -1,10 +1,10 @@
 package net.lyragames.practice.match.menu
 
 import lombok.AllArgsConstructor
-import net.lyragames.llib.utils.*
-import net.lyragames.menu.Button
-import net.lyragames.menu.Menu
-import net.lyragames.menu.buttons.DisplayButton
+import me.zowpy.menu.Menu
+import me.zowpy.menu.buttons.Button
+import me.zowpy.menu.buttons.impl.DisplayButton
+import net.lyragames.practice.utils.*
 import org.apache.commons.lang.StringEscapeUtils
 import org.bukkit.Material
 import org.bukkit.entity.Player

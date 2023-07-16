@@ -1,11 +1,11 @@
 package net.lyragames.practice.task
 
-import net.lyragames.llib.utils.CC
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.impl.TNTTagEvent
 import net.lyragames.practice.manager.EventManager
+import net.lyragames.practice.utils.CC
 import org.bukkit.scheduler.BukkitRunnable
 
 /**

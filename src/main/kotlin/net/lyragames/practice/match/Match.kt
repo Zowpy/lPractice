@@ -1,11 +1,7 @@
 package net.lyragames.practice.match
 
+import com.boydti.fawe.bukkit.chat.FancyMessage
 import com.google.common.base.Joiner
-import mkremins.fanciful.FancyMessage
-import net.lyragames.llib.item.CustomItemStack
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.PlayerUtil
-import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
@@ -20,8 +16,13 @@ import net.lyragames.practice.match.spectator.MatchSpectator
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.PlayerUtil
+import net.lyragames.practice.utils.TextBuilder
+import net.lyragames.practice.utils.TimeUtil
 import net.lyragames.practice.utils.countdown.ICountdown
 import net.lyragames.practice.utils.countdown.TitleCountdown
+import net.lyragames.practice.utils.item.CustomItemStack
 import net.lyragames.practice.utils.title.TitleBar
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -340,59 +341,61 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     open fun endMessage(winners: MutableList<MatchPlayer>, losers: MutableList<MatchPlayer>) {
-        val fancyMessage = FancyMessage()
-            .text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------\n")
+        val fancyMessage = TextBuilder()
+            .setText("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------\n")
             .then()
-            .text("${CC.GREEN}Winner: ")
+            .setText("${CC.GREEN}Winner: ")
             .then()
 
         var wi = 1
         for (matchPlayer in winners) {
             if (wi < winners.size) {
-                fancyMessage.text("${matchPlayer.name}${CC.GRAY}, ")
+                fancyMessage.setText("${matchPlayer.name}${CC.GRAY}, ")
             }else {
-                fancyMessage.text("${matchPlayer.name}\n")
+                fancyMessage.setText("${matchPlayer.name}\n")
             }
 
-            fancyMessage.command("/matchsnapshot ${matchPlayer.uuid}")
+            fancyMessage.setCommand("/matchsnapshot ${matchPlayer.uuid}")
             fancyMessage.then()
             wi++
         }
 
-        fancyMessage.text("${CC.RED}Loser: ").then()
+        fancyMessage.setText("${CC.RED}Loser: ").then()
 
         var i = 1
         for (matchPlayer in losers) {
 
             if (i < losers.size) {
-                fancyMessage.text("${matchPlayer.name}${CC.GRAY}, ")
+                fancyMessage.setText("${matchPlayer.name}${CC.GRAY}, ")
             }else {
-                fancyMessage.text("${matchPlayer.name}\n")
+                fancyMessage.setText("${matchPlayer.name}\n")
             }
 
-            fancyMessage.command("/matchsnapshot ${matchPlayer.uuid}")
+            fancyMessage.setCommand("/matchsnapshot ${matchPlayer.uuid}")
             fancyMessage.then()
             i++
         }
 
         if (spectators.isNotEmpty()) {
-            fancyMessage.text("\n${CC.GREEN}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
-                .then().text("${Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name })}\n")
-                .then().text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+            fancyMessage.setText("\n${CC.GREEN}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
+                .then().setText("${Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name })}\n")
+                .then().setText("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
         }else {
-            fancyMessage.text("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+            fancyMessage.setText("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
         }
+
+        val message = fancyMessage.build()
 
         for (matchPlayer in players) {
             if (matchPlayer.offline) continue
 
-            fancyMessage.send(matchPlayer.player)
+            matchPlayer.player.spigot().sendMessage(message)
         }
 
         for (spectator in spectators) {
             val player = spectator.player ?: continue
 
-            fancyMessage.send(player)
+            player.spigot().sendMessage(message)
         }
     }
 

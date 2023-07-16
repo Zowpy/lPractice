@@ -1,16 +1,16 @@
 package net.lyragames.practice.command
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
 import org.bukkit.entity.Player
 
 object LeaveCommand {
 
-    @Command(value = ["leave"], description = "leave ffa")
+    @Command(name = "leave", description = "leave ffa")
     fun leave(@Sender player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 

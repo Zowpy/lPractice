@@ -1,20 +1,21 @@
 package net.lyragames.practice.command
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Named
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import net.lyragames.practice.duel.procedure.menu.DuelSelectKitMenu
 import net.lyragames.practice.manager.MatchManager
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
 import org.bukkit.entity.Player
 
 object DuelCommand {
 
-    @Command(value = ["duel"], description = "send a duel request to a player!")
-    fun duel(@Sender player: Player, target: Player) {
+    @Command(name = "duel")
+    fun duel(@Sender player: Player, @Named("player") target: Player) {
         if (player.uniqueId == target.uniqueId) {
             player.sendMessage("${CC.RED}You can't duel yourself.")
             return
@@ -43,8 +44,8 @@ object DuelCommand {
         DuelSelectKitMenu().openMenu(player)
     }
 
-    @Command(value = ["duel accept"], description = "accept a player's duel request")
-    fun accept(@Sender player: Player, target: Player) {
+    @Command(name = "duel accept")
+    fun accept(@Sender player: Player, @Named("player") target: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
         val duelRequest = profile?.getDuelRequest(target.uniqueId)
 
@@ -66,8 +67,8 @@ object DuelCommand {
         )
     }
 
-    @Command(value = ["partyduel accept"], description = "accept a player's party duel request")
-    fun partyaccept(@Sender player: Player, target: Player) {
+    @Command(name = "partyduel accept")
+    fun partyaccept(@Sender player: Player, @Named("player") target: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
         val profile1 = Profile.getByUUID(target.uniqueId)
 

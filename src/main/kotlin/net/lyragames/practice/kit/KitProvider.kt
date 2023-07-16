@@ -1,13 +1,11 @@
 package net.lyragames.practice.kit
 
-import me.vaperion.blade.command.argument.BladeProvider
-import me.vaperion.blade.command.container.BladeParameter
-import me.vaperion.blade.command.context.BladeContext
-import me.vaperion.blade.command.exception.BladeExitMessage
+import me.zowpy.command.provider.Provider
+import me.zowpy.command.provider.exception.CommandExitException
 
-object KitProvider: BladeProvider<Kit> {
+object KitProvider: Provider<Kit> {
 
-    override fun provide(p0: BladeContext, p1: BladeParameter, p2: String?): Kit? {
-        return p2?.let { Kit.getByName(it) } ?: throw BladeExitMessage("That kit doesn't exist!")
+    override fun provide(p0: String): Kit {
+        return p0.let { Kit.getByName(it) } ?: throw CommandExitException("That kit doesn't exist!")
     }
 }

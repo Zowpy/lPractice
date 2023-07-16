@@ -1,7 +1,5 @@
 package net.lyragames.practice.utils
 
-import net.lyragames.llib.utils.CC
-
 object PotionGradeUtil {
 
     fun getGrade(accuracy: Double): String {

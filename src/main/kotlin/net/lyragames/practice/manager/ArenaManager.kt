@@ -1,10 +1,7 @@
 package net.lyragames.practice.manager
 
-import net.lyragames.llib.utils.Cuboid
-import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
-import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.arena.impl.StandaloneArena
 import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
@@ -14,8 +11,10 @@ import net.lyragames.practice.arena.impl.fireball.FireBallFightArena
 import net.lyragames.practice.arena.impl.fireball.StandaloneFireBallFightArena
 import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
+import net.lyragames.practice.arena.type.ArenaType
 import net.lyragames.practice.kit.Kit
-import net.lyragames.practice.match.impl.FireballFightMatch
+import net.lyragames.practice.utils.Cuboid
+import net.lyragames.practice.utils.LocationUtil
 
 /**
  * This Project is property of Zowpy © 2022

@@ -1,24 +1,23 @@
 package net.lyragames.practice.kit.editor
 
 import lombok.AllArgsConstructor
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ItemBuilder
-import net.lyragames.llib.utils.PlayerUtil
-import net.lyragames.menu.Button
-import net.lyragames.menu.Menu
-import net.lyragames.menu.buttons.DisplayButton
+import me.zowpy.menu.Menu
+import me.zowpy.menu.buttons.Button
+import me.zowpy.menu.buttons.impl.DisplayButton
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
+import net.lyragames.practice.utils.PlayerUtil
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.*
 
 
 /**
@@ -37,7 +36,7 @@ class KitEditorMenu(private val index: Int): Menu() {
         53
     )
     private val BORDER_POSITIONS = intArrayOf(1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 28, 37, 46)
-    private val BORDER_BUTTON: Button = Button.placeholder(Material.COAL_BLOCK, 0.toByte(), " ")
+    private val BORDER_BUTTON = Button.placeholder(Material.COAL_BLOCK, 0.toByte(), " ")
 
     override fun getTitle(player: Player): String {
         val profile = Profile.getByUUID(player.uniqueId)

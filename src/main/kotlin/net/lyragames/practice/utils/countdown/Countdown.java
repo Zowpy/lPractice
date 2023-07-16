@@ -1,8 +1,8 @@
 package net.lyragames.practice.utils.countdown;
 
 import lombok.Getter;
-import net.lyragames.llib.utils.CC;
 import net.lyragames.practice.PracticePlugin;
+import net.lyragames.practice.utils.CC;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 

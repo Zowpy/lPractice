@@ -1,20 +1,20 @@
 package net.lyragames.practice.command.admin
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Permission
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.Cuboid
-import net.lyragames.llib.utils.LocationUtil
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Permission
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.Cuboid
+import net.lyragames.practice.utils.LocationUtil
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object FFACommand {
 
     @Permission("lpractice.command.ffa.setup")
-    @Command(value = ["ffa", "ffa help"])
+    @Command(name = "ffa", aliases = ["ffa help"])
     fun help(@Sender player: CommandSender) {
         player.sendMessage("${CC.PRIMARY}FFA Help:")
         player.sendMessage("${CC.SECONDARY}/ffa setspawn")
@@ -23,7 +23,7 @@ object FFACommand {
     }
 
     @Permission("lpractice.command.ffa.setup")
-    @Command(value = ["ffa spawn", "ffa setspawn"], description = "set ffa spawn point!")
+    @Command(name = "ffa spawn", aliases = ["ffa setspawn"])
     fun spawn(@Sender player: Player) {
         Constants.FFA_SPAWN = player.location
         PracticePlugin.instance.ffaFile.config.set("SPAWN", LocationUtil.serialize(player.location))
@@ -33,7 +33,7 @@ object FFACommand {
     }
 
     @Permission("lpractice.command.ffa.setup")
-    @Command(value = ["ffa min"], description = "set ffa min location!")
+    @Command(name = "ffa min")
     fun min(@Sender player: Player) {
         Constants.MIN = player.location
         PracticePlugin.instance.ffaFile.config.set("SAFE-ZONE.MIN", LocationUtil.serialize(player.location))
@@ -47,7 +47,7 @@ object FFACommand {
     }
 
     @Permission("lpractice.command.ffa.setup")
-    @Command(value = ["ffa max"], description = "set ffa max location!")
+    @Command(name = "ffa max")
     fun max(@Sender player: Player) {
         Constants.MAX = player.location
         PracticePlugin.instance.ffaFile.config.set("SAFE-ZONE.MAX", LocationUtil.serialize(player.location))

@@ -2,7 +2,6 @@ package net.lyragames.practice.profile
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
-import net.lyragames.llib.utils.Cooldown
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.duel.DuelRequest
 import net.lyragames.practice.kit.Kit
@@ -13,6 +12,7 @@ import net.lyragames.practice.profile.settings.Settings
 import net.lyragames.practice.profile.statistics.KitStatistic
 import net.lyragames.practice.profile.statistics.global.GlobalStatistics
 import net.lyragames.practice.queue.QueuePlayer
+import net.lyragames.practice.utils.Cooldown
 import org.bson.Document
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

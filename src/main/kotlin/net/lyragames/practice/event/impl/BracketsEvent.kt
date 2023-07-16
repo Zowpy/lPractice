@@ -1,25 +1,20 @@
 package net.lyragames.practice.event.impl
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.Countdown
-import net.lyragames.llib.utils.PlayerUtil
-import net.lyragames.practice.PracticePlugin
-import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.event.Event
 import net.lyragames.practice.event.EventState
-import net.lyragames.practice.event.EventType
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.player.EventPlayer
 import net.lyragames.practice.event.player.EventPlayerState
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.profile.Profile
-import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.PlayerUtil
+import net.lyragames.practice.utils.countdown.Countdown
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.entity.Item
 import java.util.*
 
 
@@ -64,7 +59,6 @@ class BracketsEvent(host: UUID, eventMap: EventMap, val kit: Kit) : Event(host, 
             if (eventPlayer.offline) continue
 
             countdowns.add(Countdown(
-                PracticePlugin.instance,
                 eventPlayer.player,
                 "&aRound $round starting in <seconds> seconds!",
                 6

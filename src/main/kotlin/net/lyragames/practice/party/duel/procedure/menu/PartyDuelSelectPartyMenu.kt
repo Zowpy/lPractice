@@ -1,13 +1,13 @@
 package net.lyragames.practice.party.duel.procedure.menu
 
 import com.google.common.base.Joiner
-import net.lyragames.llib.utils.CC
-import net.lyragames.menu.Button
-import net.lyragames.menu.ItemBuilder
-import net.lyragames.menu.pagination.PaginatedMenu
+import me.zowpy.menu.buttons.Button
+import me.zowpy.menu.pagination.PaginatedMenu
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.party.duel.procedure.PartyDuelProcedure
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player

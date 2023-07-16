@@ -17,12 +17,12 @@
         <kotlin.version>1.6.20-M1</kotlin.version>
     </properties>
 
-    <build>
+    <!--<build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -31,6 +31,21 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+
+                            <relocations>
+                                <relocation>
+                                    <pattern>me.zowpy.menu</pattern>
+
+                                    <shadedPattern>net.lyragames.practice.utils.menu</shadedPattern>
+                                </relocation>
+
+                                <relocation>
+                                    <pattern>me.zowpy.command</pattern>
+
+                                    <shadedPattern>net.lyragames.practice.utils.command</shadedPattern>
+                                </relocation>
+                            </relocations>
+
                         </configuration>
                     </execution>
                 </executions>
@@ -57,12 +72,15 @@
                 </executions>
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
+                    <sourceDirs>
+                        <source>${project.basedir}/src/main/kotlin</source>
+                    </sourceDirs>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -84,29 +102,62 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build> -->
+
+    <build>
+        <plugins>
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.2.1</version>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
                 <executions>
                     <execution>
-                        <id>get-the-git-infos</id>
+                        <id>compile</id>
+                        <phase>process-sources</phase>
                         <goals>
-                            <goal>revision</goal>
+                            <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <source>src/main/java</source>
+                                <source>src/main/kotlin</source>
+                                <source>src/main/resources</source>
+                            </sourceDirs>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>validate-the-git-infos</id>
+                        <id>test-compile</id>
+                        <phase>process-test-sources</phase>
                         <goals>
-                            <goal>revision</goal>
+                            <goal>test-compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <source>src/main/java</source>
+                                <source>src/main/kotlin</source>
+                                <source>src/main/resources</source>
+                            </sourceDirs>
+                        </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -158,19 +209,15 @@
         </dependency>
 
         <dependency>
-            <groupId>net.lyragames</groupId>
-            <artifactId>lLib</artifactId>
+            <groupId>me.zowpy</groupId>
+            <artifactId>menu</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}\libs\lLib.jar</systemPath>
         </dependency>
 
         <dependency>
-            <groupId>net.lyragames</groupId>
-            <artifactId>MenuAPI</artifactId>
+            <groupId>me.zowpy</groupId>
+            <artifactId>command</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}\libs\MenuAPI.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -189,12 +236,6 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>1.6.21</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
-            <version>1.6.21</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -216,8 +257,7 @@
             <groupId>io.github.thatkawaiisam</groupId>
             <artifactId>assemble</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}\libs\assemble.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
         <!--<dependency>
             <groupId>net.lyragames</groupId>
@@ -258,13 +298,6 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>4.7.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>pl.project13.maven</groupId>
-            <artifactId>git-commit-id-plugin</artifactId>
-            <version>4.9.10</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

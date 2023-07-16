@@ -1,10 +1,6 @@
 package net.lyragames.practice.adapter
 
 import io.github.thatkawaiisam.assemble.AssembleAdapter
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ConfigFile
-import net.lyragames.llib.utils.PlayerUtil
-import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.FFAManager
@@ -18,6 +14,10 @@ import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ConfigFile
+import net.lyragames.practice.utils.PlayerUtil
+import net.lyragames.practice.utils.TimeUtil
 import org.apache.commons.lang.StringUtils
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -39,7 +39,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
         return CC.translate(configFile.getString("scoreboard.title"))
     }
 
-    override fun getLines(player: Player): MutableList<String>? {
+    override fun getLines(player: Player): MutableList<String> {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (!profile?.settings?.scoreboard!!) {

@@ -1,8 +1,6 @@
 package net.lyragames.practice.match.impl
 
 import com.google.common.base.Joiner
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.Match
@@ -10,6 +8,8 @@ import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
 import net.lyragames.practice.match.team.Team
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.PlayerUtil
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player

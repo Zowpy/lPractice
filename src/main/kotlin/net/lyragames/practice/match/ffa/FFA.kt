@@ -1,13 +1,13 @@
 package net.lyragames.practice.match.ffa
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.PlayerUtil
 import net.lyragames.practice.utils.wrapper.WrapperPlayServerSpawnEntity
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityMetadata

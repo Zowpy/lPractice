@@ -1,15 +1,15 @@
 package net.lyragames.practice.command.admin
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Permission
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Permission
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.kit.admin.AdminKitManageMenu
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.statistics.KitStatistic
+import net.lyragames.practice.utils.CC
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -29,7 +29,7 @@ import java.util.concurrent.CompletableFuture
 object KitCommand {
 
     @Permission("lpractice.command.kit.help")
-    @Command(value = ["kit help", "kit"], description = "kit help message")
+    @Command(name = "kit", aliases = ["kit help"])
     fun help(@Sender player: Player) {
         player.sendMessage("${CC.PRIMARY}Kit Commands:")
         player.sendMessage("${CC.SECONDARY}/kit create <name>")
@@ -41,7 +41,7 @@ object KitCommand {
     }
 
     @Permission("lpractice.command.kit.create")
-    @Command(value = ["kit create"], description = "create a new kit")
+    @Command(name = "kit create")
     fun create(@Sender player: Player, name: String) {
         if (Kit.getByName(name) != null) {
             player.sendMessage(CC.RED + "That kit already exists!")
@@ -66,7 +66,7 @@ object KitCommand {
     }
 
     @Permission("lpractice.command.kit.content")
-    @Command(value = ["kit content"], description = "set a kit's items")
+    @Command(name = "kit content")
     fun content(@Sender player: Player, kit: Kit) {
 
         if (player.gameMode != GameMode.SURVIVAL) {
@@ -98,7 +98,7 @@ object KitCommand {
     }
 
     @Permission("lpractice.command.kit.content.retreive")
-    @Command(value = ["kit items"], description = "retreive a kit's items")
+    @Command(name = "kit items")
     fun items(@Sender player: Player, kit: Kit) {
         player.inventory.contents = kit.content
         player.inventory.armorContents = kit.armorContent
@@ -106,7 +106,7 @@ object KitCommand {
     }
 
     @Permission("lpractice.command.kit.displayitem")
-    @Command(value = ["kit icon", "kit displayitem"])
+    @Command(name = "kit icon", aliases = ["kit displayitem"])
     fun displayItem(@Sender player: Player, kit: Kit) {
         if (player.itemInHand == null || player.itemInHand.type == Material.AIR) {
             player.sendMessage("${CC.RED}You are not holding an item!")
@@ -123,7 +123,7 @@ object KitCommand {
     }
 
     @Permission("lpractice.command.kit.edit")
-    @Command(value = ["kit edit"], description = "edit a kit!")
+    @Command(name = "kit admin")
     fun edit(@Sender player: Player, kit: Kit) {
         AdminKitManageMenu(kit).openMenu(player)
     }

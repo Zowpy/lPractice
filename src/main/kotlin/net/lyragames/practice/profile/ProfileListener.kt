@@ -1,13 +1,13 @@
 package net.lyragames.practice.profile
 
-import net.lyragames.llib.item.CustomItemStack
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.manager.FFAManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.PlayerUtil
+import net.lyragames.practice.utils.item.CustomItemStack
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer

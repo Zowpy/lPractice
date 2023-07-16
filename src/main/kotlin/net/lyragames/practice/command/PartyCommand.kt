@@ -1,22 +1,22 @@
 package net.lyragames.practice.command
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Sender
-import mkremins.fanciful.FancyMessage
-import net.lyragames.llib.utils.CC
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Named
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.party.Party
 import net.lyragames.practice.party.PartyType
 import net.lyragames.practice.party.invitation.PartyInvitation
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.TextBuilder
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
 object PartyCommand {
 
-    @Command(value = ["party", "p", "party help", "p help"])
+    @Command(name = "party", aliases = ["p", "party help", "p help"])
     fun help(@Sender player: Player) {
         player.sendMessage("${CC.PRIMARY}Party Commands:")
         player.sendMessage(CC.translate("&7&m---------------------"))
@@ -28,7 +28,7 @@ object PartyCommand {
         player.sendMessage(CC.translate("&7&m---------------------"))
     }
 
-    @Command(value = ["party create", "p create"], description = "create a party")
+    @Command(name = "party create", aliases = ["p create"])
     fun create(@Sender player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 
@@ -48,7 +48,7 @@ object PartyCommand {
         player.sendMessage("${CC.GREEN}Successfully created party!")
     }
 
-    @Command(value = ["party disband", "p disband"], description = "close a party")
+    @Command(name = "party disband", aliases = ["p disband"])
     fun disband(@Sender player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 
@@ -69,7 +69,7 @@ object PartyCommand {
         PartyManager.parties.remove(party)
     }
 
-    @Command(value = ["party leave", "p leave"], description = "leave a party")
+    @Command(name = "party leave", aliases = ["p leave"])
     fun leave(@Sender player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 
@@ -97,8 +97,8 @@ object PartyCommand {
         }
     }
 
-    @Command(value = ["party invite", "p invite"], description = "invite a player to your party")
-    fun invite(@Sender player: Player, target: Player) {
+    @Command(name = "party invite", aliases = ["p invite"])
+    fun invite(@Sender player: Player, @Named("player") target: Player) {
         if (player.uniqueId.equals(target.uniqueId)) {
             player.sendMessage("${CC.RED}You can't invite yourself!")
             return
@@ -126,19 +126,20 @@ object PartyCommand {
         val partyInvite = PartyInvitation(profile.party!!, target.uniqueId)
         profile1?.partyInvites?.add(partyInvite)
 
-        FancyMessage()
-            .text("${CC.PRIMARY}You have been invited to ${CC.SECONDARY}${player.name}'s ${CC.PRIMARY}party!")
+        val message = TextBuilder()
+            .setText("${CC.PRIMARY}You have been invited to ${CC.SECONDARY}${player.name}'s ${CC.PRIMARY}party!")
             .then()
-            .text(" ${CC.SECONDARY}[Click to join]")
-            .command("/party join ${player.name}") //${profile.party?.toString()}")
-            .tooltip("Click to join the party!")
-            .send(target)
+            .setText(" ${CC.SECONDARY}[Click to join]")
+            .setCommand("/party join ${player.name}") //${profile.party?.toString()}")
+            .build()
+
+        target.spigot().sendMessage(message)
 
         player.sendMessage("${CC.PRIMARY}Successfully invited ${CC.SECONDARY}${target.name}${CC.PRIMARY}!")
     }
 
-    @Command(value = ["party join", "p join"], description = "join a person's party")
-    fun join(@Sender player: Player, target: Player) {
+    @Command(name = "party join", aliases = ["p join"])
+    fun join(@Sender player: Player, @Named("player") target: Player) {
 
         if (player.uniqueId == target.uniqueId) {
             player.sendMessage("${CC.RED}You can't join your own party!")

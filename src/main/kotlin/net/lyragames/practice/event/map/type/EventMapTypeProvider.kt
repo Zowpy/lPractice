@@ -1,19 +1,11 @@
 package net.lyragames.practice.event.map.type
 
-import me.vaperion.blade.command.argument.BladeProvider
-import me.vaperion.blade.command.container.BladeParameter
-import me.vaperion.blade.command.context.BladeContext
-import me.vaperion.blade.command.exception.BladeExitMessage
+import me.zowpy.command.provider.Provider
+import me.zowpy.command.provider.exception.CommandExitException
 
-object EventMapTypeProvider: BladeProvider<EventMapType> {
+object EventMapTypeProvider: Provider<EventMapType> {
 
-    override fun provide(p0: BladeContext, p1: BladeParameter, p2: String?): EventMapType {
-        if (EventMapType.valueOf(p2!!) == null) throw BladeExitMessage("Invalid event map type!") else return EventMapType.valueOf(p2)
-    }
-
-    override fun suggest(context: BladeContext, input: String): MutableList<String> {
-        return EventMapType.values().map { it.name }
-            .filter { it.startsWith(input) }
-            .toMutableList()
+    override fun provide(p0: String): EventMapType {
+        if (EventMapType.valueOf(p0!!) == null) throw CommandExitException("Invalid event map type!") else return EventMapType.valueOf(p0)
     }
 }

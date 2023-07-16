@@ -1,7 +1,7 @@
 package net.lyragames.practice.match.team
 
-import net.lyragames.llib.utils.Cuboid
 import net.lyragames.practice.match.player.TeamMatchPlayer
+import net.lyragames.practice.utils.Cuboid
 import net.lyragames.practice.utils.title.TitleBar
 import org.bukkit.Location
 import java.util.*

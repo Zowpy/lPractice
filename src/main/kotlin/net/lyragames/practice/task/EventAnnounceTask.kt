@@ -1,13 +1,14 @@
 package net.lyragames.practice.task
 
-import mkremins.fanciful.FancyMessage
-import net.lyragames.llib.utils.CC
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.EventType
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.TextBuilder
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
@@ -56,15 +57,17 @@ object EventAnnounceTask: BukkitRunnable() {
          //   if (player.uniqueId == host.uniqueId) continue
              if (event.getPlayer(player.uniqueId) != null) continue
 
-            fancyMessage.send(player)
+            player.spigot().sendMessage(fancyMessage)
         }
     }
 
-    private fun buildMessage(host: Player, eventType: EventType) : FancyMessage {
-        return FancyMessage()
-            .text("${CC.GREEN}${host.name}${CC.YELLOW} is hosting ${CC.GREEN}${eventType.eventName}${CC.YELLOW} event!")
+    private fun buildMessage(host: Player, eventType: EventType) : TextComponent {
+
+        return TextBuilder()
+            .setText("${CC.GREEN}${host.name}${CC.YELLOW} is hosting ${CC.GREEN}${eventType.eventName}${CC.YELLOW} event!")
             .then()
-            .text("${CC.GREEN} [Click to join]")
-            .command("/event join")
+            .setText("${CC.GREEN} [Click to join]")
+            .setCommand("/event join")
+            .build()
     }
 }

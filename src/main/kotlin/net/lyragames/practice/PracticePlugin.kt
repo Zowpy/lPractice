@@ -3,16 +3,8 @@ package net.lyragames.practice
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.thatkawaiisam.assemble.Assemble
-import me.vaperion.blade.Blade
-import me.vaperion.blade.command.bindings.impl.BukkitBindings
-import me.vaperion.blade.command.bindings.impl.DefaultBindings
-import me.vaperion.blade.command.container.impl.BukkitCommandContainer
-import net.lyragames.llib.LyraPlugin
-import net.lyragames.llib.item.ItemListener
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ConfigFile
-import net.lyragames.llib.utils.InventoryUtil
-import net.lyragames.menu.MenuAPI
+import me.zowpy.command.CommandAPI
+import me.zowpy.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.api.PracticeAPI
 import net.lyragames.practice.arena.Arena
@@ -26,7 +18,6 @@ import net.lyragames.practice.database.Mongo
 import net.lyragames.practice.database.MongoCredentials
 import net.lyragames.practice.duel.DuelRequest
 import net.lyragames.practice.duel.gson.DuelRequestGsonAdapter
-import net.lyragames.practice.entity.EntityHider
 import net.lyragames.practice.event.listener.EventListener
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.EventMapProvider
@@ -47,15 +38,18 @@ import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
 import net.lyragames.practice.task.*
-import org.bukkit.ChatColor
+import net.lyragames.practice.utils.ConfigFile
+import net.lyragames.practice.utils.InventoryUtil
+import net.lyragames.practice.utils.item.ItemListener
 import org.bukkit.Material
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.plugin.java.JavaPlugin
 
 
-class PracticePlugin : LyraPlugin() {
+class PracticePlugin : JavaPlugin() {
 
     lateinit var settingsFile: ConfigFile
     lateinit var tablistFile: ConfigFile
@@ -67,8 +61,6 @@ class PracticePlugin : LyraPlugin() {
     lateinit var API: PracticeAPI
 
     lateinit var practiceMongo: Mongo
-
-    private lateinit var blade: Blade
 
     //private lateinit var ziggurat: Ziggurat
     override fun onEnable() {
@@ -89,9 +81,6 @@ class PracticePlugin : LyraPlugin() {
         InventoryUtil.removeCrafting(Material.WORKBENCH)
 
 
-        CC.PRIMARY = ChatColor.valueOf(settingsFile.getString("COLOR.PRIMARY")).toString()
-        CC.SECONDARY = ChatColor.valueOf(settingsFile.getString("COLOR.SECONDARY")).toString()
-
         ArenaManager.load()
         logger.info("Successfully loaded ${if (Arena.arenas.size == 1) "1 arena!" else "${Arena.arenas.size} arenas!"}")
 
@@ -110,13 +99,14 @@ class PracticePlugin : LyraPlugin() {
 
         MenuAPI(this)
 
-        blade = Blade.of()
-            .containerCreator(BukkitCommandContainer.CREATOR).binding(BukkitBindings()).binding(DefaultBindings())
-            .bind(Arena::class.java, ArenaProvider).bind(Kit::class.java, KitProvider).bind(EventMap::class.java, EventMapProvider).bind(EventMapType::class.java, EventMapTypeProvider)
-            .bind(ArenaType::class.java, ArenaTypeProvider)
-            .build()
 
-        blade
+        val commandAPI = CommandAPI(this)
+            .bind(Arena::class.java, ArenaProvider)
+            .bind(Kit::class.java, KitProvider)
+            .bind(EventMap::class.java, EventMapProvider)
+            .bind(EventMapType::class.java, EventMapTypeProvider)
+            .bind(ArenaType::class.java, ArenaTypeProvider)
+            .beginCommandRegister()
             .register(ArenaCommand)
             .register(KitCommand)
             .register(SetSpawnCommand)
@@ -134,6 +124,7 @@ class PracticePlugin : LyraPlugin() {
             .register(BuildCommand)
             .register(ArenaRatingCommand)
             .register(SpawnCommand)
+            .endRegister()
 
         Constants.load()
 

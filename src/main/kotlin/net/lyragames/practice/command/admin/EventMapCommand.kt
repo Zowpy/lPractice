@@ -1,23 +1,21 @@
 package net.lyragames.practice.command.admin
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Permission
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
-import net.lyragames.practice.arena.Arena
-import net.lyragames.practice.event.impl.TNTRunEvent
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Permission
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.impl.TNTRunMap
 import net.lyragames.practice.event.map.impl.TNTTagMap
 import net.lyragames.practice.event.map.type.EventMapType
 import net.lyragames.practice.manager.EventMapManager
+import net.lyragames.practice.utils.CC
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object EventMapCommand {
 
     @Permission("lpractice.command.eventmap.help")
-    @Command(value = ["eventmap", "eventmap help"], description = "eventmap help commands")
+    @Command(name = "eventmap", aliases = ["eventmap help"])
     fun help(@Sender sender: CommandSender) {
         sender.sendMessage("${CC.PRIMARY}EventMap Commands:")
         sender.sendMessage("${CC.SECONDARY}/eventmap create <name>")
@@ -29,7 +27,7 @@ object EventMapCommand {
         sender.sendMessage("${CC.SECONDARY}/eventmap type <name> <type> - you can choose from Sumo & Brackets")
     }
 
-    @Command(value = ["eventmap create"], description = "create a new event map")
+    @Command(name = "eventmap create")
     @Permission("lpractice.command.eventmap.create")
     fun create(@Sender player: Player, name: String) {
         if (EventMapManager.getByName(name) != null) {
@@ -44,7 +42,7 @@ object EventMapCommand {
         player.sendMessage(CC.PRIMARY + "Successfully created " + CC.SECONDARY + "'$name'!")
     }
 
-    @Command(value = ["eventmap delete"], description = "delete an event map")
+    @Command(name = "eventmap delete")
     @Permission("lpractice.command.eventmap.delete")
     fun delete(@Sender player: Player, arena: EventMap) {
         arena.delete()
@@ -53,7 +51,7 @@ object EventMapCommand {
         player.sendMessage(CC.PRIMARY + "Successfully deleted " + CC.SECONDARY + "'${arena.name}'!")
     }
 
-    @Command(value = ["eventmap spawn"], description = "set an event map's spawn point")
+    @Command(name = "eventmap spawn")
     @Permission("lpractice.command.eventmap.setup")
     fun spawn(@Sender player: Player, arena: EventMap) {
         arena.spawn = player.location
@@ -62,7 +60,7 @@ object EventMapCommand {
         player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " spawn point!")
     }
 
-    @Command(value = ["eventmap deadzone"], description = "set an event map's deadzone")
+    @Command(name = "eventmap deadzone")
     @Permission("lpractice.command.eventmap.setup")
     fun deadzone(@Sender player: Player, arena: EventMap, deadzone: Int) {
         if (arena.type != EventMapType.TNT_RUN) {
@@ -75,7 +73,7 @@ object EventMapCommand {
         player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " deadzone!")
     }
 
-    @Command(value = ["eventmap pos1", "eventmap position1", "eventmap l1", "eventmap location1"], description = "set an event map's first location")
+    @Command(name = "eventmap pos1", aliases = ["eventmap position1", "eventmap l1", "eventmap location1"])
     @Permission("lpractice.command.eventmap.setup")
     fun pos1(@Sender player: Player, arena: EventMap) {
 
@@ -90,7 +88,7 @@ object EventMapCommand {
         player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 1!")
     }
 
-    @Command(value = ["eventmap pos2", "eventmap position2", "eventmap l2", "eventmap location2"], description = "set an event map's second location")
+    @Command(name = "eventmap pos2", aliases = ["eventmap position2", "eventmap l2", "eventmap location2"])
     @Permission("lpractice.command.eventmap.setup")
     fun pos2(@Sender player: Player, arena: EventMap) {
 
@@ -105,7 +103,7 @@ object EventMapCommand {
         player.sendMessage(CC.PRIMARY + "Successfully set " + CC.SECONDARY + arena.name + CC.PRIMARY + " location 2!")
     }
 
-    @Command(value = ["eventmap type"], description = "set an event map's type")
+    @Command(name = "eventmap type")
     @Permission("lpractice.command.eventmap.setup")
     fun type(@Sender player: Player, arena: EventMap, type: EventMapType) {
         arena.type = type

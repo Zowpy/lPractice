@@ -1,8 +1,5 @@
 package net.lyragames.practice.profile.statistics
 
-import net.lyragames.llib.item.CustomItemStack
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ItemBuilder
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.Match
@@ -10,7 +7,9 @@ import net.lyragames.practice.match.MatchType
 import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
-import org.bukkit.DyeColor
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
+import net.lyragames.practice.utils.item.CustomItemStack
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -99,7 +98,7 @@ class KitStatistic constructor(val kit: String) {
                 ItemBuilder(Material.BOOK)
                     .enchantment(Enchantment.DURABILITY)
                     .addFlags(ItemFlag.HIDE_ENCHANTS)
-                    .name(CC.RED + editedKit.name)
+                    .name("${CC.RED}${editedKit.name}")
                     .build()
             )
 

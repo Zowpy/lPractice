@@ -1,8 +1,8 @@
 package net.lyragames.practice.kit.serializer
 
 import com.google.gson.*
-import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.practice.kit.EditedKit
+import net.lyragames.practice.utils.InventoryUtil
 import java.lang.reflect.Type
 
 

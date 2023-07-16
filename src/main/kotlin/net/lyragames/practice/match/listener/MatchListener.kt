@@ -1,8 +1,5 @@
 package net.lyragames.practice.match.listener
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.Cooldown
-import net.lyragames.llib.utils.TimeUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.match.Match
@@ -11,6 +8,9 @@ import net.lyragames.practice.match.impl.*
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.Cooldown
+import net.lyragames.practice.utils.TimeUtil
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.*
@@ -408,7 +408,7 @@ object MatchListener : Listener {
                     }
 
                     if (match.kit.kitData.bridge) {
-                        profile.arrowCooldown = Cooldown(PracticePlugin.instance, 5) {
+                        profile.arrowCooldown = Cooldown(5) {
                             if (shooter.inventory.getItem(8) == null || shooter.inventory.getItem(8).type == Material.AIR) {
                                 shooter.inventory.setItem(8, ItemStack(Material.ARROW))
                             } else {
@@ -476,7 +476,7 @@ object MatchListener : Listener {
                                     player.updateInventory()
                                 }
 
-                                profile.fireBallCooldown = Cooldown(PracticePlugin.instance, 1) {}
+                                profile.fireBallCooldown = Cooldown(1) {}
                             }
 
                         }
@@ -487,7 +487,7 @@ object MatchListener : Listener {
                     if (profile.enderPearlCooldown == null || profile.enderPearlCooldown?.hasExpired()!!) {
                         event.setUseItemInHand(Event.Result.ALLOW)
 
-                        profile.enderPearlCooldown = Cooldown(PracticePlugin.instance, 16) {
+                        profile.enderPearlCooldown = Cooldown(16) {
                             player.sendMessage("${CC.PRIMARY}You can now use the enderpearl.")
                             profile.enderPearlCooldown = null
                         }

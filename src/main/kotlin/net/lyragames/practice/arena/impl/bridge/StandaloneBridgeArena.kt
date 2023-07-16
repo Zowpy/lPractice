@@ -11,12 +11,12 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.session.ClipboardHolder
-import net.lyragames.llib.utils.Cuboid
-import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.impl.StandaloneArena
 import net.lyragames.practice.arena.type.ArenaType
+import net.lyragames.practice.utils.Cuboid
 import net.lyragames.practice.utils.LocationHelper
+import net.lyragames.practice.utils.LocationUtil
 import org.bukkit.Location
 import org.bukkit.World
 import java.util.concurrent.ThreadLocalRandom

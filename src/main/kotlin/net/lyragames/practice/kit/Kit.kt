@@ -1,11 +1,10 @@
 package net.lyragames.practice.kit
 
-import net.lyragames.llib.utils.InventoryUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.data.KitData
+import net.lyragames.practice.utils.InventoryUtil
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import org.bukkit.material.MaterialData
 
 /**
  * This Project is property of Zowpy © 2021

@@ -1,11 +1,11 @@
 package net.lyragames.practice.duel
 
-import mkremins.fanciful.FancyMessage
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.PlayerUtil
+import net.lyragames.practice.utils.TextBuilder
 import org.bukkit.Bukkit
 import java.util.*
 
@@ -35,13 +35,15 @@ class DuelRequest(var uuid: UUID, var target: UUID, var kit: Kit, var arena: Are
         val profile = Profile.getByUUID(target)
         profile?.duelRequests?.add(this)
 
-        FancyMessage()
-            .text("${CC.SECONDARY}${sender.name}${CC.GREEN} (${PlayerUtil.getPing(sender)} ms)${CC.PRIMARY} has sent you a duel request with kit ${CC.SECONDARY}${kit.name}${CC.PRIMARY} on")
+        val message = TextBuilder()
+            .setText("${CC.SECONDARY}${sender.name}${CC.GREEN} (${PlayerUtil.getPing(sender)} ms)${CC.PRIMARY} has sent you a duel request with kit ${CC.SECONDARY}${kit.name}${CC.PRIMARY} on")
             .then()
-            .text("${CC.PRIMARY} arena ${CC.SECONDARY}${arena.name}${CC.PRIMARY}.")
+            .setText("${CC.PRIMARY} arena ${CC.SECONDARY}${arena.name}${CC.PRIMARY}.")
             .then()
-            .text("${CC.SECONDARY} [Click to accept]")
-            .command("/duel accept ${sender.name}")
-            .send(player)
+            .setText("${CC.SECONDARY} [Click to accept]")
+            .setCommand("/duel accept ${sender.name}")
+            .build()
+
+        player.spigot().sendMessage(message)
     }
 }

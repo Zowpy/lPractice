@@ -1,10 +1,8 @@
 package net.lyragames.practice.command.admin
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Permission
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.Cuboid
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Permission
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.StandaloneArena
 import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
@@ -16,6 +14,8 @@ import net.lyragames.practice.arena.impl.mlgrush.MLGRushArena
 import net.lyragames.practice.arena.impl.mlgrush.StandaloneMLGRushArena
 import net.lyragames.practice.arena.menu.ArenaManageMenu
 import net.lyragames.practice.arena.type.ArenaType
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.Cuboid
 import org.bukkit.entity.Player
 
 
@@ -31,7 +31,7 @@ import org.bukkit.entity.Player
 object ArenaCommand {
 
     @Permission("lpractice.command.arena.help")
-    @Command(value = ["arena", "arena help"], description = "arena help message")
+    @Command(name = "arena", aliases = ["arena help"])
     fun help(@Sender player: Player) {
         player.sendMessage("${CC.PRIMARY}Arena Commands:")
         player.sendMessage(CC.translate("&7&m---------------------"))
@@ -65,7 +65,7 @@ object ArenaCommand {
         player.sendMessage(CC.translate("&7&m---------------------"))
     }
 
-    @Command(value = ["arena create"], description = "create a new arena")
+    @Command(name = "arena create")
     @Permission("lpractice.command.arena.create")
     fun create(@Sender player: Player, name: String, type: ArenaType) {
         if (Arena.getByName(name) != null) {
@@ -87,7 +87,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully created ${CC.SECONDARY}$name${CC.PRIMARY} arena with ${CC.SECONDARY}${type.name}${CC.PRIMARY} type!")
     }
 
-    @Command(value = ["arena delete"], description = "delete an arena")
+    @Command(name = "arena delete")
     @Permission("lpractice.command.arena.delete")
     fun delete(@Sender player: Player, arena: Arena) {
         arena.delete()
@@ -96,7 +96,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully deleted ${CC.SECONDARY}${arena.name}${CC.PRIMARY}!")
     }
 
-    @Command(value = ["arena pos1", "arena position1", "arena l1", "arena location1"], description = "set an arena's first location")
+    @Command(name = "arena pos1", aliases = ["arena position1", "arena l1", "arena location1"])
     @Permission("lpractice.command.arena.setup")
     fun pos1(@Sender player: Player, arena: Arena) {
         arena.l1 = player.location
@@ -105,7 +105,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s location 1!")
     }
 
-    @Command(value = ["arena pos2", "arena position2", "arena l2", "arena location2"], description = "set an arena's second location")
+    @Command(name = "arena pos2", description = "set an arena's second location")
     @Permission("lpractice.command.arena.setup")
     fun pos2(@Sender player: Player, arena: Arena) {
         arena.l2 = player.location
@@ -114,7 +114,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s location 2!")
     }
 
-    @Command(value = ["arena min", "arena minimum"], description = "set an arena's min location")
+    @Command(name = "arena min", aliases = ["arena minimum"])
     @Permission("lpractice.command.arena.setup")
     fun min(@Sender player: Player, arena: Arena) {
         arena.min = player.location
@@ -127,7 +127,7 @@ object ArenaCommand {
         }
     }
 
-    @Command(value = ["arena max", "arena maximum"], description = "set an arena's max location")
+    @Command(name = "arena max", aliases = ["arena maximum"])
     @Permission("lpractice.command.arena.setup")
     fun max(@Sender player: Player, arena: Arena) {
         arena.max = player.location
@@ -141,7 +141,7 @@ object ArenaCommand {
     }
 
 
-    @Command(value = ["arena deadzone", "arena yval"], description = "set an arena's lowest Y location (Used for sumo, bridges, bedfight, pearlfight, etc")
+    @Command(name = "arena deadzone", aliases = ["arena yval"])
     @Permission("lpractice.command.arena.setup")
     fun deadzone(@Sender player: Player, arena: Arena, deadzone: Int) {
         arena.deadzone = deadzone
@@ -150,7 +150,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s deadzone to ${CC.SECONDARY}$deadzone${CC.PRIMARY}!")
     }
 
-    @Command(value = ["arena type"], description = "change an arena type")
+    @Command(name = "arena type")
     fun type(@Sender player: Player, arena: Arena, type: ArenaType) {
         if (type == ArenaType.MLGRUSH) {
             val newArena = StandaloneMLGRushArena(arena.name)
@@ -262,7 +262,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s type to ${CC.SECONDARY}${type.name}${CC.PRIMARY}!")
     }
 
-    @Command(value = ["arena bed1", "arena b1"], description = "set an arena's first bed location")
+    @Command(name = "arena bed1", aliases = ["arena b1"])
     @Permission("lpractice.command.arena.setup")
     fun bed1(@Sender player: Player, arena: Arena) {
         if (arena.arenaType != ArenaType.MLGRUSH) {
@@ -275,7 +275,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s bed location 1!")
     }
 
-    @Command(value = ["arena bed2", "arena b2"], description = "set an arena's second bed location")
+    @Command(name = "arena bed2", aliases = ["arena b2"])
     @Permission("lpractice.command.arena.setup")
     fun bed2(@Sender player: Player, arena: Arena) {
         if (arena.arenaType != ArenaType.MLGRUSH) {
@@ -288,7 +288,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s bed location 2!")
     }
 
-    @Command(value = ["arena redBed", "arena rb"], description = "set an arena's red bed")
+    @Command(name = "arena redBed", aliases = ["arena rb"])
     @Permission("lpractice.command.arena.setup")
     fun redBed(@Sender player: Player, arena: Arena) {
         if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.FIREBALL_FIGHT) {
@@ -302,7 +302,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red bed location!")
     }
 
-    @Command(value = ["arena blueBed", "arena bb"], description = "set an arena's blue bed")
+    @Command(name = "arena blueBed", aliases = ["arena bb"])
     @Permission("lpractice.command.arena.setup")
     fun blueBed(@Sender player: Player, arena: Arena) {
         if (arena.arenaType != ArenaType.BEDFIGHT && arena.arenaType != ArenaType.FIREBALL_FIGHT) {
@@ -316,7 +316,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue bed location!")
     }
 
-    @Command(value = ["arena redspawn"], description = "set an arena's red location")
+    @Command(name = "arena redspawn")
     @Permission("lpractice.command.arena.setup")
     fun redPos(@Sender player: Player, arena: Arena) {
 
@@ -336,7 +336,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red spawn location!")
     }
 
-    @Command(value = ["arena bluespawn"], description = "set an arena's second location")
+    @Command(name = "arena bluespawn")
     @Permission("lpractice.command.arena.setup")
     fun bluePos(@Sender player: Player, arena: Arena) {
 
@@ -356,7 +356,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue spawn location!")
     }
 
-    @Command(value = ["arena blueportal1"])
+    @Command(name = "arena blueportal1")
     @Permission("lpractice.command.arena.setup")
     fun bluePortal1(@Sender player: Player, arena: Arena) {
 
@@ -371,7 +371,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue portal position 1 location!")
     }
 
-    @Command(value = ["arena blueportal2"])
+    @Command(name = "arena blueportal2")
     @Permission("lpractice.command.arena.setup")
     fun bluePortal2(@Sender player: Player, arena: Arena) {
 
@@ -386,7 +386,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s blue portal position 2 location!")
     }
 
-    @Command(value = ["arena redportal1"])
+    @Command(name = "arena redportal1")
     @Permission("lpractice.command.arena.setup")
     fun redPortal1(@Sender player: Player, arena: Arena) {
 
@@ -401,7 +401,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red portal position 1 location!")
     }
 
-    @Command(value = ["arena redportal2"])
+    @Command(name = "arena redportal2")
     @Permission("lpractice.command.arena.setup")
     fun redPortal2(@Sender player: Player, arena: Arena) {
 
@@ -416,7 +416,7 @@ object ArenaCommand {
         player.sendMessage("${CC.PRIMARY}Successfully set ${CC.SECONDARY}${arena.name}${CC.PRIMARY}'s red portal position 2 location!")
     }
 
-    @Command(value = ["arena menu"], description = "manage active arenas")
+    @Command(name = "arena menu")
     @Permission("lpractice.command.arena.menu")
     fun manage(@Sender player: Player, arena: Arena) {
         ArenaManageMenu(arena).openMenu(player)

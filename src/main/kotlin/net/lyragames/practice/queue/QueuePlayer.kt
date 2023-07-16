@@ -1,6 +1,6 @@
 package net.lyragames.practice.queue
 
-import net.lyragames.llib.utils.CC
+import net.lyragames.practice.utils.CC
 import org.bukkit.Bukkit
 import java.util.*
 

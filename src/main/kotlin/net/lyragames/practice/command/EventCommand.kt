@@ -1,28 +1,22 @@
 package net.lyragames.practice.command
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Permission
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Permission
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.event.EventState
-import net.lyragames.practice.event.impl.SumoEvent
-import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.menu.EventHostMenu
 import net.lyragames.practice.manager.EventManager
-import net.lyragames.practice.manager.EventMapManager
-import net.lyragames.practice.profile.Profile
-import net.lyragames.practice.profile.hotbar.Hotbar
-import org.bukkit.Bukkit
+import net.lyragames.practice.utils.CC
 import org.bukkit.entity.Player
 
 object EventCommand {
 
-    @Command(value = ["event host"], description = "host an event")
+    @Command(name = "event host")
     fun host(@Sender player: Player) {
         EventHostMenu().openMenu(player)
     }
 
-    @Command(value = ["event join"], description = "join an event")
+    @Command(name = "event join")
     fun join(@Sender player: Player) {
         val event = EventManager.event
 
@@ -50,7 +44,7 @@ object EventCommand {
     }
 
     @Permission("lpractice.command.event.forcestart")
-    @Command(value = ["event start", "event forcestart", "event fs"], description = "force start an event")
+    @Command(name = "event start", aliases = ["event forcestart", "event fs"])
     fun forcestart(@Sender player: Player) {
 
         if (EventManager.event?.players?.size!! < 2) {

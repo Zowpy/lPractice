@@ -1,9 +1,7 @@
 package net.lyragames.practice.event.menu
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ItemBuilder
-import net.lyragames.menu.Button
-import net.lyragames.menu.Menu
+import me.zowpy.menu.Menu
+import me.zowpy.menu.buttons.Button
 import net.lyragames.practice.event.impl.SumoEvent
 import net.lyragames.practice.event.impl.TNTRunEvent
 import net.lyragames.practice.event.impl.TNTTagEvent
@@ -12,6 +10,8 @@ import net.lyragames.practice.event.menu.brackets.EventSelectKitMenu
 import net.lyragames.practice.event.procedure.BracketEventProcedure
 import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.manager.EventMapManager
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType

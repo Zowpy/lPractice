@@ -1,11 +1,11 @@
 package net.lyragames.practice.manager
 
-import net.lyragames.llib.utils.LocationUtil
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.event.map.EventMap
 import net.lyragames.practice.event.map.impl.TNTRunMap
 import net.lyragames.practice.event.map.impl.TNTTagMap
 import net.lyragames.practice.event.map.type.EventMapType
+import net.lyragames.practice.utils.LocationUtil
 import java.util.concurrent.ThreadLocalRandom
 
 object EventMapManager {

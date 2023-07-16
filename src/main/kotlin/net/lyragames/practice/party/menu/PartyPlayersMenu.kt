@@ -1,12 +1,12 @@
 package net.lyragames.practice.party.menu
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.ItemBuilder
-import net.lyragames.menu.Button
-import net.lyragames.menu.pagination.PaginatedMenu
+import me.zowpy.menu.buttons.Button
+import me.zowpy.menu.pagination.PaginatedMenu
 import net.lyragames.practice.party.Party
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.hotbar.Hotbar
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player

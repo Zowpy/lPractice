@@ -1,17 +1,17 @@
 package net.lyragames.practice.command.admin
 
-import me.vaperion.blade.command.annotation.Command
-import me.vaperion.blade.command.annotation.Permission
-import me.vaperion.blade.command.annotation.Sender
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.LocationUtil
+import me.zowpy.command.annotation.Command
+import me.zowpy.command.annotation.Permission
+import me.zowpy.command.annotation.Sender
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.LocationUtil
 import org.bukkit.entity.Player
 
 object SetSpawnCommand {
 
-    @Command(value = ["setspawn"])
+    @Command(name = "setspawn")
     @Permission("lpractice.command.set.spawn")
     fun setspawn(@Sender player: Player) {
         Constants.SPAWN = player.location

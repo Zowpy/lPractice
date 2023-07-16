@@ -1,7 +1,5 @@
 package net.lyragames.practice.manager
 
-import net.lyragames.llib.utils.CC
-import net.lyragames.llib.utils.PlayerUtil
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.bedwars.BedWarsArena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
@@ -12,6 +10,8 @@ import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.impl.*
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.PlayerUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
