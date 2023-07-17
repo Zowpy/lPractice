@@ -68,7 +68,7 @@ class MatchSnapshot(player: Player, dead: Boolean) {
     }
 
     fun isExpired(): Boolean {
-        return createdAt + 15_000 <= System.currentTimeMillis()
+        return createdAt + 3_000 * 60 <= System.currentTimeMillis()
     }
 
     companion object {
