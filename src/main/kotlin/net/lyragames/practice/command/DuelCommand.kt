@@ -3,6 +3,7 @@ package net.lyragames.practice.command
 import me.zowpy.command.annotation.Command
 import me.zowpy.command.annotation.Named
 import me.zowpy.command.annotation.Sender
+import net.lyragames.core.bukkit.CorePlugin
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import net.lyragames.practice.duel.procedure.menu.DuelSelectKitMenu
 import net.lyragames.practice.manager.MatchManager
@@ -18,6 +19,12 @@ object DuelCommand {
     fun duel(@Sender player: Player, @Named("player") target: Player) {
         if (player.uniqueId == target.uniqueId) {
             player.sendMessage("${CC.RED}You can't duel yourself.")
+            return
+        }
+        val coreProfile = CorePlugin.getInstance().profileManager.getByUUID(player.uniqueId)
+
+        if (coreProfile.isStaffMode) {
+            player.sendMessage("${CC.RED}You cannot duel${CC.BOLD} whilst in staff mode ${CC.RED}! ${CC.YELLOW}Focus on your job!")
             return
         }
 

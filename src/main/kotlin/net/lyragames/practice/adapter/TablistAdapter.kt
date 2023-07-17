@@ -1,13 +1,26 @@
 package net.lyragames.practice.adapter
 
+import io.github.thatkawaiisam.ziggurat.ZigguratAdapter
+import io.github.thatkawaiisam.ziggurat.utils.BufferedTabObject
+import io.github.thatkawaiisam.ziggurat.utils.SkinTexture
+import net.lyragames.core.api.profile.Profile
+import net.lyragames.core.bukkit.CorePlugin
+import net.lyragames.practice.PracticePlugin
+import net.lyragames.practice.utils.PlayerUtil
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
+import org.bukkit.entity.Player
 
-class TablistAdapter//: ZigguratAdapter {
-{
-    /*override fun getSlots(player: Player?): MutableSet<BufferedTabObject> {
+
+class TablistAdapter: ZigguratAdapter {
+
+    override fun getSlots(player: Player?): MutableSet<BufferedTabObject> {
 
         var toReturn: HashSet<BufferedTabObject> = hashSetOf()
         var plugin = CorePlugin.getInstance()
         val profiles: MutableCollection<Profile> = plugin.profileManager.profiles.values
+
+
 
         profiles.sortedByDescending { profile ->
             if (profile.isDisguised) {
@@ -37,15 +50,6 @@ class TablistAdapter//: ZigguratAdapter {
             i++
         }
 
-        /*toReturn.add(
-            BufferedTabObject() //Text
-                .text("&a&lThis is in Slot 1") //Column
-                .column(TabColumn.LEFT) //Slot
-                .slot(1) //Ping (little buggy with 1.7 clients but defaults to 0 if thats the case
-                .ping(999) //Texture (need to get skin sig and key
-                .skin(ZigguratCommons.defaultTexture)
-        ) */
-
 
 
         return toReturn
@@ -57,5 +61,5 @@ class TablistAdapter//: ZigguratAdapter {
 
     override fun getHeader(): String {
         return ChatColor.translateAlternateColorCodes('&', PracticePlugin.instance.tablistFile.getString("tablist.header"))
-    } */
+    }
 }

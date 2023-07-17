@@ -3,9 +3,11 @@ package net.lyragames.practice
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.thatkawaiisam.assemble.Assemble
+import io.github.thatkawaiisam.ziggurat.Ziggurat
 import me.zowpy.command.CommandAPI
 import me.zowpy.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
+import net.lyragames.practice.adapter.TablistAdapter
 import net.lyragames.practice.api.PracticeAPI
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.ArenaProvider
@@ -38,6 +40,7 @@ import net.lyragames.practice.match.listener.MatchListener
 import net.lyragames.practice.profile.ProfileListener
 import net.lyragames.practice.queue.task.QueueTask
 import net.lyragames.practice.task.*
+import net.lyragames.practice.utils.CC
 import net.lyragames.practice.utils.ConfigFile
 import net.lyragames.practice.utils.InventoryUtil
 import net.lyragames.practice.utils.item.ItemListener
@@ -47,6 +50,7 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import zone.potion.toothless.ToothlessConfig
 
 
 class PracticePlugin : JavaPlugin() {
@@ -56,13 +60,14 @@ class PracticePlugin : JavaPlugin() {
     lateinit var kitsFile: ConfigFile
     lateinit var arenasFile: ConfigFile
     lateinit var scoreboardFile: ConfigFile
+    lateinit var knockbackFile: ConfigFile
     lateinit var ffaFile: ConfigFile
     lateinit var eventsFile: ConfigFile
     lateinit var API: PracticeAPI
 
     lateinit var practiceMongo: Mongo
 
-    //private lateinit var ziggurat: Ziggurat
+    private lateinit var ziggurat: Ziggurat
     override fun onEnable() {
         instance = this
 
@@ -71,12 +76,14 @@ class PracticePlugin : JavaPlugin() {
         kitsFile = ConfigFile(this, "kits")
         arenasFile = ConfigFile(this, "arenas")
         scoreboardFile = ConfigFile(this, "scoreboard")
+        knockbackFile = ConfigFile(this, "LyraSpigot")
         ffaFile = ConfigFile(this, "ffa")
         eventsFile = ConfigFile(this, "events")
         logger.info("Successfully loaded files!")
 
         loadMongo()
         cleanupWorld()
+        injectKnockbackSettings()
 
         InventoryUtil.removeCrafting(Material.WORKBENCH)
 
@@ -124,6 +131,9 @@ class PracticePlugin : JavaPlugin() {
             .register(ArenaRatingCommand)
             .register(SpawnCommand)
             .register(PartyCommand)
+            .register(LyraSpigotCommand)
+            .register(TeleportCommand)
+            .register(PingCommand)
             .endRegister()
 
         Constants.load()
@@ -140,7 +150,7 @@ class PracticePlugin : JavaPlugin() {
         //EntityHider(this, EntityHider.Policy.WHITELIST).init()
 
         if (tablistFile.getBoolean("tablist.enabled")) {
-            //ziggurat = Ziggurat(this, TablistAdapter())
+            ziggurat = Ziggurat(this, TablistAdapter())
         }
 
         if (scoreboardFile.getBoolean("scoreboard.enabled")) {
@@ -202,6 +212,17 @@ class PracticePlugin : JavaPlugin() {
         }
 
         logger.info("Cleaned all worlds")
+    }
+
+    private fun injectKnockbackSettings() {
+        ToothlessConfig.knockbackVertical = knockbackFile.config.getDouble("KNOCKBACK.VERTICAL")
+        ToothlessConfig.knockbackHorizontal = knockbackFile.config.getDouble("KNOCKBACK.HORIZONTAL")
+
+        ToothlessConfig.knockbackExtraHorizontal = knockbackFile.config.getDouble("KNOCKBACK.EXTRA_HORIZONTAL")
+        ToothlessConfig.knockbackExtraVertical = knockbackFile.config.getDouble("KNOCKBACK.EXTRA_VERTICAL")
+
+        ToothlessConfig.knockbackVerticalLimit = knockbackFile.config.getDouble("KNOCKBACK.LIMIT")
+        logger.severe("${CC.AQUA}Successfully injected knockback values into Lyra Spigot")
     }
 
     companion object {

@@ -35,6 +35,8 @@ class QueuePlayer(var uuid: UUID, var name: String, val queue: Queue, val pingFa
         }
     }
 
+
+
     fun isInRange(elo: Int): Boolean {
         return elo >= this.elo - range && elo <= this.elo + range
     }

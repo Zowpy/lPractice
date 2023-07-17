@@ -214,6 +214,7 @@ object EventListener : Listener {
                     event.damage = 0.0
                 }
 
+
                 val eventPlayer = currentEvent.getPlayer(player.uniqueId)
                 val eventPlayer1 = currentEvent.getPlayer(damager.uniqueId)
 

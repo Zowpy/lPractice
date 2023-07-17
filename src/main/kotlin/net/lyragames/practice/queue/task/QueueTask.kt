@@ -35,9 +35,10 @@ object QueueTask : BukkitRunnable() {
 
                 queue.queuePlayers.forEach { it.tickRange() }
 
-                if (queue.queuePlayers.size < 2) {
+
+                if (queue.queuePlayers.size < 2)
                     continue
-                }
+
 
                 for (firstQueueProfile in queue.queuePlayers) {
                     val firstPlayer = Bukkit.getPlayer(firstQueueProfile.uuid) ?: continue

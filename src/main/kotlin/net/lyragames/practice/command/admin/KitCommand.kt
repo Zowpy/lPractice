@@ -127,4 +127,17 @@ object KitCommand {
     fun edit(@Sender player: Player, kit: Kit) {
         AdminKitManageMenu(kit).openMenu(player)
     }
+
+
+    @Permission("lpractice.command.kit.displayname")
+    @Command(name = "kit displayname")
+    fun displayName(@Sender player: Player, kit: Kit, name: String) {
+        if (kit == null) return
+
+
+        kit.displayName = name
+        player.sendMessage("${CC.YELLOW} You have updated ${CC.AQUA}${kit.name}${CC.YELLOW} to display as ${CC.GREEN}${kit.displayName}")
+
+    }
+
 }

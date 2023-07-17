@@ -266,6 +266,10 @@ object MatchListener : Listener {
                         event.damage = 0.0
                     }
 
+                    if (match.kit.kitData.combo) {
+                        val reductionValue = PracticePlugin.instance.knockbackFile.config.getDouble("COMBO.REDUCTION_VALUE")
+                        player.velocity.multiply(reductionValue)
+                    }
                     matchPlayer.combo = 0
                 }
             } else {

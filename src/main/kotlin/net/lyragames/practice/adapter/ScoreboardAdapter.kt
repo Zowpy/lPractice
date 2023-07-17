@@ -90,7 +90,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
                         )
                             .replace("<in_match>", Match.inMatch().toString())
                             .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
-                            .replace("<kit>", match.kit.name)
+                            .replace("<kit>", match.kit.displayName)
                             .replace("<time>", match.getTime())
                             .replace(
                                 "<points>",
@@ -182,7 +182,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
                         CC.translate(
                             it.replace("<online>", Bukkit.getOnlinePlayers().size.toString())
                                 .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
-                                .replace("<kit>", match.kit.name)
+                                .replace("<kit>", match.kit.displayName)
                                 .replace("<time>", match.getTime())
                                 .replace("<red>", red)
                                 .replace("<blue>", blue)
@@ -207,7 +207,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
                             )
                                 .replace("<in_match>", Match.inMatch().toString())
                                 .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
-                                .replace("<kit>", match.kit.name)
+                                .replace("<kit>", match.kit.displayName)
                                 .replace("<hits>", team.hits.toString())
                                 .replace("<opponent-hits>", match.getOpponentTeam(team)?.hits?.toString()!!)
                                 .replace(
@@ -228,7 +228,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
                         )
                             .replace("<in_match>", Match.inMatch().toString())
                             .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
-                            .replace("<kit>", match.kit.name)
+                            .replace("<kit>", match.kit.displayName)
                             .replace("<hits>", matchPlayer.hits.toString())
                             .replace("<opponent-hits>", match.getOpponent(player.uniqueId)?.hits.toString())
                             .replace(
@@ -248,7 +248,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
                         )
                             .replace("<in_match>", Match.inMatch().toString())
                             .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
-                            .replace("<kit>", match.kit.name)
+                            .replace("<kit>", match.kit.displayName)
                             .replace("<time>", match.getTime())
                     }.collect(Collectors.toList())
             }
@@ -261,7 +261,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
                     )
                         .replace("<in_match>", Match.inMatch().toString())
                         .replace("<opponent>", match.getOpponentString(player.uniqueId)!!)
-                        .replace("<kit>", match.kit.name)
+                        .replace("<kit>", match.kit.displayName)
                         .replace("<time>", match.getTime())
                 }.collect(Collectors.toList())
 
@@ -369,7 +369,7 @@ class ScoreboardAdapter(private val configFile: ConfigFile) : AssembleAdapter {
                 return configFile.getStringList("scoreboard.spectate").stream()
                     .map {
                         CC.translate(
-                            it.replace("<kit>", match.kit.name)
+                            it.replace("<kit>", match.kit.displayName)
                                 .replace("<time>", match.getTime())
                                 .replace("<team1>", match.getPlayerString(randPlayer.uuid)!!)
                                 .replace("<team2>", match.getOpponentString(randPlayer.uuid)!!)

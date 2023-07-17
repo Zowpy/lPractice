@@ -33,7 +33,7 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
 
         return ItemBuilder(queue.kit.displayItem.clone())
             .amount(if (playing <= 0) 1 else playing.toInt())
-            .name("${CC.BOLD}${CC.YELLOW}${queue.kit.name}")
+            .name("${CC.BOLD}${CC.YELLOW}${queue.kit.displayName}")
             .addFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS)
             .lore(arrayListOf(
                 "${CC.PRIMARY}Playing: ${CC.SECONDARY}$playing",

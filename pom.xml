@@ -292,11 +292,36 @@
         </dependency>
 
         <dependency>
-            <groupId>io.github.thatkawaiisam</groupId>
+            <groupId>net.lyragames</groupId>
             <artifactId>assemble</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>net.lyragames</groupId>
+            <artifactId>Ziggurat</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lyragames</groupId>
+            <artifactId>Volcano</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/Volcano.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lyragames</groupId>
+            <artifactId>Spigot</artifactId>
+            <version>1.8.8-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/LyraSpigot.jar</systemPath>
+        </dependency>
+
+
         <!--<dependency>
             <groupId>net.lyragames</groupId>
             <artifactId>ReplayAPI</artifactId>
@@ -304,13 +329,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}\libs\Replay.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>net.lyragames</groupId>
-            <artifactId>TablistAPI</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}\libs\Ziggurat.jar</systemPath>
-        </dependency>
+
 
         <dependency>
             <groupId>net.lyragames</groupId>

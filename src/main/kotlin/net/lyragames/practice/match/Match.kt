@@ -2,6 +2,7 @@ package net.lyragames.practice.match
 
 import com.boydti.fawe.bukkit.chat.FancyMessage
 import com.google.common.base.Joiner
+import net.lyragames.core.bukkit.CorePlugin
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
@@ -31,6 +32,9 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+import org.json.XMLTokener.entity
 import java.util.*
 import java.util.stream.Collectors
 
@@ -56,7 +60,6 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val snapshots: MutableList<MatchSnapshot> = mutableListOf()
     val spectators: MutableList<MatchSpectator> = mutableListOf()
     val countdowns: MutableList<ICountdown> = mutableListOf()
-
     open fun start() {
 
         for (matchPlayer in players) {
@@ -72,6 +75,14 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
             player.teleport(matchPlayer.spawn)
             profile?.getKitStatistic(kit.name)?.generateBooks(player)
+
+            if (kit.kitData.boxing || kit.kitData.combo) {
+                player.addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 1))
+            }
+            if (kit.kitData.combo) {
+                player.noDamageTicks = 3
+                player.maximumNoDamageTicks = 3
+            }
 
             countdowns.add(TitleCountdown(
                 player,
@@ -101,14 +112,20 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     open fun addSpectator(player: Player) {
+
         val profile = Profile.getByUUID(player.uniqueId)
+        val coreProfile = CorePlugin.getInstance().profileManager.getByUUID(profile?.uuid)
+
+        val displayName = coreProfile.coloredName
+
+
         profile?.state = ProfileState.SPECTATING
         profile?.spectatingMatch = uuid
 
         if (!profile?.silent!!) {
-            sendMessage("&a${player.name}&e started spectating!")
+            sendMessage("&a$displayName &e started spectating!")
         }else {
-            sendMessage("&7[S] &a${player.name}&e started spectating!", "lpractice.silent")
+            sendMessage("&7[S] &a$displayName&e started spectating!", "lpractice.silent")
         }
 
         players.forEach {
@@ -343,6 +360,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     open fun endMessage(winners: MutableList<MatchPlayer>, losers: MutableList<MatchPlayer>) {
         val fancyMessage = TextBuilder()
             .setText("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------\n")
+            .then()
+            .setText("${CC.YELLOW}Click here to see the inventories\n")
             .then()
             .setText("${CC.GREEN}Winner: ")
             .then()
