@@ -31,6 +31,8 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.util.*
 import java.util.stream.Collectors
 
@@ -66,6 +68,15 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             val profile = Profile.getByUUID(player.uniqueId)
 
             CustomItemStack.customItemStacks.removeIf { it.uuid == matchPlayer.uuid }
+
+            if (kit.kitData.boxing || kit.kitData.combo) {
+                player.addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 1))
+            }
+
+            if (kit.kitData.combo) {
+                player.noDamageTicks = 3
+                player.maximumNoDamageTicks = 3
+            }
 
             PlayerUtil.reset(player)
             PlayerUtil.denyMovement(player)
@@ -221,6 +232,46 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         matchState = MatchState.ENDING
 
+        winners.forEach { winner ->
+            losers.forEach { winner.player.hidePlayer(it.player) }
+        }
+
+        for (matchPlayer in players) {
+            if (matchPlayer.offline) continue
+
+            val bukkitPlayer = matchPlayer.player
+            val profile = Profile.getByUUID(matchPlayer.uuid)
+
+            if (profile!!.arrowCooldown != null) {
+                profile.arrowCooldown!!.cancel()
+                profile.arrowCooldown = null
+            }
+
+            if (profile.enderPearlCooldown != null) {
+                profile.enderPearlCooldown!!.cancel()
+                profile.enderPearlCooldown = null
+            }
+
+            val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
+
+            snapshot.potionsThrown = matchPlayer.potionsThrown
+            snapshot.potionsMissed = matchPlayer.potionsMissed
+            snapshot.longestCombo = matchPlayer.longestCombo
+            snapshot.totalHits = matchPlayer.hits
+            snapshot.opponent = getOpponent(bukkitPlayer.uniqueId)?.uuid
+
+            snapshots.add(snapshot)
+
+            snapshot.createdAt = System.currentTimeMillis()
+            MatchSnapshot.snapshots.add(snapshot)
+
+            PlayerUtil.reset(bukkitPlayer)
+            PlayerUtil.allowMovement(bukkitPlayer)
+        }
+
+        sendTitleBar(winners)
+        endMessage(winners, losers)
+
         Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
             for (matchPlayer in players) {
                 if (matchPlayer.offline) continue
@@ -228,30 +279,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 val bukkitPlayer = matchPlayer.player
                 val profile = Profile.getByUUID(matchPlayer.uuid)
 
-                if (profile!!.arrowCooldown != null) {
-                    profile.arrowCooldown!!.cancel()
-                    profile.arrowCooldown = null
-                }
-
-                if (profile.enderPearlCooldown != null) {
-                    profile.enderPearlCooldown!!.cancel()
-                    profile.enderPearlCooldown = null
-                }
-
-                val snapshot = MatchSnapshot(bukkitPlayer, matchPlayer.dead)
-
-                snapshot.potionsThrown = matchPlayer.potionsThrown
-                snapshot.potionsMissed = matchPlayer.potionsMissed
-                snapshot.longestCombo = matchPlayer.longestCombo
-                snapshot.totalHits = matchPlayer.hits
-                snapshot.opponent = getOpponent(bukkitPlayer.uniqueId)?.uuid
-
-                snapshots.add(snapshot)
-
-                PlayerUtil.reset(bukkitPlayer)
-                PlayerUtil.allowMovement(bukkitPlayer)
-
-                profile.match = null
+                profile!!.match = null
                 profile.state = ProfileState.LOBBY
 
                 if (Constants.SPAWN != null) {
@@ -280,14 +308,6 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 ratingMessage(profile)
             }
 
-            for (snapshot in snapshots) {
-                snapshot.createdAt = System.currentTimeMillis()
-                MatchSnapshot.snapshots.add(snapshot)
-            }
-
-            sendTitleBar(winners)
-            endMessage(winners, losers)
-
             if (spectators.isNotEmpty()) {
                 for (i in 0 until spectators.size) {
                     val player = spectators[i].player ?: continue
@@ -300,7 +320,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             matches.remove(this)
             reset()
             arena.free = true
-        }, 20L)
+        }, 60L)
     }
 
     open fun handleQuit(matchPlayer: MatchPlayer) {
