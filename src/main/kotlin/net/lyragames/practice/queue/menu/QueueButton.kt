@@ -1,12 +1,12 @@
 package net.lyragames.practice.queue.menu
 
 import me.zowpy.menu.buttons.Button
+import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.queue.Queue
-import net.lyragames.practice.queue.QueuePlayer
 import net.lyragames.practice.utils.CC
 import net.lyragames.practice.utils.ItemBuilder
 import org.bukkit.entity.Player
@@ -33,7 +33,7 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
 
         return ItemBuilder(queue.kit.displayItem.clone())
             .amount(if (playing <= 0) 1 else playing.toInt())
-            .name("${CC.BOLD}${CC.YELLOW}${queue.kit.name}")
+            .name(queue.kit.displayName)
             .addFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS)
             .lore(arrayListOf(
                 "${CC.PRIMARY}Playing: ${CC.SECONDARY}$playing",
@@ -52,13 +52,7 @@ class QueueButton(private val queue: Queue, private val ranked: Boolean): Button
                 return
             }
 
-            val queuePlayer = QueuePlayer(player.uniqueId, player.name, queue, profile?.settings?.pingRestriction!!)
-            queuePlayer.elo = profile.getKitStatistic(queue.kit.name)?.elo!!
-
-            profile.queuePlayer = queuePlayer
-            profile.state = ProfileState.QUEUE
-
-            queue.queuePlayers.add(queuePlayer)
+            QueueManager.addToQueue(profile!!, queue)
 
             player.sendMessage(" ")
             player.sendMessage("${CC.PRIMARY}${CC.BOLD}${if (ranked) "Ranked" else "Unranked"}")

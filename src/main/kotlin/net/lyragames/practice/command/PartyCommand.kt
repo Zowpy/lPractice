@@ -131,6 +131,7 @@ object PartyCommand {
             .then()
             .setText(" ${CC.SECONDARY}[Click to join]")
             .setCommand("/party join ${player.name}") //${profile.party?.toString()}")
+            .then()
             .build()
 
         target.spigot().sendMessage(message)

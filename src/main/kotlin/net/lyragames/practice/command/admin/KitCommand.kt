@@ -34,6 +34,7 @@ object KitCommand {
         player.sendMessage("${CC.PRIMARY}Kit Commands:")
         player.sendMessage("${CC.SECONDARY}/kit create <name>")
         player.sendMessage("${CC.SECONDARY}/kit delete <kit>")
+        player.sendMessage("${CC.SECONDARY}/kit displayname <kit> <name>")
         player.sendMessage("${CC.SECONDARY}/kit content <kit>")
         player.sendMessage("${CC.SECONDARY}/kit edit <kit>")
         player.sendMessage("${CC.SECONDARY}/kit items <kit>")
@@ -126,5 +127,12 @@ object KitCommand {
     @Command(name = "kit admin")
     fun edit(@Sender player: Player, kit: Kit) {
         AdminKitManageMenu(kit).openMenu(player)
+    }
+
+    @Permission("lpractice.command.kit.displayname")
+    @Command(name = "kit displayname")
+    fun displayName(@Sender player: Player, kit: Kit, name: String) {
+        kit.displayName = name
+        player.sendMessage("${CC.YELLOW}You have updated ${CC.AQUA}${kit.name}${CC.YELLOW} to display as ${CC.GREEN}${kit.displayName}")
     }
 }

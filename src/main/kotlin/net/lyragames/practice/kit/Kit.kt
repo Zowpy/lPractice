@@ -20,6 +20,7 @@ class Kit(val name: String) {
     var content: Array<ItemStack> = arrayOf()
     var armorContent: Array<ItemStack> = arrayOf()
     val kitData = KitData()
+    var displayName = ""
 
     fun save() {
         val configFile = PracticePlugin.instance.kitsFile
@@ -28,6 +29,8 @@ class Kit(val name: String) {
         section.set("icon", InventoryUtil.serializeItemStack(displayItem))
         if (content.isEmpty()) section.set("content", "null") else section.set("content", InventoryUtil.serializeInventory(content))
         if (armorContent.isEmpty()) section.set("armorContent", "null") else section.set("armorContent", InventoryUtil.serializeInventory(armorContent))
+
+        section.set("displayName", displayName)
 
         val dataSection = section.createSection("kitData")
         dataSection.set("build", kitData.build)

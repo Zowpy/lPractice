@@ -42,6 +42,7 @@ class DuelRequest(var uuid: UUID, var target: UUID, var kit: Kit, var arena: Are
             .then()
             .setText("${CC.SECONDARY} [Click to accept]")
             .setCommand("/duel accept ${sender.name}")
+            .then()
             .build()
 
         player.spigot().sendMessage(message)

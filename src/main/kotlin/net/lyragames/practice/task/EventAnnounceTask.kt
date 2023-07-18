@@ -68,6 +68,7 @@ object EventAnnounceTask: BukkitRunnable() {
             .then()
             .setText("${CC.GREEN} [Click to join]")
             .setCommand("/event join")
+            .then()
             .build()
     }
 }

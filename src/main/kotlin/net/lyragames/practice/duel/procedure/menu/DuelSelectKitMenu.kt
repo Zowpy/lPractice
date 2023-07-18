@@ -44,7 +44,7 @@ class DuelSelectKitMenu: Menu() {
             toReturn[toReturn.size] = object : Button() {
                 override fun getButtonItem(p0: Player?): ItemStack {
                     return ItemBuilder(kit.displayItem)
-                        .name("${CC.PRIMARY}${kit.name}")
+                        .name(kit.displayName)
                         .addFlags(ItemFlag.HIDE_ATTRIBUTES)
                         .build()
                 }

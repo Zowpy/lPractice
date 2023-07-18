@@ -4,15 +4,14 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TextBuilder {
 
     private final TextComponent textComponent;
     private TextComponent latest;
 
-    private List<TextComponent> parts = new ArrayList<>();
+    private boolean first = true;
+
+    //private List<TextComponent> parts = new ArrayList<>();
 
     public TextBuilder() {
         this.textComponent = new TextComponent();
@@ -52,17 +51,17 @@ public class TextBuilder {
     }
 
     public TextBuilder then() {
-       latest = new TextComponent();
-       parts.add(latest);
+        if (!first) {
+            textComponent.addExtra(latest);
+        }
 
-       return this;
+        latest = new TextComponent();
+        first = false;
+
+        return this;
     }
 
     public TextComponent build() {
-        for (TextComponent part : parts) {
-            textComponent.addExtra(part);
-        }
-
         return this.textComponent;
     }
 

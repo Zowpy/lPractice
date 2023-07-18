@@ -61,11 +61,12 @@ object MoveListener: Listener {
 
         if (event.to.block.type == Material.WATER || event.to.block.type == Material.STATIONARY_WATER) {
 
-            if (profile.match != null) {
+            if (profile.state == ProfileState.MATCH) {
 
                 val match = Match.getByUUID(profile.match!!)
+                val matchPlayer = match!!.getMatchPlayer(player.uniqueId)
 
-                if (match?.kit?.kitData?.sumo!!) {
+                if (!matchPlayer!!.dead && match.matchState == MatchState.FIGHTING && match.kit.kitData.sumo) {
                     match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
                 }
 

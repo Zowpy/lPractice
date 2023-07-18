@@ -10,15 +10,29 @@ import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.impl.*
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.ItemBuilder
 import net.lyragames.practice.utils.PlayerUtil
+import net.lyragames.practice.utils.item.CustomItemStack
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.function.Consumer
 
 object MatchManager {
 
-    fun createMatch(kit: Kit, arena: Arena, ranked: Boolean, friendly: Boolean, firstPlayer: Player, secondPlayer: Player): Match {
+    fun createMatch(
+        kit: Kit,
+        arena: Arena,
+        ranked: Boolean,
+        friendly: Boolean,
+        firstPlayer: Player,
+        secondPlayer: Player
+    ): Match {
+        arena.free = false
+
         val match = when {
             kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
             kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
@@ -43,13 +57,13 @@ object MatchManager {
         if (arena is StandaloneBedWarsArena) {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
-        }else if (arena is BedWarsArena) {
+        } else if (arena is BedWarsArena) {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
         } else if (arena is BridgeArena) {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
-        }else if (arena is StandaloneBridgeArena) {
+        } else if (arena is StandaloneBridgeArena) {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
         } else {
@@ -96,6 +110,8 @@ object MatchManager {
     }
 
     fun createTeamMatch(kit: Kit, arena: Arena, ranked: Boolean, friendly: Boolean, players: MutableList<UUID>) {
+        arena.free = false
+
         val match = when {
             kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
             kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
@@ -124,7 +140,16 @@ object MatchManager {
         match.start()
     }
 
-    fun createTeamMatch(kit: Kit, arena: Arena, ranked: Boolean, friendly: Boolean, firstTeam: MutableList<UUID>, secondTeam: MutableList<UUID>) {
+    fun createTeamMatch(
+        kit: Kit,
+        arena: Arena,
+        ranked: Boolean,
+        friendly: Boolean,
+        firstTeam: MutableList<UUID>,
+        secondTeam: MutableList<UUID>
+    ) {
+        arena.free = false
+
         val match = when {
             kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
             kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
@@ -162,5 +187,36 @@ object MatchManager {
 
         Match.matches.add(match)
         match.start()
+    }
+
+    fun createReQueueItem(player: Player, match: Match) {
+
+        val item =
+            CustomItemStack(player.uniqueId, ItemBuilder(Material.PAPER).name("${CC.SECONDARY}Play again!").build())
+
+        item.rightClick = true
+        item.removeOnClick = true
+
+        item.clicked = Consumer {
+            //match.players.removeIf { it.uuid == player.uniqueId }
+
+            /*if (Constants.SPAWN != null) {
+                player.teleport(Constants.SPAWN)
+            }*/
+
+            match.rematchingPlayers.add(player.uniqueId)
+
+            val profile = Profile.getByUUID(player.uniqueId)
+
+            QueueManager.addToQueue(
+                profile!!,
+                QueueManager.findQueue(match.kit, match.ranked)!!
+            )
+
+            Hotbar.giveHotbar(profile)
+        }
+
+        item.create()
+        player.inventory.addItem(item.itemStack)
     }
 }

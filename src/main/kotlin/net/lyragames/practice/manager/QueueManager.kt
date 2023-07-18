@@ -1,7 +1,10 @@
 package net.lyragames.practice.manager
 
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.queue.Queue
+import net.lyragames.practice.queue.QueuePlayer
 import java.util.*
 
 
@@ -33,6 +36,20 @@ object QueueManager {
                 //rankedQueues.add(queue1)
             }
         }
+    }
+
+    fun addToQueue(profile: Profile, queue: Queue) {
+        val queuePlayer = QueuePlayer(profile.uuid, profile.name!!, queue, profile.settings.pingRestriction)
+        queuePlayer.elo = profile.getKitStatistic(queue.kit.name)?.elo!!
+
+        profile.queuePlayer = queuePlayer
+        profile.state = ProfileState.QUEUE
+
+        queue.queuePlayers.add(queuePlayer)
+    }
+
+    fun findQueue(kit: Kit, ranked: Boolean): Queue? {
+        return queues.firstOrNull { it.kit.name == kit.name && it.ranked == ranked }
     }
 
     fun getQueue(uuid: UUID): Queue? {

@@ -7,6 +7,7 @@ import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.manager.ArenaRatingManager
+import net.lyragames.practice.manager.MatchManager
 import net.lyragames.practice.manager.StatisticManager
 import net.lyragames.practice.match.impl.MLGRushMatch
 import net.lyragames.practice.match.impl.TeamMatch
@@ -58,6 +59,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val snapshots: MutableList<MatchSnapshot> = mutableListOf()
     val spectators: MutableList<MatchSpectator> = mutableListOf()
     val countdowns: MutableList<ICountdown> = mutableListOf()
+    val rematchingPlayers: MutableList<UUID> = mutableListOf()
 
     open fun start() {
 
@@ -118,7 +120,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         if (!profile?.silent!!) {
             sendMessage("&a${player.name}&e started spectating!")
-        }else {
+        } else {
             sendMessage("&7[S] &a${player.name}&e started spectating!", "lpractice.silent")
         }
 
@@ -142,7 +144,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         if (!profile?.silent!!) {
             sendMessage("&a${player.name}&e stopped spectating!")
-        }else {
+        } else {
             sendMessage("&7[S] &a${player.name}&e stopped spectating!", "lpractice.silent")
         }
 
@@ -193,13 +195,16 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     fun sendMessage(message: String) {
-        players.stream().map { it.player }.forEach { it.sendMessage(CC.translate(message)) }
-        spectators.stream().map { it.player }.forEach { it.sendMessage(CC.translate(message)) }
+        players.filter { !it.offline }.map { it.player }.forEach { it.sendMessage(CC.translate(message)) }
+        spectators.filter { Bukkit.getPlayer(uuid) != null }.map { it.player }
+            .forEach { it.sendMessage(CC.translate(message)) }
     }
 
     fun sendMessage(message: String, permission: String) {
-        players.stream().map { it.player }.forEach { if (it.hasPermission(permission)) it.sendMessage(CC.translate(message)) }
-        spectators.stream().map { it.player }.forEach { if (it.hasPermission(permission)) it.sendMessage(CC.translate(message)) }
+        players.stream().map { it.player }
+            .forEach { if (it.hasPermission(permission)) it.sendMessage(CC.translate(message)) }
+        spectators.stream().map { it.player }
+            .forEach { if (it.hasPermission(permission)) it.sendMessage(CC.translate(message)) }
     }
 
     open fun handleDeath(player: MatchPlayer) {
@@ -223,8 +228,6 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     open fun end(losers: MutableList<MatchPlayer>) {
-        reset()
-
         countdowns.forEach { it.cancel() }
 
         val winners = players.filter { !losers.contains(it) }
@@ -262,11 +265,17 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
             snapshots.add(snapshot)
 
-            snapshot.createdAt = System.currentTimeMillis()
-            MatchSnapshot.snapshots.add(snapshot)
-
             PlayerUtil.reset(bukkitPlayer)
             PlayerUtil.allowMovement(bukkitPlayer)
+
+            if (!friendly) {
+                MatchManager.createReQueueItem(bukkitPlayer, this)
+            }
+        }
+
+        for (snapshot in snapshots) {
+            snapshot.createdAt = System.currentTimeMillis()
+            MatchSnapshot.snapshots.add(snapshot)
         }
 
         sendTitleBar(winners)
@@ -279,30 +288,41 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 val bukkitPlayer = matchPlayer.player
                 val profile = Profile.getByUUID(matchPlayer.uuid)
 
-                profile!!.match = null
-                profile.state = ProfileState.LOBBY
-
-                if (Constants.SPAWN != null) {
-                    bukkitPlayer.teleport(Constants.SPAWN)
+                if (!losers.contains(matchPlayer) && !friendly) {
+                    StatisticManager.win(profile!!, profile, kit, ranked)
+                } else {
+                    if (!friendly) {
+                        StatisticManager.loss(profile!!, kit, ranked)
+                    }
                 }
-
-                CustomItemStack.customItemStacks.removeIf { it.uuid == matchPlayer.uuid }
-
-                Hotbar.giveHotbar(profile)
 
                 players.stream().filter { !it.offline }.map { it.player }
                     .forEach {
-                        if (it.player == null) return@forEach
+                        val targetProfile = Profile.getByUUID(it.uniqueId)
+
+                        if (rematchingPlayers.contains(it.uniqueId) && targetProfile!!.match == profile!!.match)
+                            return@forEach
+
                         bukkitPlayer.hidePlayer(it)
                         it.hidePlayer(bukkitPlayer)
                     }
 
-                if (!losers.contains(matchPlayer) && !friendly) {
-                    StatisticManager.win(profile, profile, kit, ranked)
-                }else {
-                    if (!friendly) {
-                        StatisticManager.loss(profile, kit, ranked)
+                if (!rematchingPlayers.contains(matchPlayer.uuid)) {
+                    CustomItemStack.customItemStacks.removeIf { it.uuid == matchPlayer.uuid }
+                }
+
+                if ((profile!!.state == ProfileState.MATCH || profile.state == ProfileState.QUEUE) && profile.match == uuid) {
+                    if (profile.state != ProfileState.QUEUE) {
+                        profile.state = ProfileState.LOBBY
                     }
+
+                    profile.match = null
+
+                    if (Constants.SPAWN != null) {
+                        bukkitPlayer.teleport(Constants.SPAWN)
+                    }
+
+                    Hotbar.giveHotbar(profile)
                 }
 
                 ratingMessage(profile)
@@ -316,15 +336,26 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             }
 
             spectators.clear()
+            snapshots.clear()
 
-            matches.remove(this)
             reset()
+            matches.remove(this)
             arena.free = true
         }, 60L)
     }
 
     open fun handleQuit(matchPlayer: MatchPlayer) {
         matchPlayer.offline = true
+
+        val snapshot = MatchSnapshot(matchPlayer.player, matchPlayer.dead)
+
+        snapshot.potionsThrown = matchPlayer.potionsThrown
+        snapshot.potionsMissed = matchPlayer.potionsMissed
+        snapshot.longestCombo = matchPlayer.longestCombo
+        snapshot.totalHits = matchPlayer.hits
+        snapshot.opponent = getOpponent(matchPlayer.uuid)?.uuid
+
+        snapshots.add(snapshot)
 
         handleDeath(matchPlayer)
     }
@@ -362,7 +393,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
     open fun endMessage(winners: MutableList<MatchPlayer>, losers: MutableList<MatchPlayer>) {
         val fancyMessage = TextBuilder()
-            .setText("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------\n")
+            .setText("${CC.PRIMARY}${CC.BOLD}Match Results ${CC.RESET}${CC.GRAY}(click player to view)\n")
             .then()
             .setText("${CC.GREEN}Winner: ")
             .then()
@@ -370,9 +401,9 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         var wi = 1
         for (matchPlayer in winners) {
             if (wi < winners.size) {
-                fancyMessage.setText("${matchPlayer.name}${CC.GRAY}, ")
-            }else {
-                fancyMessage.setText("${matchPlayer.name}\n")
+                fancyMessage.setText("${CC.PRIMARY}${matchPlayer.name}${CC.GRAY}, ")
+            } else {
+                fancyMessage.setText("${CC.PRIMARY}${matchPlayer.name}")
             }
 
             fancyMessage.setCommand("/matchsnapshot ${matchPlayer.uuid}")
@@ -380,15 +411,15 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             wi++
         }
 
-        fancyMessage.setText("${CC.RED}Loser: ").then()
+        fancyMessage.setText("${CC.GRAY} ⎟ ${CC.RED}Loser: ").then()
 
         var i = 1
         for (matchPlayer in losers) {
 
             if (i < losers.size) {
-                fancyMessage.setText("${matchPlayer.name}${CC.GRAY}, ")
-            }else {
-                fancyMessage.setText("${matchPlayer.name}\n")
+                fancyMessage.setText("${CC.PRIMARY}${matchPlayer.name}${CC.GRAY}, ")
+            } else {
+                fancyMessage.setText("${CC.PRIMARY}${matchPlayer.name}")
             }
 
             fancyMessage.setCommand("/matchsnapshot ${matchPlayer.uuid}")
@@ -397,11 +428,10 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
 
         if (spectators.isNotEmpty()) {
-            fancyMessage.setText("\n${CC.GREEN}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
-                .then().setText("${Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name })}\n")
-                .then().setText("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
-        }else {
-            fancyMessage.setText("${CC.GRAY}${CC.STRIKE_THROUGH}---------------------------")
+            fancyMessage.setText("\n\n${CC.PRIMARY}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
+                .then()
+                .setText(Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name }))
+                .then()
         }
 
         val message = fancyMessage.build()
@@ -409,13 +439,19 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         for (matchPlayer in players) {
             if (matchPlayer.offline) continue
 
-            matchPlayer.player.spigot().sendMessage(message)
+            val player = matchPlayer.player
+
+            player.sendMessage(" ")
+            player.spigot().sendMessage(message)
+            player.sendMessage(" ")
         }
 
         for (spectator in spectators) {
             val player = spectator.player ?: continue
 
+            player.sendMessage(" ")
             player.spigot().sendMessage(message)
+            player.sendMessage(" ")
         }
     }
 
@@ -424,7 +460,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         players.forEach {
             if (it.offline) return@forEach
-            TitleBar.sendTitleBar(it.player, "${CC.SECONDARY}$winnerString${CC.PRIMARY} won!", null, 10, 40, 10) }
+            TitleBar.sendTitleBar(it.player, "${CC.SECONDARY}$winnerString${CC.PRIMARY} won!", null, 10, 60, 10)
+        }
     }
 
     fun getTime(): String {

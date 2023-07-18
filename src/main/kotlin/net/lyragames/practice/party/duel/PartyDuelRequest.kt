@@ -43,6 +43,7 @@ class PartyDuelRequest(val partyUUID: UUID, val issuer: UUID) {
             .then()
             .setText("${CC.SECONDARY} [Click to accept]")
             .setCommand("/partyduel accept ${sender.name}")
+            .then()
             .build()
 
         leader.spigot().sendMessage(message)

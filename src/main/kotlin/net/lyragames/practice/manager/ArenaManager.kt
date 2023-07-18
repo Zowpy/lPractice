@@ -166,13 +166,23 @@ object ArenaManager {
 
         for (arena in Arena.arenas) {
             if (!arena.isSetup) continue
-            if (kit.kitData.build && !arena.isFree()) continue
+            if (!arena.free) continue
 
-            if (kit.kitData.sumo && arena.arenaType != ArenaType.SUMO) continue
-            if (kit.kitData.mlgRush && arena.arenaType != ArenaType.MLGRUSH) continue
-            if (kit.kitData.bedFights && arena.arenaType != ArenaType.BEDFIGHT) continue
-            if (kit.kitData.bridge && arena.arenaType != ArenaType.BRIDGE) continue
-            if (kit.kitData.fireballFight && arena.arenaType != ArenaType.FIREBALL_FIGHT) continue
+            if (arena.arenaType == ArenaType.BUILD && !kit.kitData.build) continue
+            if (arena.arenaType == ArenaType.SUMO && !kit.kitData.sumo) continue
+            if (arena.arenaType == ArenaType.MLGRUSH && !kit.kitData.mlgRush) continue
+            if (arena.arenaType == ArenaType.BEDFIGHT && !kit.kitData.bedFights) continue
+            if (arena.arenaType == ArenaType.BRIDGE && !kit.kitData.bridge) continue
+            if (arena.arenaType == ArenaType.FIREBALL_FIGHT && !kit.kitData.fireballFight) continue
+
+            val kitData = kit.kitData
+
+            if (arena.arenaType == ArenaType.NORMAL && (kitData.build
+                        || kitData.bedFights
+                        || kitData.mlgRush
+                        || kitData.sumo
+                        || kitData.bridge
+                        || kitData.fireballFight)) continue
 
             return arena
         }

@@ -2,6 +2,7 @@ package net.lyragames.practice.manager
 
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.kit.Kit
+import net.lyragames.practice.utils.CC
 import net.lyragames.practice.utils.InventoryUtil
 
 /**
@@ -25,7 +26,7 @@ object KitManager {
             val kit = Kit(key)
 
             kit.displayItem = InventoryUtil.deserializeItemStack(section.getString("icon"))
-
+            kit.displayName = section.getString("displayName", "${CC.SECONDARY}$key")
 
             if (!section.getString("content").equals("null", false)) {
                 kit.content = InventoryUtil.deserializeInventory(section.getString("content"))

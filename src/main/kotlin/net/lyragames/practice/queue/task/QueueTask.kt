@@ -5,7 +5,6 @@ import net.lyragames.practice.manager.ArenaManager
 import net.lyragames.practice.manager.MatchManager
 import net.lyragames.practice.manager.QueueManager
 import net.lyragames.practice.profile.Profile
-import net.lyragames.practice.utils.CC
 import net.lyragames.practice.utils.PlayerUtil
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
@@ -65,16 +64,11 @@ object QueueTask : BukkitRunnable() {
                         }
 
                         val arena = ArenaManager.getFreeArena(queue.kit)
-
-                        if (arena == null) {
-                            arrayOf(
-                                firstPlayer,
-                                secondPlayer
-                            ).forEach { it.sendMessage("${CC.RED}There are no free arenas!") }
+                            ?: /*arrayOf(
+                                                    firstPlayer,
+                                                    secondPlayer
+                                                ).forEach { it.sendMessage("${CC.RED}There are no free arenas!") } */
                             continue
-                        }
-
-                        arena.free = false
 
                         queue.queuePlayers.remove(firstQueueProfile)
                         queue.queuePlayers.remove(secondQueueProfile)

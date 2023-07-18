@@ -9,10 +9,11 @@ class ItemListener : Listener {
     @EventHandler
     fun onInteract(event: PlayerInteractEvent) {
         val customItemStack = getByInteraction(event) ?: return
-        if (customItemStack.rightClick && !event.action.name.contains("RIGHT")) {
-            return
-        }
+
+        if (customItemStack.rightClick && !event.action.name.contains("RIGHT")) return
+
         customItemStack.clicked!!.accept(event)
+
         if (customItemStack.removeOnClick) {
             CustomItemStack.customItemStacks.remove(customItemStack)
         }

@@ -164,6 +164,11 @@ object MatchListener : Listener {
             val match = Match.getByUUID(profile.match!!)
             val matchPlayer = match?.getMatchPlayer(player.uniqueId)
 
+            if (match!!.matchState != MatchState.FIGHTING) {
+                event.isCancelled = true
+                return
+            }
+
             if (matchPlayer?.dead!! || matchPlayer.respawning) {
                 event.isCancelled = true
                 return
@@ -181,6 +186,11 @@ object MatchListener : Listener {
         if (profile?.state == ProfileState.MATCH) {
             val match = Match.getByUUID(profile.match!!)
             val matchPlayer = match?.getMatchPlayer(player.uniqueId)
+
+            if (match!!.matchState != MatchState.FIGHTING) {
+                event.isCancelled = true
+                return
+            }
 
             if (matchPlayer?.dead!! || matchPlayer.respawning) {
                 event.isCancelled = true
@@ -262,7 +272,7 @@ object MatchListener : Listener {
                         }
                     }
 
-                    if (match.kit.kitData.mlgRush) {
+                    if (match.kit.kitData.mlgRush || match.kit.kitData.sumo) {
                         event.damage = 0.0
                     }
 
@@ -303,6 +313,8 @@ object MatchListener : Listener {
             val match = Match.getByUUID(profile.match!!) ?: return
 
             match.handleDeath(match.getMatchPlayer(player.uniqueId)!!)
+
+            event.drops.forEach { match.droppedItems.add(player.world.dropItemNaturally(player.location, it)) }
         }
 
         event.deathMessage = null
@@ -445,8 +457,7 @@ object MatchListener : Listener {
                 if (profile!!.state == ProfileState.MATCH && event.hasItem()) {
                     val match = Match.getByUUID(profile.match!!)
 
-                    if (event.item.type == Material.BOW ||
-                        (event.item.type == Material.POTION && Potion.fromItemStack(event.item).isSplash)
+                    if ((event.item.type == Material.POTION && Potion.fromItemStack(event.item).isSplash)
                         || event.item.type == Material.FIREBALL) {
                         if (match!!.matchState != MatchState.FIGHTING) {
                             event.isCancelled = true
