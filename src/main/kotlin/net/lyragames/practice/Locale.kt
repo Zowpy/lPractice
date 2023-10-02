@@ -2,7 +2,8 @@ package net.lyragames.practice
 
 import net.lyragames.practice.utils.CC
 
-enum class Locale(s: String) {
+enum class Locale(private val path: String) {
+
     CANT_DO_THIS("cant-do-this"),
     CLICK_TO_JOIN("click-to-join"),
     CLICK_TO_ACCEPT("click-to-accept"),
@@ -81,24 +82,11 @@ enum class Locale(s: String) {
 
     CANT_FIND_ARENA("exception.cant-find-arena");
 
-
-
-
-    val path: String;
-
-    init {
-       this.path = s;
-    }
-
-
-
     fun getMessage(): String {
-
-        return CC.translate(PracticePlugin.instance.languageFile.getString(path));
+        return CC.translate(getNormalMessage())
     }
 
     fun getNormalMessage(): String {
-        return PracticePlugin.instance.languageFile.getString(path);
-
+        return PracticePlugin.instance.languageFile.getString(path)
     }
 }

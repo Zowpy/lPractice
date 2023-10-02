@@ -176,7 +176,7 @@ class PracticePlugin : JavaPlugin() {
                 .port(settingsFile.getInt("MONGODB.NORMAL.PORT"))
                 .uri(settingsFile.getString("MONGODB.URI.CONNECTION-STRING"))
                 .useUri(settingsFile.getBoolean("MONGODB.URI-MODE"))
-                .database(settingsFile.getConfig().getString("MONGODB.DATABASE", "lpractice"))
+                .database(settingsFile.config.getString("MONGODB.DATABASE", "lpractice"))
 
             if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED")) {
                 builder.username(settingsFile.getString("MONGODB.NORMAL.AUTH.USERNAME"))

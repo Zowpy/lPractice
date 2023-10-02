@@ -185,7 +185,9 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     open fun addPlayer(player: Player, location: Location) {
-        val matchPlayer = MatchPlayer(player.uniqueId, player.name, location)
+        val elo = Profile.getByUUID(player.uniqueId)!!.getKitStatistic(kit.name)!!.elo
+
+        val matchPlayer = MatchPlayer(player.uniqueId, player.name, location, elo)
         players.add(matchPlayer)
 
         players.stream().map { it.player }
@@ -246,6 +248,14 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             val bukkitPlayer = matchPlayer.player
             val profile = Profile.getByUUID(matchPlayer.uuid)
 
+            if (!losers.contains(matchPlayer) && !friendly) {
+                StatisticManager.win(profile!!, profile, kit, ranked)
+            } else {
+                if (!friendly) {
+                    StatisticManager.loss(profile!!, kit, ranked)
+                }
+            }
+
             if (profile!!.arrowCooldown != null) {
                 profile.arrowCooldown!!.cancel()
                 profile.arrowCooldown = null
@@ -282,20 +292,21 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         sendTitleBar(winners)
         endMessage(winners, losers)
 
+        for (matchPlayer in players)
+        {
+            if (matchPlayer.offline) continue
+
+            val player = matchPlayer.player
+
+            player.sendMessage("${CC.PRIMARY}ELO Updates: ${CC.GREEN}${getCombinedNames(winners, " (+<elo>)")}${CC.GRAY}, ${CC.RED}${getCombinedNames(losers, " (-<elo>)")}")
+        }
+
         Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
             for (matchPlayer in players) {
                 if (matchPlayer.offline) continue
 
                 val bukkitPlayer = matchPlayer.player
                 val profile = Profile.getByUUID(matchPlayer.uuid)
-
-                if (!losers.contains(matchPlayer) && !friendly) {
-                    StatisticManager.win(profile!!, profile, kit, ranked)
-                } else {
-                    if (!friendly) {
-                        StatisticManager.loss(profile!!, kit, ranked)
-                    }
-                }
 
                 players.stream().filter { !it.offline }.map { it.player }
                     .forEach {
@@ -457,12 +468,18 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     }
 
     private fun sendTitleBar(winners: MutableList<MatchPlayer>) {
-        val winnerString = Joiner.on(", ").join(winners.map { it.name }.toList())
-
         players.forEach {
             if (it.offline) return@forEach
-            TitleBar.sendTitleBar(it.player, "${CC.SECONDARY}$winnerString${CC.PRIMARY} won!", null, 10, 60, 10)
+            TitleBar.sendTitleBar(it.player, "${CC.SECONDARY}${getCombinedNames(winners)}${CC.PRIMARY} won!", null, 10, 60, 10)
         }
+    }
+
+    fun getCombinedNames(players: MutableList<MatchPlayer>, suffix: String = ""): String {
+        return Joiner.on(", ").join(players.map { it.name + suffix.replace("<elo>", getEloUpdate(it).toString()) }.toList())
+    }
+
+    private fun getEloUpdate(matchPlayer: MatchPlayer): Int {
+        return Profile.getByUUID(matchPlayer.uuid)!!.getKitStatistic(kit.name)!!.elo - matchPlayer.initialElo
     }
 
     fun getTime(): String {

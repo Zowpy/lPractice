@@ -13,4 +13,4 @@ import java.util.*
  * Project: Practice
  */
 @Getter
-class TeamMatchPlayer(uuid: UUID, name: String, spawn: Location, val teamUniqueId: UUID) : MatchPlayer(uuid, name, spawn)
+class TeamMatchPlayer(uuid: UUID, name: String, spawn: Location, val teamUniqueId: UUID, initialElo: Int) : MatchPlayer(uuid, name, spawn, initialElo)

@@ -55,7 +55,9 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
     override fun addPlayer(player: Player, location: Location) {
         val team = findTeam()
-        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid)
+        val elo = Profile.getByUUID(player.uniqueId)!!.getKitStatistic(kit.name)!!.elo
+
+        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid, elo)
 
         teamMatchPlayer.coloredName = "${team.color}${player.name}"
         teamMatchPlayer.bedLocations = LocationHelper.findBedLocations(team.bedLocation!!)

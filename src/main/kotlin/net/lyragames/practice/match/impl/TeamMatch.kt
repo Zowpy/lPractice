@@ -9,6 +9,7 @@ import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.player.TeamMatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
 import net.lyragames.practice.match.team.Team
+import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.utils.CC
 import net.lyragames.practice.utils.PlayerUtil
 import org.bukkit.Location
@@ -130,7 +131,9 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
 
     override fun addPlayer(player: Player, location: Location) {
         val team = findTeam()
-        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid)
+        val elo = Profile.getByUUID(player.uniqueId)!!.getKitStatistic(kit.name)!!.elo
+
+        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid, elo)
 
         val blue = team.name == "Blue"
 
@@ -146,7 +149,9 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
     }
 
     fun addPlayer(player: Player, team: Team) {
-        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team.spawn!!, team.uuid!!)
+        val elo = Profile.getByUUID(player.uniqueId)!!.getKitStatistic(kit.name)!!.elo
+
+        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team.spawn!!, team.uuid, elo)
 
         team.players.add(teamMatchPlayer)
 

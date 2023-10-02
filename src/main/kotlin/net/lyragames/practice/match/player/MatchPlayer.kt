@@ -16,7 +16,7 @@ import java.util.*
  * Project: Practice
  */
 
-open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location) {
+open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location, var initialElo: Int) {
     var dead = false
     var respawning = false
     var offline = false

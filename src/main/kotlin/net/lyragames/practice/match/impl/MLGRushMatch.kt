@@ -69,7 +69,9 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
     override fun addPlayer(player: Player, location: Location) {
         val team = findTeam()
-        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid)
+        val elo = Profile.getByUUID(player.uniqueId)!!.getKitStatistic(kit.name)!!.elo
+
+        val teamMatchPlayer = TeamMatchPlayer(player.uniqueId, player.name, team?.spawn!!, team.uuid, elo)
 
         val blue = team.name == "Blue"
 
