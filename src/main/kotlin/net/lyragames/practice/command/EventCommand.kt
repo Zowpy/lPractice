@@ -3,6 +3,7 @@ package net.lyragames.practice.command
 import me.zowpy.command.annotation.Command
 import me.zowpy.command.annotation.Permission
 import me.zowpy.command.annotation.Sender
+import net.lyragames.practice.Locale
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.menu.EventHostMenu
 import net.lyragames.practice.manager.EventManager
@@ -32,22 +33,22 @@ object EventCommand {
         val event = EventManager.event
 
         if (event == null) {
-            player.sendMessage("${CC.RED}There are no active events currently!")
+            player.sendMessage(Locale.NO_ACTIVE_EVENTS.getMessage())
             return
         }
 
         if (event.requiredPlayers == event.players.size) {
-            player.sendMessage("${CC.RED}The event is full!")
+            player.sendMessage(Locale.EVENT_FULL.getMessage())
             return
         }
 
         if (event.getPlayer(player.uniqueId) != null) {
-            player.sendMessage("${CC.RED}You are already in the event!")
+            player.sendMessage(Locale.ALREADY_IN_EVENT.getMessage())
             return
         }
 
         if (event.state != EventState.ANNOUNCING) {
-            player.sendMessage("${CC.RED}The event already started!")
+            player.sendMessage(Locale.ALREADY_STARTED.getMessage())
             return
         }
 
@@ -59,7 +60,7 @@ object EventCommand {
     fun forcestart(@Sender player: Player) {
 
         if (EventManager.event?.players?.size!! < 2) {
-            player.sendMessage("${CC.RED}You need at least 2 players to force start!")
+            player.sendMessage(Locale.NOT_ENOUGH_PLAYER.getMessage())
             return
         }
 

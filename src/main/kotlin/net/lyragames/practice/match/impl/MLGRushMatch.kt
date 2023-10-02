@@ -1,5 +1,6 @@
 package net.lyragames.practice.match.impl
 
+import net.lyragames.practice.Locale
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.MatchState
@@ -86,13 +87,13 @@ class MLGRushMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, are
 
     override fun handleDeath(player: MatchPlayer) {
         if (player.offline) {
-            sendMessage("&c${player.name} ${CC.PRIMARY}has disconnected!")
+            sendMessage(Locale.PLAYER_DISCONNECTED.getMessage().replace("<player>", player.name))
         } else if (player.lastDamager == null && !player.offline) {
-            sendMessage("&c${player.name} ${CC.PRIMARY}has died from natural causes!")
+            sendMessage(Locale.PLAYER_DIED.getMessage())
         } else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
+            sendMessage(Locale.PLAYED_KILLED.getMessage().replace("<player>", player.name).replace("<killer>", matchPlayer!!.name))
         }
 
         player.respawning = true

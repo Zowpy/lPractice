@@ -3,6 +3,7 @@ package net.lyragames.practice.command
 import me.zowpy.command.annotation.Command
 import me.zowpy.command.annotation.Named
 import me.zowpy.command.annotation.Sender
+import net.lyragames.practice.Locale
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import net.lyragames.practice.duel.procedure.menu.DuelSelectKitMenu
 import net.lyragames.practice.manager.MatchManager
@@ -17,24 +18,25 @@ object DuelCommand {
     @Command(name = "duel")
     fun duel(@Sender player: Player, @Named("player") target: Player) {
         if (player.uniqueId == target.uniqueId) {
-            player.sendMessage("${CC.RED}You can't duel yourself.")
+            player.sendMessage(Locale.CANT_DUEL_YOURSELF.getMessage())
+            player.sendMessage("self.")
             return
         }
 
         val profile = Profile.getByUUID(target.uniqueId)
 
         if (profile!!.duelRequests.any { it.uuid == player.uniqueId && !it.isExpired() }) {
-            player.sendMessage("${CC.RED}You already have an ongoing duel request to ${target.name}.")
+            player.sendMessage(Locale.ONGOING_DUEL.getMessage().replace("<target>", target.name))
             return
         }
 
         if (profile.state != ProfileState.LOBBY) {
-            player.sendMessage("${CC.RED}That player is currently busy!")
+            player.sendMessage(Locale.BUSY_PLAYER.getMessage())
             return
         }
 
         if (!profile.settings.duels && !player.hasPermission("lpractice.bypass.duels")) {
-            player.sendMessage("${CC.SECONDARY}${target.name}${CC.PRIMARY}'s has duels disabled.")
+            player.sendMessage(Locale.DISABLED_DUELS.getMessage())
             return
         }
 
@@ -50,7 +52,7 @@ object DuelCommand {
         val duelRequest = profile?.getDuelRequest(target.uniqueId)
 
         if (duelRequest == null) {
-            player.sendMessage("${CC.RED}Invalid duel request!")
+            player.sendMessage(Locale.INVALID_DUEL.getMessage())
             return
         }
 
@@ -73,22 +75,22 @@ object DuelCommand {
         val profile1 = Profile.getByUUID(target.uniqueId)
 
         if (profile?.state != ProfileState.LOBBY || profile1?.state != ProfileState.LOBBY) {
-            player.sendMessage("${CC.RED}You can't do this right now!")
+            player.sendMessage(Locale.CANT_DO_THIS.getMessage())
             return
         }
 
         if (profile.party == null) {
-            player.sendMessage("${CC.RED}You are not in a party!")
+            player.sendMessage(Locale.NOT_IN_A_PARTY.getNormalMessage())
             return
         }
 
         if (profile1.party == null) {
-            player.sendMessage("${CC.RED}That player is not in a party!")
+            player.sendMessage(Locale.OTHER_NOT_IN_A_PARTY.getMessage())
             return
         }
 
         if (profile.party == profile1.party) {
-            player.sendMessage("${CC.RED}You are in ${CC.YELLOW}${target.name}'s ${CC.RED}party!")
+            player.sendMessage(Locale.JOINED_PARTY.getMessage())
             return
         }
 
@@ -96,14 +98,14 @@ object DuelCommand {
         val party1 = PartyManager.getByUUID(profile1.party!!)
 
         if (party?.leader != player.uniqueId) {
-            player.sendMessage("${CC.RED}Only the party leader can accept duel requests!")
+            player.sendMessage(Locale.CANT_ACCEPT_PARTY_DUEL.getMessage())
             return
         }
 
         val duelRequest = party?.getDuelRequest(profile1.uuid)
 
         if (duelRequest == null) {
-            player.sendMessage("${CC.RED}Invalid duel request!")
+            player.sendMessage(Locale.INVALID_DUEL.getMessage())
             return
         }
 

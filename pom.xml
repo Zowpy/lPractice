@@ -206,6 +206,10 @@
 
     <repositories>
         <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
@@ -250,12 +254,16 @@
             <groupId>me.zowpy</groupId>
             <artifactId>menu</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/MenuAPI.jar</systemPath>
         </dependency>
 
         <dependency>
             <groupId>me.zowpy</groupId>
             <artifactId>command</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/CommandAPI.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -276,13 +284,14 @@
             <version>1.6.21</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.sk89q.worldedit</groupId>
-            <artifactId>worldedit-bukkit</artifactId>
+      <dependency>
+            <groupId>com.boydti</groupId>
+            <artifactId>fawe</artifactId>
             <version>6.0.0-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/FAWE.jar</systemPath>
         </dependency>
+
 
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
@@ -290,6 +299,14 @@
             <version>6.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>6.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>io.github.thatkawaiisam</groupId>

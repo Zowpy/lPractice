@@ -1,6 +1,7 @@
 package net.lyragames.practice.match.impl
 
 import com.google.common.base.Joiner
+import net.lyragames.practice.Locale
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.Match
@@ -44,11 +45,11 @@ open class TeamMatch(kit: Kit, arena: Arena, ranked: Boolean) : Match(kit, arena
         player.dead = true
 
         if (player.lastDamager == null) {
-            sendMessage("${player.coloredName}${CC.PRIMARY}was killed!")
+            sendMessage(Locale.PLAYER_DIED.getMessage().replace("<player>", player.coloredName))
         }else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("${player.coloredName} ${CC.PRIMARY}was killed by ${matchPlayer?.coloredName}${CC.PRIMARY}!")
+            sendMessage(Locale.PLAYED_KILLED.getMessage().replace("<player>", player.coloredName).replace("<killer>", matchPlayer!!.name))
         }
 
         val losingTeam = teams.stream().filter { team -> !team.players.stream().anyMatch { !it.dead } }.findAny().orElse(null)

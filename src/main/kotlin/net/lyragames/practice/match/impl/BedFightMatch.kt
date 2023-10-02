@@ -1,5 +1,6 @@
 package net.lyragames.practice.match.impl
 
+import net.lyragames.practice.Locale
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.impl.bedwars.StandaloneBedWarsArena
 import net.lyragames.practice.kit.Kit
@@ -104,7 +105,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         if (event.block.type == Material.BED || event.block.type == Material.BED_BLOCK) {
 
             if (matchPlayer.bedLocations.contains(event.block.location)) {
-                event.player.sendMessage("${CC.RED}You cannot break your own bed.")
+                event.player.sendMessage(Locale.BREAK_OWN_BED.getMessage())
                 return
             }
 
@@ -113,7 +114,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
                     val team = getTeam((player as TeamMatchPlayer).teamUniqueId)
 
                     if (team!!.broken) {
-                        matchPlayer.player.sendMessage("${CC.RED}The bed has already been broken.")
+                        matchPlayer.player.sendMessage(Locale.BED_ALREADY_BROKEN.getMessage())
                         break
                     }
 
@@ -132,7 +133,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
                     team.sendTitle("${CC.RED}BED DESTROYED!", "You will no longer respawn!", 10, 40, 10)
 
                     sendMessage(" ")
-                    sendMessage("${CC.SECONDARY}${CC.BOLD}BED DESTRUCTION > ${team.coloredName} Bed ${CC.PRIMARY}was destroyed by ${matchPlayer.coloredName}${CC.PRIMARY}!")
+                    sendMessage(Locale.BED_DESTROYED.getMessage())
                     sendMessage(" ")
 
                     team.broken = true
@@ -147,13 +148,13 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         val team = getTeam((player as TeamMatchPlayer).teamUniqueId)
 
         if (player.offline) {
-            sendMessage("&c${player.coloredName} ${CC.PRIMARY}has disconnected!")
+            sendMessage(Locale.PLAYER_DISCONNECTED.getMessage())
         } else if (player.lastDamager == null && !player.offline) {
-            sendMessage("&c${player.coloredName} ${CC.PRIMARY}was killed!${if (team?.broken!!) "${CC.GRAY} (${CC.SECONDARY}FINAL${CC.GRAY})" else ""}")
+            sendMessage("${Locale.PLAYER_DIED.getMessage()}${if (team?.broken!!) "${Locale.FINAL_TAG}" else ""}")
         } else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c${player.coloredName} ${CC.PRIMARY}was killed by ${matchPlayer?.coloredName}${CC.PRIMARY}!${if (team?.broken!!) "${CC.GRAY} (${CC.SECONDARY}FINAL${CC.GRAY})" else ""}")
+            sendMessage("${Locale.PLAYED_KILLED.getMessage().replace("<player>", player.name).replace("<killer>", matchPlayer!!.name)}${CC.PRIMARY}!${if (team?.broken!!) "${Locale.FINAL_TAG.getMessage()}" else ""}")
         }
 
         player.respawning = true

@@ -1,5 +1,6 @@
 package net.lyragames.practice.queue
 
+import net.lyragames.practice.Locale
 import net.lyragames.practice.utils.CC
 import org.bukkit.Bukkit
 import java.util.*
@@ -29,7 +30,7 @@ class QueuePlayer(var uuid: UUID, var name: String, val queue: Queue, val pingFa
             if (ticked >= 50) {
                 ticked = 0
                 if (queue.ranked) {
-                    Bukkit.getPlayer(uuid)?.sendMessage("${CC.PRIMARY}Searching in ELO range ${CC.SECONDARY}[${getMinRange()} -> ${getMaxRange()}]${CC.PRIMARY}...")
+                    Bukkit.getPlayer(uuid)?.sendMessage(Locale.ELO_SEARCH.getMessage().replace("<min>", "${getMinRange()}").replace("<max>", "${getMaxRange()}"))
                 }
             }
         }
@@ -39,13 +40,14 @@ class QueuePlayer(var uuid: UUID, var name: String, val queue: Queue, val pingFa
         return elo >= this.elo - range && elo <= this.elo + range
     }
 
-    private fun getMinRange(): Int {
+
+    fun getMinRange(): Int {
         val min = elo - range
-        return if (min < 0) 0 else min
+        return Math.max(min, 0)
     }
 
-    private fun getMaxRange(): Int {
+    fun getMaxRange(): Int {
         val max = elo + range
-        return if (max > 2500) 2500 else max
+        return Math.min(max, 2500)
     }
 }

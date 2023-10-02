@@ -1,5 +1,6 @@
 package net.lyragames.practice.match.ffa
 
+import net.lyragames.practice.Locale
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.kit.Kit
@@ -42,9 +43,9 @@ class FFA(val kit: Kit) {
             killer.kills++
             killer.killStreak++
 
-            sendMessage("${CC.SECONDARY}${ffaPlayer.name} ${CC.PRIMARY}has been killed by ${CC.SECONDARY}${killer.name}${CC.PRIMARY}.")
+            sendMessage(Locale.PLAYED_KILLED.getMessage().replace("<player>", ffaPlayer.name).replace("<killer>", killer.name))
         }else {
-            sendMessage("${CC.SECONDARY}${ffaPlayer.name} ${CC.PRIMARY}died from natural causes.")
+            sendMessage(Locale.PLAYER_DIED.getMessage().replace("<player>", ffaPlayer.name))
         }
 
         setup(ffaPlayer)

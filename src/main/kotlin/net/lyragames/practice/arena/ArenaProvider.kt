@@ -2,6 +2,7 @@ package net.lyragames.practice.arena
 
 import me.zowpy.command.provider.Provider
 import me.zowpy.command.provider.exception.CommandExitException
+import net.lyragames.practice.Locale
 
 /**
  * This Project is property of Zowpy © 2022
@@ -15,6 +16,6 @@ import me.zowpy.command.provider.exception.CommandExitException
 object ArenaProvider: Provider<Arena> {
 
     override fun provide(p0: String): Arena {
-        return p0.let { Arena.getByName(it) } ?: throw CommandExitException("That specific arena doesn't exist!")
+        return p0.let { Arena.getByName(it) } ?: throw CommandExitException(Locale.CANT_FIND_ARENA.getMessage())
     }
 }
