@@ -58,6 +58,8 @@ class PracticePlugin : JavaPlugin() {
     lateinit var scoreboardFile: ConfigFile
     lateinit var ffaFile: ConfigFile
     lateinit var eventsFile: ConfigFile
+    lateinit var languageFile: ConfigFile
+
     lateinit var API: PracticeAPI
 
     lateinit var practiceMongo: Mongo
@@ -73,6 +75,8 @@ class PracticePlugin : JavaPlugin() {
         scoreboardFile = ConfigFile(this, "scoreboard")
         ffaFile = ConfigFile(this, "ffa")
         eventsFile = ConfigFile(this, "events")
+        languageFile = ConfigFile(this, "language")
+
         logger.info("Successfully loaded files!")
 
         loadMongo()
@@ -100,7 +104,7 @@ class PracticePlugin : JavaPlugin() {
         MenuAPI(this)
 
 
-        val commandAPI = CommandAPI(this)
+        CommandAPI(this)
             .bind(Arena::class.java, ArenaProvider)
             .bind(Kit::class.java, KitProvider)
             .bind(EventMap::class.java, EventMapProvider)

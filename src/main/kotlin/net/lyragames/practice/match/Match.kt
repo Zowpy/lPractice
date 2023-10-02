@@ -2,6 +2,7 @@ package net.lyragames.practice.match
 
 import com.boydti.fawe.bukkit.chat.FancyMessage
 import com.google.common.base.Joiner
+import net.lyragames.practice.Locale
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.constants.Constants
@@ -212,16 +213,16 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         if (player.offline) {
 
-            sendMessage("&c${player.name} ${CC.PRIMARY}has disconnected!")
+            sendMessage(Locale.PLAYER_DISCONNECTED.getMessage().replace("<player>", player.name))
 
         } else if (player.lastDamager == null && !player.offline) {
 
-            sendMessage("&c${player.name} ${CC.PRIMARY}has died from natural causes!")
+            sendMessage(Locale.PLAYER_DIED.getMessage().replace("<player>", player.name))
 
         } else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c${player.name} ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
+            sendMessage(Locale.PLAYED_KILLED.getMessage().replace("<killer>", matchPlayer!!.name).replace("<player>", player.name))
         }
 
         end(mutableListOf(player))

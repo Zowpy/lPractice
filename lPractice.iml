@@ -21,12 +21,13 @@
       <configuration version="3" platform="JVM 1.8" allPlatforms="JVM [1.8]" useProjectSettings="false">
         <compilerSettings />
         <compilerArguments>
+          <option name="jvmTarget" value="1.8" />
           <option name="languageVersion" value="1.6" />
           <option name="apiVersion" value="1.6" />
-          <option name="pluginOptions">
+          <option name="pluginClasspaths">
             <array />
           </option>
-          <option name="pluginClasspaths">
+          <option name="pluginOptions">
             <array />
           </option>
           <option name="errors">
@@ -52,8 +53,24 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.20" level="project" />
-    <orderEntry type="library" name="Maven: me.zowpy:menu:1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: me.zowpy:command:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: me.zowpy:menu:1.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/MenuAPI.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: me.zowpy:command:1.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/CommandAPI.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.8" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:mongo-java-driver:3.12.10" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21" level="project" />
@@ -62,7 +79,7 @@
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.21" level="project" />
     <orderEntry type="module-library">
-      <library name="Maven: com.sk89q.worldedit:worldedit-bukkit:6.0.0-SNAPSHOT">
+      <library name="Maven: com.boydti:fawe:6.0.0-SNAPSHOT">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/libs/FAWE.jar!/" />
         </CLASSES>
@@ -80,6 +97,14 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.lib:jlibnoise:1.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q:jchronic:0.2.4a" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: junit:junit:4.8.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldedit:worldedit-bukkit:6.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.sk89q.bukkit:bukkit-classloader-check:1.7.2-R0.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.googlecode.json-simple:json-simple:1.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.avaje:ebean:2.7.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.persistence:persistence-api:1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: commons-lang:commons-lang:2.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q:dummypermscompat:1.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.bukkit:bukkit:1.7.2-R0.3" level="project" />
     <orderEntry type="library" name="Maven: io.github.thatkawaiisam:assemble:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.github.cryptomorin:XSeries:7.9.1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.comphenix.protocol:ProtocolLib:4.7.0" level="project" />

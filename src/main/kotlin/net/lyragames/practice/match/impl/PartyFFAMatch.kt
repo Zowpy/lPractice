@@ -1,5 +1,6 @@
 package net.lyragames.practice.match.impl
 
+import net.lyragames.practice.Locale
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.Match
@@ -24,11 +25,11 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
         player.dead = true
 
         if (player.lastDamager == null) {
-            sendMessage("&c" + player.name + " ${CC.PRIMARY}was killed!")
+            sendMessage(Locale.PLAYER_DIED.getMessage().replace("<player>", player.coloredName))
         }else {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("&c" + player.name + " ${CC.PRIMARY}has been killed by &c" + matchPlayer?.name + "${CC.PRIMARY}!")
+            sendMessage(Locale.PLAYED_KILLED.getMessage().replace("<player>", player.coloredName).replace("<killer>", matchPlayer!!.coloredName))
         }
 
         val winner = getAlivePlayers()[0]

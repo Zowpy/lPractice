@@ -3,6 +3,7 @@ package net.lyragames.practice.command
 import me.zowpy.command.annotation.Command
 import me.zowpy.command.annotation.Named
 import me.zowpy.command.annotation.Sender
+import net.lyragames.practice.Locale
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.party.Party
 import net.lyragames.practice.party.PartyType
@@ -33,7 +34,7 @@ object PartyCommand {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.party != null) {
-            player.sendMessage("${CC.RED}You are already in a party!")
+            player.sendMessage(Locale.ALREADY_IN_PARTY.getMessage())
             return
         }
 
@@ -45,7 +46,7 @@ object PartyCommand {
         profile?.party = party.uuid
 
         Hotbar.giveHotbar(profile!!)
-        player.sendMessage("${CC.GREEN}Successfully created party!")
+        player.sendMessage(Locale.CREATED_PARTY.getMessage())
     }
 
     @Command(name = "party disband", aliases = ["p disband"])
@@ -53,7 +54,7 @@ object PartyCommand {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.party == null) {
-            player.sendMessage("${CC.RED}You are not in a party.")
+            player.sendMessage(Locale.NOT_IN_A_PARTY.getMessage())
             return
         }
 
@@ -62,7 +63,7 @@ object PartyCommand {
         party?.players?.map { Profile.getByUUID(it) }
             ?.forEach {
                 it?.party = null
-                it?.player?.sendMessage("${CC.RED}The party has been disbanded.")
+                it?.player?.sendMessage(Locale.DISBANDED_PARTY.getMessage())
                 Hotbar.giveHotbar(it!!)
             }
 
@@ -74,7 +75,7 @@ object PartyCommand {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.party == null) {
-            player.sendMessage("${CC.RED}You are not in a party.")
+            player.sendMessage(Locale.NOT_IN_A_PARTY.getMessage())
             return
         }
 
@@ -84,7 +85,7 @@ object PartyCommand {
             party?.players?.filter { Bukkit.getPlayer(it) != null }?.map { Profile.getByUUID(it) }
                 ?.forEach {
                     it?.party = null
-                    it?.player?.sendMessage("${CC.RED}The party has been disbanded.")
+                    it?.player?.sendMessage(Locale.DISBANDED_PARTY.getMessage())
                     Hotbar.giveHotbar(it!!)
                 }
 
@@ -93,33 +94,33 @@ object PartyCommand {
             party?.players?.remove(player.uniqueId)
             profile.party = null
             Hotbar.giveHotbar(profile)
-            party?.sendMessage("${CC.SECONDARY}${player.name}${CC.PRIMARY} left the party!")
+            party?.sendMessage(Locale.LEFT_PARTY.getMessage())
         }
     }
 
     @Command(name = "party invite", aliases = ["p invite"])
     fun invite(@Sender player: Player, @Named("player") target: Player) {
         if (player.uniqueId.equals(target.uniqueId)) {
-            player.sendMessage("${CC.RED}You can't invite yourself!")
+            player.sendMessage(Locale.CANT_INVITE_YOURSELF.getMessage())
             return
         }
 
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.party == null) {
-            player.sendMessage("${CC.RED}You are not in a party!")
+            player.sendMessage(Locale.NOT_IN_A_PARTY.getMessage())
             return
         }
 
         val profile1 = Profile.getByUUID(target.uniqueId)
 
         if (profile1?.party != null) {
-            player.sendMessage("${CC.RED}That player is already in a party!")
+            player.sendMessage(Locale.PLAYER_ALREADY_IN_PARTY.getMessage())
             return
         }
 
         if (profile1?.getPartyInvite(profile.party!!) != null) {
-            player.sendMessage("${CC.RED}You already invited that player!")
+            player.sendMessage(Locale.ALREADY_INVITED_PLAYER.getMessage())
             return
         }
 
@@ -127,23 +128,23 @@ object PartyCommand {
         profile1?.partyInvites?.add(partyInvite)
 
         val message = TextBuilder()
-            .setText("${CC.PRIMARY}You have been invited to ${CC.SECONDARY}${player.name}'s ${CC.PRIMARY}party!")
+            .setText(Locale.PARTY_INVITED_MESSAGE.getMessage())
             .then()
-            .setText(" ${CC.SECONDARY}[Click to join]")
+            .setText(Locale.CLICK_TO_JOIN.getMessage())
             .setCommand("/party join ${player.name}") //${profile.party?.toString()}")
             .then()
             .build()
 
         target.spigot().sendMessage(message)
 
-        player.sendMessage("${CC.PRIMARY}Successfully invited ${CC.SECONDARY}${target.name}${CC.PRIMARY}!")
+        player.sendMessage(Locale.PARTY_INVITED_MESSAGE.getMessage())
     }
 
     @Command(name = "party join", aliases = ["p join"])
     fun join(@Sender player: Player, @Named("player") target: Player) {
 
         if (player.uniqueId == target.uniqueId) {
-            player.sendMessage("${CC.RED}You can't join your own party!")
+            player.sendMessage(Locale.JOIN_OWN_PARTY.getMessage())
             return
         }
 
@@ -151,36 +152,36 @@ object PartyCommand {
         val profile1 = Profile.getByUUID(target.uniqueId)
 
         if (profile?.party != null) {
-            player.sendMessage("${CC.RED}You are already in a party!")
+            player.sendMessage(Locale.ALREADY_IN_PARTY.getMessage())
             return
         }
 
         if (profile1?.party == null) {
-            player.sendMessage("${CC.RED}That player isn't in a party")
+            player.sendMessage(Locale.ISNT_IN_PARTY.getMessage())
             return
         }
 
         val party = PartyManager.getByUUID(profile1.party!!)
 
         if (party?.leader != target.uniqueId) {
-            player.sendMessage("${CC.RED}That player isn't in a party")
+            player.sendMessage(Locale.ISNT_IN_PARTY.getMessage())
             return
         }
 
         val partyInvitation = profile?.getPartyInvite(profile1.party!!)
 
         if (party?.banned?.contains(player.uniqueId)!!) {
-            player.sendMessage("${CC.RED}You are banned from this party!")
+            player.sendMessage(Locale.BANNED_FROM_PARTY.getMessage())
             return
         }
 
         if (party.partyType == PartyType.PRIVATE && partyInvitation == null) {
-            player.sendMessage("${CC.RED}You are not invited to this party!")
+            player.sendMessage(Locale.NOT_INVITED.getMessage())
             return
         }
 
         if (partyInvitation != null && partyInvitation.isExpired() && party.partyType == PartyType.PRIVATE) {
-            player.sendMessage("${CC.RED}That party invite expired!")
+            player.sendMessage(Locale.PARTY_EXPIRED.getMessage())
             return
         }
 
@@ -193,6 +194,6 @@ object PartyCommand {
 
         Hotbar.giveHotbar(profile!!)
 
-        party.sendMessage("${CC.SECONDARY}${player.name}${CC.PRIMARY} joined the party!")
+        party.sendMessage(Locale.JOIN_PARTY_BROADCAST.getMessage())
     }
 }

@@ -3,6 +3,7 @@ package net.lyragames.practice.command
 import me.zowpy.command.annotation.Command
 import me.zowpy.command.annotation.Named
 import me.zowpy.command.annotation.Sender
+import net.lyragames.practice.Locale
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.rating.ArenaRating
 import net.lyragames.practice.manager.ArenaRatingManager
@@ -18,12 +19,12 @@ object RateMapCommand {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (!profile?.settings?.mapRating!!) {
-            player.sendMessage("${CC.RED}You have map rating disabled, You can enable it from the settings menu.")
+            player.sendMessage(Locale.DISABLED_MAP_RATING.getMessage())
             return
         }
 
         if (ArenaRatingManager.hasRated(player.uniqueId, arena)) {
-            player.sendMessage("${CC.RED}You already rated this map!")
+            player.sendMessage(Locale.ALREADY_RATED.getMessage())
             return
         }
 
@@ -32,6 +33,6 @@ object RateMapCommand {
 
         ArenaRatingManager.arenaRatings.add(rating)
 
-        player.sendMessage("${CC.GREEN}Thank you for voting! Your feedback is appreciated.")
+        player.sendMessage(Locale.THANK_YOU.getMessage())
     }
 }

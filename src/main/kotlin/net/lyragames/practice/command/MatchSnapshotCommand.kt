@@ -2,6 +2,7 @@ package net.lyragames.practice.command
 
 import me.zowpy.command.annotation.Command
 import me.zowpy.command.annotation.Sender
+import net.lyragames.practice.Locale
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.match.menu.MatchDetailsMenu
 import net.lyragames.practice.match.snapshot.MatchSnapshot
@@ -22,7 +23,7 @@ object MatchSnapshotCommand {
         }
 
         if (cachedInventory == null) {
-            player.sendMessage("${CC.RED}Couldn't find the requested inventory.")
+            player.sendMessage(Locale.COULDNT_FIND_INVENTORY.getMessage())
             return
         }
 

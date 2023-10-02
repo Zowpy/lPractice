@@ -1,5 +1,6 @@
 package net.lyragames.practice.duel
 
+import net.lyragames.practice.Locale
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.profile.Profile
@@ -36,11 +37,11 @@ class DuelRequest(var uuid: UUID, var target: UUID, var kit: Kit, var arena: Are
         profile?.duelRequests?.add(this)
 
         val message = TextBuilder()
-            .setText("${CC.SECONDARY}${sender.name}${CC.GREEN} (${PlayerUtil.getPing(sender)} ms)${CC.PRIMARY} has sent you a duel request with kit ${CC.SECONDARY}${kit.name}${CC.PRIMARY} on")
+            .setText(Locale.DUEL_REQUEST.getMessage().replace("<ping>", "${PlayerUtil.getPing(sender)}").replace("<sender>", sender.name).replace("<kit>", kit.displayName))
             .then()
-            .setText("${CC.PRIMARY} arena ${CC.SECONDARY}${arena.name}${CC.PRIMARY}.")
+            .setText(Locale.DUEL_REQUEST_FOOTER.getMessage().replace("<arena>", arena.name))
             .then()
-            .setText("${CC.SECONDARY} [Click to accept]")
+            .setText(Locale.CLICK_TO_ACCEPT.getMessage())
             .setCommand("/duel accept ${sender.name}")
             .then()
             .build()

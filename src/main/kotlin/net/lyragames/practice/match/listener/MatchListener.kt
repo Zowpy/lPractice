@@ -1,5 +1,6 @@
 package net.lyragames.practice.match.listener
 
+import net.lyragames.practice.Locale
 import net.lyragames.practice.PracticePlugin
 import net.lyragames.practice.constants.Constants
 import net.lyragames.practice.match.Match
@@ -62,7 +63,7 @@ object MatchListener : Listener {
             if (match.kit.kitData.build || match.kit.kitData.mlgRush || match.kit.kitData.bedFights || match.kit.kitData.bridge || match.kit.kitData.fireballFight) {
                 if (!match.arena.bounds.isInCuboid(event.blockPlaced.location)) {
                     event.isCancelled = true
-                    player.sendMessage("${CC.RED}You cannot place blocks here.")
+                    player.sendMessage(Locale.CANT_PLACE.getMessage())
                     return
                 }
 
@@ -472,7 +473,7 @@ object MatchListener : Listener {
                             event.isCancelled = true
 
                             if (profile.fireBallCooldown != null && !profile.fireBallCooldown!!.hasExpired()) {
-                                player.sendMessage("${CC.SECONDARY}Fireball cooldown: ${CC.PRIMARY}${TimeUtil.millisToSeconds(profile.fireBallCooldown!!.timeRemaining)}")
+                                player.sendMessage(Locale.FIREBALL_COOLDOWN.getMessage())
                             }else {
                                 val fireBall = player.launchProjectile(Fireball::class.java)
                                 fireBall.velocity = player.location.direction.multiply(1.4)
@@ -499,20 +500,18 @@ object MatchListener : Listener {
                         event.setUseItemInHand(Event.Result.ALLOW)
 
                         profile.enderPearlCooldown = Cooldown(16) {
-                            player.sendMessage("${CC.PRIMARY}You can now use the enderpearl.")
+                            player.sendMessage(Locale.ENDERPEARL_COOLDOWN_DONE.getMessage())
                             profile.enderPearlCooldown = null
                         }
                     } else {
                         event.isCancelled = true
                         event.setUseItemInHand(Event.Result.DENY)
 
-                        player.sendMessage(
-                            "${CC.SECONDARY}Enderpearl cooldown: ${CC.PRIMARY}${
-                                profile.enderPearlCooldown?.timeRemaining?.let {
-                                    TimeUtil.millisToSeconds(it)
-                                }
-                            }"
-                        )
+
+                        player.sendMessage(Locale.ENDERPERL_COOLDOWN_TIME.getMessage().replace("<seconds>",
+                            "${profile.enderPearlCooldown?.timeRemaining?.let { TimeUtil.millisToSeconds(it) }}"))
+
+
                     }
                 }
             }
