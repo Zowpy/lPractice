@@ -32,9 +32,17 @@ object StatisticManager {
         // ELO
         if (ranked) {
             kitStatistic.rankedWins++
-            val elo = loserProfile.getKitStatistic(kit.name)?.elo
-            loserProfile.getKitStatistic(kit.name)?.elo = loserProfile.getKitStatistic(kit.name)?.elo?.plus(elo?.let { EloUtil.getNewRating(it, kitStatistic.elo, false) }!!)!!
-            kitStatistic.elo =+ EloUtil.getNewRating(kitStatistic.elo, loserProfile.getKitStatistic(kit.name)?.elo!!, true)
+
+            val loserKitStatistic = loserProfile.getKitStatistic(kit.name)
+
+            val loserElo = loserKitStatistic!!.elo
+            val winnerElo = kitStatistic.elo
+
+            val newLoserElo = EloUtil.getNewRating(loserElo, winnerElo, false)
+            val newWinnerElo = EloUtil.getNewRating(winnerElo, loserElo, true)
+
+            loserKitStatistic.elo = newLoserElo
+            kitStatistic.elo = newWinnerElo
 
             loserProfile.save()
 
