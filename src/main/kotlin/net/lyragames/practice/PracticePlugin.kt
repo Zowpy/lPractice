@@ -172,11 +172,13 @@ class PracticePlugin : JavaPlugin() {
                 .port(settingsFile.getInt("MONGODB.NORMAL.PORT"))
                 .uri(settingsFile.getString("MONGODB.URI.CONNECTION-STRING"))
                 .useUri(settingsFile.getBoolean("MONGODB.URI-MODE"))
+                .database(settingsFile.getConfig().getString("MONGODB.DATABASE", "lpractice"))
 
             if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED")) {
                 builder.username(settingsFile.getString("MONGODB.NORMAL.AUTH.USERNAME"))
                 builder.password(settingsFile.getString("MONGODB.NORMAL.AUTH.PASSWORD"))
             }
+
             practiceMongo = Mongo(settingsFile.getString("MONGODB.NORMAL.AUTH.AUTH-DATABASE"))
             practiceMongo.load(builder.build())
 
