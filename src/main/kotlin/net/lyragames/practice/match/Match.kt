@@ -49,7 +49,8 @@ import java.util.stream.Collectors
  * Project: Practice
  */
 
-open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
+open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean)
+{
 
     val uuid = UUID.randomUUID()
     var friendly = false
@@ -63,9 +64,11 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
     val countdowns: MutableList<ICountdown> = mutableListOf()
     val rematchingPlayers: MutableList<UUID> = mutableListOf()
 
-    open fun start() {
+    open fun start()
+    {
 
-        for (matchPlayer in players) {
+        for (matchPlayer in players)
+        {
             if (matchPlayer.offline) continue
 
             val player = matchPlayer.player
@@ -73,11 +76,13 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
             CustomItemStack.customItemStacks.removeIf { it.uuid == matchPlayer.uuid }
 
-            if (kit.kitData.boxing || kit.kitData.combo) {
+            if (kit.kitData.boxing || kit.kitData.combo)
+            {
                 player.addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 1))
             }
 
-            if (kit.kitData.combo) {
+            if (kit.kitData.combo)
+            {
                 player.noDamageTicks = 3
                 player.maximumNoDamageTicks = 3
             }
@@ -103,31 +108,41 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
     }
 
-    open fun getMatchType(): MatchType {
-        if (this is TeamMatch) {
+    open fun getMatchType(): MatchType
+    {
+        if (this is TeamMatch)
+        {
             return MatchType.TEAM
         }
 
-        if (this is MLGRushMatch) {
+        if (this is MLGRushMatch)
+        {
             return MatchType.BEDFIGHTS
         }
 
         return MatchType.NORMAL
     }
 
-    open fun addSpectator(player: Player) {
+    open fun addSpectator(player: Player)
+    {
         val profile = Profile.getByUUID(player.uniqueId)
         profile?.state = ProfileState.SPECTATING
         profile?.spectatingMatch = uuid
 
-        if (!profile?.silent!!) {
+        if (!profile?.silent!!)
+        {
             sendMessage(Locale.STARTED_SPECTATING.getMessage().replace("<player>", profile.name!!))
-        } else {
-            sendMessage(Locale.STARTED_SPECTATING_SILENT.getMessage().replace("<player>", profile.name!!), "lpractice.silent")
+        } else
+        {
+            sendMessage(
+                Locale.STARTED_SPECTATING_SILENT.getMessage().replace("<player>", profile.name!!),
+                "lpractice.silent"
+            )
         }
 
         players.forEach {
-            if (!it.offline) {
+            if (!it.offline)
+            {
                 player.showPlayer(it.player)
             }
         }
@@ -141,51 +156,64 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         spectators.add(matchSpectator)
     }
 
-    open fun removeSpectator(player: Player) {
+    open fun removeSpectator(player: Player)
+    {
         val profile = Profile.getByUUID(player.uniqueId)
 
-        if (!profile?.silent!!) {
+        if (!profile?.silent!!)
+        {
             sendMessage(Locale.STOPPED_SPECTATING.getMessage().replace("<player>", profile.name!!))
-        } else {
-            sendMessage(Locale.STOPPED_SPECTATING_SILENT.getMessage().replace("<player>", profile.name!!), "lpractice.silent")
+        } else
+        {
+            sendMessage(
+                Locale.STOPPED_SPECTATING_SILENT.getMessage().replace("<player>", profile.name!!),
+                "lpractice.silent"
+            )
         }
 
         removeSpec(player)
         spectators.removeIf { it.uuid == player.uniqueId }
     }
 
-    private fun removeSpec(player: Player) {
+    private fun removeSpec(player: Player)
+    {
         val profile = Profile.getByUUID(player.uniqueId)
         profile?.state = ProfileState.LOBBY
         profile?.spectatingMatch = null
 
         players.forEach {
-            if (!it.offline) {
+            if (!it.offline)
+            {
                 player.hidePlayer(it.player)
             }
         }
 
-        if (player != null) {
+        if (player != null)
+        {
             PlayerUtil.reset(player)
 
             Hotbar.giveHotbar(profile!!)
 
-            if (Constants.SPAWN != null) {
+            if (Constants.SPAWN != null)
+            {
                 player.teleport(Constants.SPAWN)
             }
         }
     }
 
-    open fun forceRemoveSpectator(player: Player) {
+    open fun forceRemoveSpectator(player: Player)
+    {
         removeSpec(player)
         spectators.removeIf { it.uuid == player.uniqueId }
     }
 
-    open fun canHit(player: Player, target: Player): Boolean {
+    open fun canHit(player: Player, target: Player): Boolean
+    {
         return true
     }
 
-    open fun addPlayer(player: Player, location: Location) {
+    open fun addPlayer(player: Player, location: Location)
+    {
         val elo = Profile.getByUUID(player.uniqueId)!!.getKitStatistic(kit.name)!!.elo
 
         val matchPlayer = MatchPlayer(player.uniqueId, player.name, location, elo)
@@ -198,40 +226,50 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             }
     }
 
-    fun sendMessage(message: String) {
+    fun sendMessage(message: String)
+    {
         players.filter { !it.offline }.map { it.player }.forEach { it.sendMessage(CC.translate(message)) }
         spectators.filter { Bukkit.getPlayer(uuid) != null }.map { it.player }
             .forEach { it.sendMessage(CC.translate(message)) }
     }
 
-    fun sendMessage(message: String, permission: String) {
+    fun sendMessage(message: String, permission: String)
+    {
         players.stream().map { it.player }
             .forEach { if (it.hasPermission(permission)) it.sendMessage(CC.translate(message)) }
         spectators.stream().map { it.player }
             .forEach { if (it.hasPermission(permission)) it.sendMessage(CC.translate(message)) }
     }
 
-    open fun handleDeath(player: MatchPlayer) {
+    open fun handleDeath(player: MatchPlayer)
+    {
         player.dead = true
 
-        if (player.offline) {
+        if (player.offline)
+        {
 
             sendMessage(Locale.PLAYER_DISCONNECTED.getMessage().replace("<player>", player.name))
 
-        } else if (player.lastDamager == null && !player.offline) {
+        } else if (player.lastDamager == null && !player.offline)
+        {
 
             sendMessage(Locale.PLAYER_DIED.getMessage().replace("<player>", player.name))
 
-        } else {
+        } else
+        {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage(Locale.PLAYED_KILLED.getMessage().replace("<killer>", matchPlayer!!.name).replace("<player>", player.name))
+            sendMessage(
+                Locale.PLAYED_KILLED.getMessage().replace("<killer>", matchPlayer!!.name)
+                    .replace("<player>", player.name)
+            )
         }
 
         end(mutableListOf(player))
     }
 
-    open fun end(losers: MutableList<MatchPlayer>) {
+    open fun end(losers: MutableList<MatchPlayer>)
+    {
         countdowns.forEach { it.cancel() }
 
         val winners = players.filter { !losers.contains(it) }
@@ -243,26 +281,34 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             losers.forEach { winner.player.hidePlayer(it.player) }
         }
 
-        for (matchPlayer in players) {
-            if (matchPlayer.offline) continue
+        for (matchPlayer in players)
+        {
 
-            val bukkitPlayer = matchPlayer.player
-            val profile = Profile.getByUUID(matchPlayer.uuid)
+            val profile = matchPlayer.profile
 
-            if (!losers.contains(matchPlayer) && !friendly) {
-                StatisticManager.win(profile!!, profile, kit, ranked)
-            } else {
-                if (!friendly) {
-                    StatisticManager.loss(profile!!, kit, ranked)
+            if (!losers.contains(matchPlayer) && !friendly)
+            {
+                StatisticManager.win(profile, losers[0].profile, kit, ranked)
+            } else
+            {
+                if (!friendly)
+                {
+                    StatisticManager.loss(profile, kit, ranked)
                 }
             }
 
-            if (profile!!.arrowCooldown != null) {
+            if (matchPlayer.offline) continue
+
+            val bukkitPlayer = matchPlayer.player
+
+            if (profile.arrowCooldown != null)
+            {
                 profile.arrowCooldown!!.cancel()
                 profile.arrowCooldown = null
             }
 
-            if (profile.enderPearlCooldown != null) {
+            if (profile.enderPearlCooldown != null)
+            {
                 profile.enderPearlCooldown!!.cancel()
                 profile.enderPearlCooldown = null
             }
@@ -280,12 +326,14 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             PlayerUtil.reset(bukkitPlayer)
             PlayerUtil.allowMovement(bukkitPlayer)
 
-            if (!friendly) {
+            if (!friendly)
+            {
                 MatchManager.createReQueueItem(bukkitPlayer, this)
             }
         }
 
-        for (snapshot in snapshots) {
+        for (snapshot in snapshots)
+        {
             snapshot.createdAt = System.currentTimeMillis()
             MatchSnapshot.snapshots.add(snapshot)
         }
@@ -293,8 +341,10 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         sendTitleBar(winners)
         endMessage(winners, losers)
 
-        if(ranked) {
-            for (matchPlayer in players) {
+        if (ranked)
+        {
+            for (matchPlayer in players)
+            {
                 if (matchPlayer.offline) continue
 
                 val player = matchPlayer.player
@@ -305,13 +355,14 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                             winners,
                             " (+<elo>)"
                         )
-                    }${CC.GRAY}, ${CC.RED}${getCombinedNames(losers, " (-<elo>)")}"
+                    }${CC.GRAY}, ${CC.RED}${getCombinedNames(losers, " (<elo>)")}"
                 )
             }
         }
 
         Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
-            for (matchPlayer in players) {
+            for (matchPlayer in players)
+            {
                 if (matchPlayer.offline) continue
 
                 val bukkitPlayer = matchPlayer.player
@@ -328,18 +379,22 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                         it.hidePlayer(bukkitPlayer)
                     }
 
-                if (!rematchingPlayers.contains(matchPlayer.uuid)) {
+                if (!rematchingPlayers.contains(matchPlayer.uuid))
+                {
                     CustomItemStack.customItemStacks.removeIf { it.uuid == matchPlayer.uuid }
                 }
 
-                if ((profile!!.state == ProfileState.MATCH || profile.state == ProfileState.QUEUE) && profile.match == uuid) {
-                    if (profile.state != ProfileState.QUEUE) {
+                if ((profile!!.state == ProfileState.MATCH || profile.state == ProfileState.QUEUE) && profile.match == uuid)
+                {
+                    if (profile.state != ProfileState.QUEUE)
+                    {
                         profile.state = ProfileState.LOBBY
                     }
 
                     profile.match = null
 
-                    if (Constants.SPAWN != null) {
+                    if (Constants.SPAWN != null)
+                    {
                         bukkitPlayer.teleport(Constants.SPAWN)
                     }
 
@@ -349,8 +404,10 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
                 ratingMessage(profile)
             }
 
-            if (spectators.isNotEmpty()) {
-                for (i in 0 until spectators.size) {
+            if (spectators.isNotEmpty())
+            {
+                for (i in 0 until spectators.size)
+                {
                     val player = spectators[i].player ?: continue
                     removeSpec(player)
                 }
@@ -365,7 +422,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }, 60L)
     }
 
-    open fun handleQuit(matchPlayer: MatchPlayer) {
+    open fun handleQuit(matchPlayer: MatchPlayer)
+    {
         matchPlayer.offline = true
 
         val snapshot = MatchSnapshot(matchPlayer.player, matchPlayer.dead)
@@ -381,7 +439,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         handleDeath(matchPlayer)
     }
 
-    private fun ratingMessage(profile: Profile) {
+    private fun ratingMessage(profile: Profile)
+    {
         if (!profile.settings.mapRating) return
         if (ArenaRatingManager.hasRated(profile.uuid, arena)) return
         if (profile.player == null || !profile.player.isOnline) return
@@ -412,7 +471,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         fancyMessage.send(profile.player)
     }
 
-    open fun endMessage(winners: MutableList<MatchPlayer>, losers: MutableList<MatchPlayer>) {
+    open fun endMessage(winners: MutableList<MatchPlayer>, losers: MutableList<MatchPlayer>)
+    {
         val fancyMessage = TextBuilder()
             .setText("${CC.PRIMARY}${CC.BOLD}Match Results ${CC.RESET}${CC.GRAY}(click player to view)\n")
             .then()
@@ -420,10 +480,13 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             .then()
 
         var wi = 1
-        for (matchPlayer in winners) {
-            if (wi < winners.size) {
+        for (matchPlayer in winners)
+        {
+            if (wi < winners.size)
+            {
                 fancyMessage.setText("${CC.PRIMARY}${matchPlayer.name}${CC.GRAY}, ")
-            } else {
+            } else
+            {
                 fancyMessage.setText("${CC.PRIMARY}${matchPlayer.name}")
             }
 
@@ -435,11 +498,14 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         fancyMessage.setText("${CC.GRAY} ⎟ ${CC.RED}Loser: ").then()
 
         var i = 1
-        for (matchPlayer in losers) {
+        for (matchPlayer in losers)
+        {
 
-            if (i < losers.size) {
+            if (i < losers.size)
+            {
                 fancyMessage.setText("${CC.PRIMARY}${matchPlayer.name}${CC.GRAY}, ")
-            } else {
+            } else
+            {
                 fancyMessage.setText("${CC.PRIMARY}${matchPlayer.name}")
             }
 
@@ -448,7 +514,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             i++
         }
 
-        if (spectators.isNotEmpty()) {
+        if (spectators.isNotEmpty())
+        {
             fancyMessage.setText("\n\n${CC.PRIMARY}Spectators ${CC.GRAY}(${spectators.size})${CC.GREEN}: ")
                 .then()
                 .setText(Joiner.on("${CC.GRAY}, ${CC.RESET}").join(spectators.map { it.name }))
@@ -457,7 +524,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
         val message = fancyMessage.build()
 
-        for (matchPlayer in players) {
+        for (matchPlayer in players)
+        {
             if (matchPlayer.offline) continue
 
             val player = matchPlayer.player
@@ -467,7 +535,8 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             player.sendMessage(" ")
         }
 
-        for (spectator in spectators) {
+        for (spectator in spectators)
+        {
             val player = spectator.player ?: continue
 
             player.sendMessage(" ")
@@ -476,71 +545,94 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         }
     }
 
-    private fun sendTitleBar(winners: MutableList<MatchPlayer>) {
+    private fun sendTitleBar(winners: MutableList<MatchPlayer>)
+    {
         players.forEach {
             if (it.offline) return@forEach
-            TitleBar.sendTitleBar(it.player, "${CC.SECONDARY}${getCombinedNames(winners)}${CC.PRIMARY} won!", null, 10, 60, 10)
+            TitleBar.sendTitleBar(
+                it.player,
+                "${CC.SECONDARY}${getCombinedNames(winners)}${CC.PRIMARY} won!",
+                null,
+                10,
+                60,
+                10
+            )
         }
     }
 
-    fun getCombinedNames(players: MutableList<MatchPlayer>, suffix: String = ""): String {
-        return Joiner.on(", ").join(players.map { it.name + suffix.replace("<elo>", getEloUpdate(it).toString()) }.toList())
+    fun getCombinedNames(players: MutableList<MatchPlayer>, suffix: String = ""): String
+    {
+        return Joiner.on(", ")
+            .join(players.map { it.name + suffix.replace("<elo>", getEloUpdate(it).toString()) }.toList())
     }
 
-    private fun getEloUpdate(matchPlayer: MatchPlayer): Int {
+    private fun getEloUpdate(matchPlayer: MatchPlayer): Int
+    {
         return Profile.getByUUID(matchPlayer.uuid)!!.getKitStatistic(kit.name)!!.elo - matchPlayer.initialElo
     }
 
-    fun getTime(): String {
-        if (matchState == MatchState.STARTING) {
+    fun getTime(): String
+    {
+        if (matchState == MatchState.STARTING)
+        {
             return "${CC.GREEN}Starting"
         }
 
-        if (matchState == MatchState.ENDING) {
+        if (matchState == MatchState.ENDING)
+        {
             return "${CC.RED}Ending"
         }
 
         return TimeUtil.millisToTimer(System.currentTimeMillis() - started)
     }
 
-    open fun reset() {
+    open fun reset()
+    {
         blocksPlaced.forEach { it.type = Material.AIR }
         droppedItems.forEach { it.remove() }
     }
 
-    fun getMatchPlayer(uuid: UUID): MatchPlayer? {
+    fun getMatchPlayer(uuid: UUID): MatchPlayer?
+    {
         return players.stream().filter { it.uuid == uuid }
             .findFirst().orElse(null)
     }
 
-    fun getOpponent(uuid: UUID): MatchPlayer? {
+    fun getOpponent(uuid: UUID): MatchPlayer?
+    {
         return players.stream().filter { it.uuid != uuid }
             .findFirst().orElse(null)
     }
 
-    open fun getOpponentString(uuid: UUID): String? {
+    open fun getOpponentString(uuid: UUID): String?
+    {
         return getOpponent(uuid)?.name
     }
 
-    fun getAlivePlayers(): MutableList<MatchPlayer> {
+    fun getAlivePlayers(): MutableList<MatchPlayer>
+    {
         return players.stream().filter { !it.dead && !it.offline }
             .collect(Collectors.toList())
     }
 
-    companion object {
+    companion object
+    {
         @JvmStatic
         val matches: ConcurrentHashMap<UUID, Match> = ConcurrentHashMap<UUID, Match>()
 
         @JvmStatic
-        fun getByUUID(uuid: UUID): Match? {
+        fun getByUUID(uuid: UUID): Match?
+        {
             return matches[uuid]
         }
 
         @JvmStatic
-        fun inMatch(): Int {
+        fun inMatch(): Int
+        {
             var count = 0
 
-            for (match in matches) {
+            for (match in matches)
+            {
                 count += match.value.players.size
             }
 

@@ -40,7 +40,6 @@ import net.lyragames.practice.utils.InventoryUtil
 import net.lyragames.practice.utils.item.ItemListener
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.command.defaults.WhitelistCommand
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
@@ -153,14 +152,11 @@ class PracticePlugin : JavaPlugin() {
 
 
 
-        arrayOf(DuelCommand, EventCommand, LeaveCommand, MatchSnapshotCommand, PartyCommand, SettingsCommand, SpawnCommand, SpectateCommand, ArenaCommand, ArenaRatingCommand, BuildCommand, EventMapCommand, FFACommand, FollowCommand, KitCommand, SetSpawnCommand).forEach { commandAPI.registerCommand(
+        arrayOf(DuelCommand, EventCommand, LeaveCommand, MatchSnapshotCommand, PartyCommand, SettingsCommand, SpawnCommand, SpectateCommand, ArenaCommand, ArenaRatingCommand, BuildCommand, EventMapCommand, FFACommand, FollowCommand, KitCommand, SetSpawnCommand, RateMapCommand).forEach { commandAPI.registerCommand(
             it as BaseCommand?
         ) }
 
         commandAPI.enableUnstableAPI("help")
-
-
-
 
 
         /*

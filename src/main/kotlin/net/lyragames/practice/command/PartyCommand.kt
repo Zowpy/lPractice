@@ -10,11 +10,11 @@ import net.lyragames.practice.party.PartyType
 import net.lyragames.practice.party.invitation.PartyInvitation
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.hotbar.Hotbar
-import net.lyragames.practice.utils.CC
 import net.lyragames.practice.utils.TextBuilder
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+
 @CommandAlias("party")
 object PartyCommand: BaseCommand() {
 
@@ -34,7 +34,7 @@ object PartyCommand: BaseCommand() {
          */
     }
 
-    @Subcommand("party create")
+    @Subcommand("create")
     fun create(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 
@@ -75,7 +75,7 @@ object PartyCommand: BaseCommand() {
         PartyManager.parties.remove(party)
     }
 
-    @Subcommand("party")
+    @Subcommand("leave")
     fun leave(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 

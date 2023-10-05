@@ -2,13 +2,7 @@ package net.lyragames.practice.command
 
 
 import co.aikar.commands.BaseCommand
-import co.aikar.commands.annotation.Async
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
-import co.aikar.commands.annotation.Flags
-import co.aikar.commands.annotation.Name
-import co.aikar.commands.annotation.Single
-import co.aikar.commands.annotation.Subcommand
+import co.aikar.commands.annotation.*
 import net.lyragames.practice.Locale
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import net.lyragames.practice.duel.procedure.menu.DuelSelectKitMenu
@@ -16,9 +10,9 @@ import net.lyragames.practice.manager.MatchManager
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
-import net.lyragames.practice.utils.CC
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+
 @CommandAlias("duel")
 object DuelCommand: BaseCommand() {
 

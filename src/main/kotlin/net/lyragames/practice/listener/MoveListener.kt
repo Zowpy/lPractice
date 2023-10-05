@@ -8,6 +8,7 @@ import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.MatchState
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
+import net.lyragames.practice.utils.PlayerUtil
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -22,6 +23,11 @@ object MoveListener: Listener {
             && event.from.z == event.to.z) return
 
         val player = event.player
+
+        if (PlayerUtil.denyMovement.contains(player.uniqueId)) {
+            event.isCancelled = true
+            return
+        }
 
         val profile = Profile.getByUUID(player.uniqueId)
 

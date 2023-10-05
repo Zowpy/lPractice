@@ -1,10 +1,5 @@
 package net.lyragames.practice.profile
 
-import com.boydti.fawe.logging.LoggingChangeSet.api
-import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.benmanes.caffeine.cache.LoadingCache
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
 import net.lyragames.practice.PracticePlugin
@@ -24,7 +19,6 @@ import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -36,7 +30,8 @@ import java.util.concurrent.TimeUnit
  * Project: Practice
  */
 
-class Profile(val uuid: UUID, var name: String?) {
+class Profile(val uuid: UUID, var name: String?)
+{
 
     var match: UUID? = null
     var matchObject: Match? = null
@@ -55,7 +50,7 @@ class Profile(val uuid: UUID, var name: String?) {
 
     var kitEditorData: KitEditorData? = KitEditorData()
     var settings: Settings = Settings()
-    
+
     val followers: MutableList<UUID> = mutableListOf()
 
     var silent = false
@@ -71,7 +66,8 @@ class Profile(val uuid: UUID, var name: String?) {
     val player: Player
         get() = Bukkit.getPlayer(uuid)
 
-    private fun toBson() : Document {
+    private fun toBson(): Document
+    {
         return Document("_id", uuid.toString())
             .append("name", name)
             .append("duelRequests", duelRequests.map { PracticePlugin.GSON.toJson(it) }.toMutableList())
@@ -82,100 +78,131 @@ class Profile(val uuid: UUID, var name: String?) {
             .append("silent", silent)
     }
 
-    fun save() {
+    fun save()
+    {
         CompletableFuture.runAsync {
-            PracticePlugin.instance.practiceMongo.profiles.updateOne(Filters.eq("uuid", uuid.toString()), Document("${'$'}set", toBson()), UpdateOptions().upsert(true))
+            PracticePlugin.instance.practiceMongo.profiles.updateOne(
+                Filters.eq("uuid", uuid.toString()),
+                Document("${'$'}set", toBson()),
+                UpdateOptions().upsert(true)
+            )
         }
     }
 
-    fun saveSync() {
-        PracticePlugin.instance.practiceMongo.profiles.updateOne(Filters.eq("uuid", uuid.toString()), Document("${'$'}set", toBson()), UpdateOptions().upsert(true))
+    fun saveSync()
+    {
+        PracticePlugin.instance.practiceMongo.profiles.updateOne(
+            Filters.eq("uuid", uuid.toString()),
+            Document("${'$'}set", toBson()),
+            UpdateOptions().upsert(true)
+        )
     }
 
-    fun load() {
+    fun load(): Profile
+    {
         val document = PracticePlugin.instance.practiceMongo.profiles.find(Filters.eq("uuid", uuid.toString())).first()
 
-        if (document == null) {
-            for (kit in Kit.kits) {
+        if (document == null)
+        {
+            for (kit in Kit.kits)
+            {
                 val kitStatistic = KitStatistic(kit.name)
                 kitStatistics.add(kitStatistic)
             }
             save()
-            return
+            return this
         }
 
         load(document)
+
+        return this
     }
 
-    fun getPartyInvite(uuid: UUID): PartyInvitation? {
+    fun getPartyInvite(uuid: UUID): PartyInvitation?
+    {
         return partyInvites.stream().filter { it.uuid == uuid && !it.isExpired() }
             .findFirst().orElse(null)
     }
 
-    fun getDuelRequest(uuid: UUID): DuelRequest? {
+    fun getDuelRequest(uuid: UUID): DuelRequest?
+    {
         return duelRequests.stream().filter { it.uuid == uuid && !it.isExpired() }
             .findFirst().orElse(null)
     }
 
-    fun getKitStatistic(kit: String): KitStatistic? {
+    fun getKitStatistic(kit: String): KitStatistic?
+    {
         return kitStatistics.stream().filter { kitStatistic -> kitStatistic.kit.equals(kit, true) }
             .findFirst().orElse(null)
     }
 
-    fun load(document: Document) {
+    fun load(document: Document)
+    {
         var save = false
 
-        if (name != null && !document.getString("name").equals(name)) {
+        if (name != null && !document.getString("name").equals(name))
+        {
             save = true
-        }else if (name == null) {
+        } else if (name == null)
+        {
             name = document.getString("name")
         }
 
-        duelRequests = document.getList("duelRequests", String::class.java).map { PracticePlugin.GSON.fromJson(it, DuelRequest::class.java) }.toMutableList()
-        partyInvites = document.getList("partyInvites", String::class.java).map { PracticePlugin.GSON.fromJson(it, PartyInvitation::class.java) }.toMutableList()
+        duelRequests = document.getList("duelRequests", String::class.java)
+            .map { PracticePlugin.GSON.fromJson(it, DuelRequest::class.java) }.toMutableList()
+        partyInvites = document.getList("partyInvites", String::class.java)
+            .map { PracticePlugin.GSON.fromJson(it, PartyInvitation::class.java) }.toMutableList()
 
-        if (duelRequests.removeIf { it.isExpired() } || partyInvites.removeIf { it.isExpired() }) {
+        if (duelRequests.removeIf { it.isExpired() } || partyInvites.removeIf { it.isExpired() })
+        {
             save = true
         }
 
-        kitStatistics = document.getList("kitsStatistics", String::class.java).map { PracticePlugin.GSON.fromJson(it, KitStatistic::class.java) }.toMutableList()
-        globalStatistic = PracticePlugin.GSON.fromJson(document.getString("globalStatistics"), GlobalStatistics::class.java)
+        kitStatistics = document.getList("kitsStatistics", String::class.java)
+            .map { PracticePlugin.GSON.fromJson(it, KitStatistic::class.java) }.toMutableList()
+        globalStatistic =
+            PracticePlugin.GSON.fromJson(document.getString("globalStatistics"), GlobalStatistics::class.java)
         settings = PracticePlugin.GSON.fromJson(document.getString("settings"), Settings::class.java)
 
         silent = document.getBoolean("silent")
 
-        for (kit in Kit.kits) {
+        for (kit in Kit.kits)
+        {
             var found = false
 
-            for (kitStatistic in kitStatistics) {
-                if (kitStatistic.kit.equals(kit.name, false)) {
+            for (kitStatistic in kitStatistics)
+            {
+                if (kitStatistic.kit.equals(kit.name, false))
+                {
                     found = true
                     break
                 }
             }
 
-            if (!found) {
+            if (!found)
+            {
                 val kitStatistic = KitStatistic(kit.name)
                 kitStatistics.add(kitStatistic)
                 save = true
             }
         }
 
-        if (save) {
+        if (save)
+        {
             save()
         }
     }
 
-    companion object {
+    companion object
+    {
         @JvmStatic
         val profiles: ConcurrentHashMap<UUID, Profile> = ConcurrentHashMap<UUID, Profile>()
 
-
-
         @JvmStatic
-        fun getByUUID(uuid: UUID): Profile? {
+        fun getByUUID(uuid: UUID): Profile?
+        {
             return profiles[uuid]//profiles.stream().filter { profile: Profile? -> profile?.uuid == uuid }
-                //.findFirst().orElse(null)
+            //.findFirst().orElse(null)
         }
     }
 }

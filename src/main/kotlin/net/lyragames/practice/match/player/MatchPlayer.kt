@@ -1,5 +1,6 @@
 package net.lyragames.practice.match.player
 
+import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.utils.countdown.ICountdown
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -16,7 +17,8 @@ import java.util.*
  * Project: Practice
  */
 
-open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location, var initialElo: Int) {
+open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location, var initialElo: Int)
+{
     var dead = false
     var respawning = false
     var offline = false
@@ -43,4 +45,11 @@ open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location, va
     var points = 0
     var bedLocations: MutableList<Location> = mutableListOf()
     var respawnCountdown: ICountdown? = null
+
+    val profile: Profile
+        get()
+        {
+            return Profile.getByUUID(uuid) ?: Profile(uuid, name).load()
+        }
+
 }

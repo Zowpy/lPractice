@@ -21,7 +21,8 @@ import org.bukkit.entity.Player
 import java.util.*
 import java.util.function.Consumer
 
-object MatchManager {
+object MatchManager
+{
 
     fun createMatch(
         kit: Kit,
@@ -30,10 +31,12 @@ object MatchManager {
         friendly: Boolean,
         firstPlayer: Player,
         secondPlayer: Player
-    ): Match {
+    ): Match
+    {
         arena.free = false
 
-        val match = when {
+        val match = when
+        {
             kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
             kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
             kit.kitData.bridge -> BridgeMatch(kit, arena, ranked)
@@ -54,24 +57,30 @@ object MatchManager {
         profile1?.matchObject = match
         profile1?.state = ProfileState.MATCH
 
-        if (arena is StandaloneBedWarsArena) {
+        if (arena is StandaloneBedWarsArena)
+        {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
-        } else if (arena is BedWarsArena) {
+        } else if (arena is BedWarsArena)
+        {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
-        } else if (arena is BridgeArena) {
+        } else if (arena is BridgeArena)
+        {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
-        } else if (arena is StandaloneBridgeArena) {
+        } else if (arena is StandaloneBridgeArena)
+        {
             match.addPlayer(firstPlayer, arena.blueSpawn!!)
             match.addPlayer(secondPlayer, arena.redSpawn!!)
-        } else {
+        } else
+        {
             match.addPlayer(firstPlayer, arena.l1!!)
             match.addPlayer(secondPlayer, arena.l2!!)
         }
 
-        if (!friendly) {
+        if (!friendly)
+        {
             generateMessage(firstPlayer, secondPlayer, ranked, arena, kit)
         }
 
@@ -82,7 +91,14 @@ object MatchManager {
         return match
     }
 
-    private fun generateMessage(firstPlayer: Player, secondPlayer: Player, ranked: Boolean, arena: Arena, kit: Kit) {
+    private fun generateMessage(
+        firstPlayer: Player,
+        secondPlayer: Player,
+        ranked: Boolean,
+        arena: Arena,
+        kit: Kit
+    )
+    {
         firstPlayer.sendMessage(" ")
         secondPlayer.sendMessage(" ")
 
@@ -97,7 +113,8 @@ object MatchManager {
         secondPlayer.sendMessage("${CC.PRIMARY} ⚫ Opponent: ${CC.RED}${firstPlayer.name}")
         secondPlayer.sendMessage("${CC.PRIMARY} ⚫ Ping: ${CC.RED}${PlayerUtil.getPing(firstPlayer)} ms")
 
-        if (ranked) {
+        if (ranked)
+        {
             val profile = Profile.getByUUID(firstPlayer.uniqueId)
             val profile1 = Profile.getByUUID(secondPlayer.uniqueId)
 
@@ -109,10 +126,18 @@ object MatchManager {
         secondPlayer.sendMessage(" ")
     }
 
-    fun createTeamMatch(kit: Kit, arena: Arena, ranked: Boolean, friendly: Boolean, players: MutableList<UUID>) {
+    fun createTeamMatch(
+        kit: Kit,
+        arena: Arena,
+        ranked: Boolean,
+        friendly: Boolean,
+        players: MutableList<UUID>
+    )
+    {
         arena.free = false
 
-        val match = when {
+        val match = when
+        {
             kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
             kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
             kit.kitData.bridge -> BridgeMatch(kit, arena, ranked)
@@ -122,7 +147,8 @@ object MatchManager {
 
         match.friendly = friendly
 
-        for (uuid in players) {
+        for (uuid in players)
+        {
             val partyPlayer = Bukkit.getPlayer(uuid) ?: continue
 
             val profile = Profile.getByUUID(uuid)
@@ -147,10 +173,12 @@ object MatchManager {
         friendly: Boolean,
         firstTeam: MutableList<UUID>,
         secondTeam: MutableList<UUID>
-    ) {
+    )
+    {
         arena.free = false
 
-        val match = when {
+        val match = when
+        {
             kit.kitData.mlgRush -> MLGRushMatch(kit, arena, ranked)
             kit.kitData.bedFights -> BedFightMatch(kit, arena, ranked)
             kit.kitData.bridge -> BridgeMatch(kit, arena, ranked)
@@ -163,7 +191,8 @@ object MatchManager {
         val team1 = match.teams[0]
         val team2 = match.teams[1]
 
-        for (uuid in firstTeam) {
+        for (uuid in firstTeam)
+        {
             val profileParty = Profile.getByUUID(uuid)
 
             profileParty!!.kitEditorData = null
@@ -174,7 +203,8 @@ object MatchManager {
             match.addPlayer(Bukkit.getPlayer(uuid), team1)
         }
 
-        for (uuid in secondTeam) {
+        for (uuid in secondTeam)
+        {
             val profileParty = Profile.getByUUID(uuid)
 
             profileParty!!.kitEditorData = null
@@ -185,11 +215,12 @@ object MatchManager {
             match.addPlayer(Bukkit.getPlayer(uuid), team2)
         }
 
-        Match.matches.put(match.uuid, match)
+        Match.matches[match.uuid] = match
         match.start()
     }
 
-    fun createReQueueItem(player: Player, match: Match) {
+    fun createReQueueItem(player: Player, match: Match)
+    {
 
         val item =
             CustomItemStack(player.uniqueId, ItemBuilder(Material.PAPER).name("${CC.SECONDARY}Play again!").build())
@@ -217,6 +248,8 @@ object MatchManager {
         }
 
         item.create()
-        player.inventory.addItem(item.itemStack)
+
+        player.itemInHand = item.itemStack
+        player.updateInventory()
     }
 }

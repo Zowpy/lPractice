@@ -13,15 +13,18 @@ import net.lyragames.practice.utils.EloUtil
  * Project: lPractice
  */
 
-object StatisticManager {
+object StatisticManager
+{
 
-    fun win(profile: Profile, loserProfile: Profile, kit: Kit, ranked: Boolean) {
+    fun win(profile: Profile, loserProfile: Profile, kit: Kit, ranked: Boolean)
+    {
         val globalStatistics = profile.globalStatistic
 
         globalStatistics.wins++
         globalStatistics.streak++
 
-        if (globalStatistics.streak >= globalStatistics.bestStreak) {
+        if (globalStatistics.streak >= globalStatistics.bestStreak)
+        {
             globalStatistics.bestStreak = globalStatistics.streak
         }
 
@@ -30,7 +33,8 @@ object StatisticManager {
         kitStatistic.wins++
 
         // ELO
-        if (ranked) {
+        if (ranked)
+        {
             kitStatistic.rankedWins++
 
             val loserKitStatistic = loserProfile.getKitStatistic(kit.name)
@@ -46,21 +50,24 @@ object StatisticManager {
 
             loserProfile.save()
 
-            if (kitStatistic.elo >= kitStatistic.peakELO) {
+            if (kitStatistic.elo >= kitStatistic.peakELO)
+            {
                 kitStatistic.peakELO = kitStatistic.elo
             }
         }
 
         kitStatistic.currentStreak++
 
-        if (kitStatistic.currentStreak >= kitStatistic.bestStreak) {
+        if (kitStatistic.currentStreak >= kitStatistic.bestStreak)
+        {
             kitStatistic.bestStreak = kitStatistic.currentStreak
         }
 
         profile.save()
     }
 
-    fun loss(profile: Profile, kit: Kit, ranked: Boolean) {
+    fun loss(profile: Profile, kit: Kit, ranked: Boolean)
+    {
         val globalStatistics = profile.globalStatistic
 
         globalStatistics.losses++
@@ -71,7 +78,8 @@ object StatisticManager {
         kitStatistic.losses++
         kitStatistic.currentStreak = 0
 
-        if (ranked) {
+        if (ranked)
+        {
             kitStatistic.rankedLosses++
         }
 
