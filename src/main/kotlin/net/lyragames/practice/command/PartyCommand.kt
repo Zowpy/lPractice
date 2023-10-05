@@ -19,7 +19,7 @@ import org.bukkit.entity.Player
 object PartyCommand: BaseCommand() {
 
     @HelpCommand
-    fun help(player: CommandSender, help: CommandHelp) {
+    fun help(help: CommandHelp) {
         help.showHelp()
         /*
         player.sendMessage("${CC.PRIMARY}Party Commands:")
@@ -35,8 +35,8 @@ object PartyCommand: BaseCommand() {
     }
 
     @Subcommand("create")
-    fun create(player: Player) {
-        val profile = Profile.getByUUID(player.uniqueId)
+    fun create(player: CommandSender) {
+        val profile = Profile.getByUUID((player as Player).uniqueId)
 
         if (profile?.party != null) {
             player.sendMessage(Locale.ALREADY_IN_PARTY.getMessage())
@@ -55,8 +55,8 @@ object PartyCommand: BaseCommand() {
     }
 
     @Subcommand("disband")
-    fun disband(player: Player) {
-        val profile = Profile.getByUUID(player.uniqueId)
+    fun disband(player: CommandSender) {
+        val profile = Profile.getByUUID((player as Player).uniqueId)
 
         if (profile?.party == null) {
             player.sendMessage(Locale.NOT_IN_A_PARTY.getMessage())
@@ -76,8 +76,8 @@ object PartyCommand: BaseCommand() {
     }
 
     @Subcommand("leave")
-    fun leave(player: Player) {
-        val profile = Profile.getByUUID(player.uniqueId)
+    fun leave(player: CommandSender) {
+        val profile = Profile.getByUUID((player as Player).uniqueId)
 
         if (profile?.party == null) {
             player.sendMessage(Locale.NOT_IN_A_PARTY.getMessage())
@@ -104,8 +104,8 @@ object PartyCommand: BaseCommand() {
     }
 
     @Subcommand("invite")
-    fun invite(player: Player, @Single @Name("target") target: Player) {
-        if (player.uniqueId.equals(target.uniqueId)) {
+    fun invite(player: CommandSender, @Single @Name("target") target: Player) {
+        if ((player as Player).uniqueId.equals(target.uniqueId)) {
             player.sendMessage(Locale.CANT_INVITE_YOURSELF.getMessage())
             return
         }
@@ -146,9 +146,9 @@ object PartyCommand: BaseCommand() {
     }
 
     @Subcommand("join")
-    fun join(player: Player,@Single @Name("player") target: Player) {
+    fun join(player: CommandSender,@Single @Name("player") target: Player) {
 
-        if (player.uniqueId == target.uniqueId) {
+        if ((player as Player).uniqueId == target.uniqueId) {
             player.sendMessage(Locale.JOIN_OWN_PARTY.getMessage())
             return
         }
