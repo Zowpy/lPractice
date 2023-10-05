@@ -1,6 +1,7 @@
 package net.lyragames.practice.command
 
 import co.aikar.commands.BaseCommand
+import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Name
 import co.aikar.commands.annotation.Single
 import co.aikar.commands.annotation.Subcommand
@@ -16,7 +17,7 @@ import java.util.*
 
 object RateMapCommand: BaseCommand() {
 
-    @Subcommand("ratemap")
+    @CommandAlias("ratemap")
     fun rate(player: CommandSender, @Single @Name("arena") arena: Arena, @Single @Name("star") int: Int) {
         val profile = Profile.getByUUID((player as Player).uniqueId)
 

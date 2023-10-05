@@ -1,6 +1,7 @@
 package net.lyragames.practice.command
 
 import co.aikar.commands.BaseCommand
+import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Subcommand
 
 import net.lyragames.practice.Locale
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player
 
 object SpawnCommand: BaseCommand() {
 
-    @Subcommand("spawn")
+    @CommandAlias("spawn")
     fun spawn(player: CommandSender) {
         val profile = Profile.getByUUID((player as Player).uniqueId)
 
