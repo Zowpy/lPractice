@@ -17,7 +17,9 @@ object MoveListener: Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onMove(event: PlayerMoveEvent) {
-        if (event.to == event.from) return
+        if (event.from.x == event.to.x
+            && event.from.y == event.to.y
+            && event.from.z == event.to.z) return
 
         val player = event.player
 

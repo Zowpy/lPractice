@@ -233,6 +233,14 @@
             <id>nms-repo</id>
             <url>https://repo.codemc.io/repository/nms/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -259,11 +267,9 @@
         </dependency>
 
         <dependency>
-            <groupId>me.zowpy</groupId>
-            <artifactId>command</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/CommandAPI.jar</systemPath>
+            <groupId>com.github.RefineDevelopment.CommandAPI-ACF</groupId>
+            <artifactId>acf-paper</artifactId>
+            <version>master-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -355,5 +361,21 @@
             <version>4.7.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>LATEST</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.8</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 </project>

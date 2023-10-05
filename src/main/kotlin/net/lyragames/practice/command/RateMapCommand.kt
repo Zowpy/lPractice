@@ -1,22 +1,24 @@
 package net.lyragames.practice.command
 
-import me.zowpy.command.annotation.Command
-import me.zowpy.command.annotation.Named
-import me.zowpy.command.annotation.Sender
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.annotation.Name
+import co.aikar.commands.annotation.Single
+import co.aikar.commands.annotation.Subcommand
 import net.lyragames.practice.Locale
 import net.lyragames.practice.arena.Arena
 import net.lyragames.practice.arena.rating.ArenaRating
 import net.lyragames.practice.manager.ArenaRatingManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.utils.CC
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
 
-object RateMapCommand {
+object RateMapCommand: BaseCommand() {
 
-    @Command(name = "ratemap")
-    fun rate(@Sender player: Player, @Named("arena") arena: Arena, @Named("stars") int: Int) {
-        val profile = Profile.getByUUID(player.uniqueId)
+    @Subcommand("ratemap")
+    fun rate(player: CommandSender, @Single @Name("arena") arena: Arena, @Single @Name("star") int: Int) {
+        val profile = Profile.getByUUID((player as Player).uniqueId)
 
         if (!profile?.settings?.mapRating!!) {
             player.sendMessage(Locale.DISABLED_MAP_RATING.getMessage())

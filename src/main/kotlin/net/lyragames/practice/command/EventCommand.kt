@@ -1,8 +1,10 @@
 package net.lyragames.practice.command
 
-import me.zowpy.command.annotation.Command
-import me.zowpy.command.annotation.Permission
-import me.zowpy.command.annotation.Sender
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.HelpCommand
+import co.aikar.commands.annotation.Subcommand
 import net.lyragames.practice.Locale
 import net.lyragames.practice.event.EventState
 import net.lyragames.practice.event.menu.EventHostMenu
@@ -10,11 +12,11 @@ import net.lyragames.practice.manager.EventManager
 import net.lyragames.practice.utils.CC
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+@CommandAlias("event")
 
-object EventCommand {
-
-    @Command(name = "event")
-    fun help(@Sender player: CommandSender) {
+object EventCommand: BaseCommand() {
+    @HelpCommand
+    fun help(player: CommandSender) {
         player.sendMessage("${CC.SECONDARY}Event Help")
         player.sendMessage(CC.CHAT_BAR)
         player.sendMessage("${CC.PRIMARY}/event join")
@@ -23,13 +25,13 @@ object EventCommand {
         player.sendMessage(CC.CHAT_BAR)
     }
 
-    @Command(name = "event host")
-    fun host(@Sender player: Player) {
-        EventHostMenu().openMenu(player)
+    @Subcommand("host")
+    fun host(player: CommandSender) {
+        EventHostMenu().openMenu(player as Player)
     }
 
-    @Command(name = "event join")
-    fun join(@Sender player: Player) {
+    @Subcommand("join")
+    fun join(player: CommandSender) {
         val event = EventManager.event
 
         if (event == null) {
@@ -42,7 +44,7 @@ object EventCommand {
             return
         }
 
-        if (event.getPlayer(player.uniqueId) != null) {
+        if (event.getPlayer((player as Player).uniqueId) != null) {
             player.sendMessage(Locale.ALREADY_IN_EVENT.getMessage())
             return
         }
@@ -55,9 +57,9 @@ object EventCommand {
         event.addPlayer(player)
     }
 
-    @Permission("lpractice.command.event.forcestart")
-    @Command(name = "event start", aliases = ["event forcestart", "event fs"])
-    fun forcestart(@Sender player: Player) {
+    @CommandPermission("lpractice.command.event.forcestart")
+    @Subcommand("start|forcestart|fs")
+    fun forcestart(player: CommandSender) {
 
         if (EventManager.event?.players?.size!! < 2) {
             player.sendMessage(Locale.NOT_ENOUGH_PLAYER.getMessage())

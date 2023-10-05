@@ -1,14 +1,16 @@
 package net.lyragames.practice.command
 
-import me.zowpy.command.annotation.Command
-import me.zowpy.command.annotation.Sender
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.annotation.Subcommand
+
 import net.lyragames.practice.profile.settings.SettingsMenu
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-object SettingsCommand {
+object SettingsCommand: BaseCommand() {
 
-    @Command(name = "settings", aliases = ["lpractice:settings"])
-    fun settings(@Sender player: Player) {
-        SettingsMenu().openMenu(player)
+    @Subcommand("settings|lpractice:settings")
+    fun settings(player: CommandSender) {
+        SettingsMenu().openMenu(player as Player)
     }
 }

@@ -1,8 +1,14 @@
 package net.lyragames.practice.command
 
-import me.zowpy.command.annotation.Command
-import me.zowpy.command.annotation.Named
-import me.zowpy.command.annotation.Sender
+
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.annotation.Async
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Flags
+import co.aikar.commands.annotation.Name
+import co.aikar.commands.annotation.Single
+import co.aikar.commands.annotation.Subcommand
 import net.lyragames.practice.Locale
 import net.lyragames.practice.duel.procedure.DuelProcedure
 import net.lyragames.practice.duel.procedure.menu.DuelSelectKitMenu
@@ -11,15 +17,17 @@ import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.utils.CC
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+@CommandAlias("duel")
+object DuelCommand: BaseCommand() {
 
-object DuelCommand {
-
-    @Command(name = "duel")
-    fun duel(@Sender player: Player, @Named("player") target: Player) {
+    @Default
+    @Async
+    fun duel(sender: CommandSender, @Single @Name("other") target: Player) {
+        val player = sender as Player
         if (player.uniqueId == target.uniqueId) {
             player.sendMessage(Locale.CANT_DUEL_YOURSELF.getMessage())
-            player.sendMessage("self.")
             return
         }
 
@@ -46,9 +54,10 @@ object DuelCommand {
         DuelSelectKitMenu().openMenu(player)
     }
 
-    @Command(name = "duel accept")
-    fun accept(@Sender player: Player, @Named("player") target: Player) {
-        val profile = Profile.getByUUID(player.uniqueId)
+    @Subcommand("accept")
+    @Async
+    fun accept(player: CommandSender, @Single @Name("player") target: Player) {
+        val profile = Profile.getByUUID((player as Player).uniqueId)
         val duelRequest = profile?.getDuelRequest(target.uniqueId)
 
         if (duelRequest == null) {
@@ -64,14 +73,14 @@ object DuelCommand {
             arena,
             false,
             true,
-            player,
+            player as Player,
             target
         )
     }
 
-    @Command(name = "partyduel accept")
-    fun partyaccept(@Sender player: Player, @Named("player") target: Player) {
-        val profile = Profile.getByUUID(player.uniqueId)
+    @CommandAlias("party accept")
+    fun partyaccept( player: CommandSender,@Single @Name("player") target: Player) {
+        val profile = Profile.getByUUID((player as Player).uniqueId)
         val profile1 = Profile.getByUUID(target.uniqueId)
 
         if (profile?.state != ProfileState.LOBBY || profile1?.state != ProfileState.LOBBY) {

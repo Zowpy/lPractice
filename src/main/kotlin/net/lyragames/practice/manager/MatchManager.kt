@@ -75,7 +75,7 @@ object MatchManager {
             generateMessage(firstPlayer, secondPlayer, ranked, arena, kit)
         }
 
-        Match.matches.add(match)
+        Match.matches[match.uuid] = match
 
         match.start()
 
@@ -135,7 +135,7 @@ object MatchManager {
             match.addPlayer(partyPlayer, partyPlayer.location)
         }
 
-        Match.matches.add(match)
+        Match.matches[match.uuid] = match
 
         match.start()
     }
@@ -185,7 +185,7 @@ object MatchManager {
             match.addPlayer(Bukkit.getPlayer(uuid), team2)
         }
 
-        Match.matches.add(match)
+        Match.matches.put(match.uuid, match)
         match.start()
     }
 

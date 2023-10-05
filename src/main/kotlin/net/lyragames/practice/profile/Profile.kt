@@ -1,5 +1,10 @@
 package net.lyragames.practice.profile
 
+import com.boydti.fawe.logging.LoggingChangeSet.api
+import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.benmanes.caffeine.cache.LoadingCache
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
 import net.lyragames.practice.PracticePlugin
@@ -18,6 +23,9 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
+
 
 /**
  * This Project is property of Zowpy © 2021
@@ -160,12 +168,14 @@ class Profile(val uuid: UUID, var name: String?) {
 
     companion object {
         @JvmStatic
-        val profiles: MutableList<Profile?> = mutableListOf()
+        val profiles: ConcurrentHashMap<UUID, Profile> = ConcurrentHashMap<UUID, Profile>()
+
+
 
         @JvmStatic
         fun getByUUID(uuid: UUID): Profile? {
-            return profiles.stream().filter { profile: Profile? -> profile?.uuid == uuid }
-                .findFirst().orElse(null)
+            return profiles[uuid]//profiles.stream().filter { profile: Profile? -> profile?.uuid == uuid }
+                //.findFirst().orElse(null)
         }
     }
 }

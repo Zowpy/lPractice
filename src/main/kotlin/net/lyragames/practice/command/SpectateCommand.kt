@@ -1,21 +1,24 @@
 package net.lyragames.practice.command
 
-import me.zowpy.command.annotation.Command
-import me.zowpy.command.annotation.Named
-import me.zowpy.command.annotation.Sender
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.Name
+import co.aikar.commands.annotation.Single
+import co.aikar.commands.annotation.Subcommand
 import net.lyragames.practice.Locale
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.utils.CC
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-object SpectateCommand {
+object SpectateCommand: BaseCommand() {
 
-    @Command(name = "spectate", aliases = ["s", "spec"])
-    fun spectate(@Sender player: Player, @Named("player") target: Player) {
+    @CommandAlias("spectate|s|spec")
+    fun spectate(player: CommandSender, @Single @Name("player") target: Player) {
         val targetProfile = Profile.getByUUID(target.uniqueId)
-        val profile = Profile.getByUUID(player.uniqueId)
+        val profile = Profile.getByUUID((player as Player).uniqueId)
 
         if (targetProfile?.state != ProfileState.MATCH) {
             player.sendMessage(Locale.NOT_IN_A_MATCH.getMessage())

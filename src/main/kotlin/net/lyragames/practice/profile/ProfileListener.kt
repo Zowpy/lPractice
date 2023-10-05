@@ -32,10 +32,16 @@ object ProfileListener: Listener {
     @EventHandler
     fun onAsyncLogin(event: AsyncPlayerPreLoginEvent) {
         try {
+            val profile = Profile(event.uniqueId, event.name);
+            profile.load()
+            Profile.profiles[event.uniqueId] = profile;
+            /*
             val profile = Profile(event.uniqueId, event.name)
             profile.load()
             Profile.profiles.add(profile)
 
+
+             */
 
         } catch (e: Exception) {
             event.loginResult = AsyncPlayerPreLoginEvent.Result.KICK_OTHER
@@ -121,6 +127,6 @@ object ProfileListener: Listener {
         }
 
         CustomItemStack.customItemStacks.removeIf { it.uuid == player.uniqueId }
-        Profile.profiles.remove(profile)
+        Profile.profiles.remove(player.uniqueId)
     }
 }

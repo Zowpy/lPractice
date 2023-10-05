@@ -13,7 +13,7 @@ object ArrowCooldownTask: BukkitRunnable() {
     }
 
     override fun run() {
-        for (profile in Profile.profiles) {
+        for (profile in Profile.profiles.elements()) {
             if (profile?.state == ProfileState.MATCH && profile.match != null) {
 
                 val match = Match.getByUUID(profile.match!!)

@@ -1,16 +1,16 @@
 package net.lyragames.practice
 
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.thatkawaiisam.assemble.Assemble
-import me.zowpy.command.CommandAPI
 import me.zowpy.menu.MenuAPI
 import net.lyragames.practice.adapter.ScoreboardAdapter
 import net.lyragames.practice.api.PracticeAPI
 import net.lyragames.practice.arena.Arena
-import net.lyragames.practice.arena.ArenaProvider
 import net.lyragames.practice.arena.type.ArenaType
-import net.lyragames.practice.arena.type.ArenaTypeProvider
 import net.lyragames.practice.command.*
 import net.lyragames.practice.command.admin.*
 import net.lyragames.practice.constants.Constants
@@ -20,12 +20,9 @@ import net.lyragames.practice.duel.DuelRequest
 import net.lyragames.practice.duel.gson.DuelRequestGsonAdapter
 import net.lyragames.practice.event.listener.EventListener
 import net.lyragames.practice.event.map.EventMap
-import net.lyragames.practice.event.map.EventMapProvider
 import net.lyragames.practice.event.map.type.EventMapType
-import net.lyragames.practice.event.map.type.EventMapTypeProvider
 import net.lyragames.practice.kit.EditedKit
 import net.lyragames.practice.kit.Kit
-import net.lyragames.practice.kit.KitProvider
 import net.lyragames.practice.kit.editor.listener.KitEditorListener
 import net.lyragames.practice.kit.serializer.EditKitSerializer
 import net.lyragames.practice.listener.MoveListener
@@ -41,7 +38,9 @@ import net.lyragames.practice.task.*
 import net.lyragames.practice.utils.ConfigFile
 import net.lyragames.practice.utils.InventoryUtil
 import net.lyragames.practice.utils.item.ItemListener
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.command.defaults.WhitelistCommand
 import org.bukkit.entity.ExperienceOrb
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
@@ -59,6 +58,8 @@ class PracticePlugin : JavaPlugin() {
     lateinit var ffaFile: ConfigFile
     lateinit var eventsFile: ConfigFile
     lateinit var languageFile: ConfigFile
+
+    lateinit var commandAPI: PaperCommandManager
 
     lateinit var API: PracticeAPI
 
@@ -103,7 +104,66 @@ class PracticePlugin : JavaPlugin() {
 
         MenuAPI(this)
 
+        commandAPI = PaperCommandManager(this)
 
+        commandAPI.commandContexts.registerContext(Player::class.java) {
+            val source: String = it.popFirstArg()
+            if (it.getIssuer().isPlayer() && (source.equals("self", ignoreCase = true) || source == "")) {
+                return@registerContext it.getPlayer()
+            }
+            if (!it.getIssuer().isPlayer() && (source.equals("self", ignoreCase = true) || source == "")) {
+                throw InvalidCommandArgument("You cannot do this!")
+            }
+
+            return@registerContext Bukkit.getPlayer(source)
+                ?: throw InvalidCommandArgument("That player is offline!")
+        }
+
+        commandAPI.commandContexts.registerContext(Arena::class.java) {
+            val source: String = it.popFirstArg()
+            return@registerContext source.let { Arena.getByName(source) } ?: throw InvalidCommandArgument(Locale.CANT_FIND_ARENA.getMessage())
+
+        }
+
+        commandAPI.commandContexts.registerContext(Kit::class.java) {
+            val source: String = it.popFirstArg()
+            return@registerContext source.let { Kit.getByName(source) } ?: throw InvalidCommandArgument("Cant find Kit!")
+
+        }
+
+
+        commandAPI.commandContexts.registerContext(EventMap::class.java) {
+            val source: String = it.popFirstArg()
+            return@registerContext source.let { EventMapManager.getByName(source) } ?: throw InvalidCommandArgument("Cant find event map!")
+
+        }
+
+        commandAPI.commandContexts.registerContext(EventMapType::class.java) {
+            val source: String = it.popFirstArg()
+            return@registerContext source.let { EventMapType.valueOf(source) }
+
+        }
+
+
+        commandAPI.commandContexts.registerContext(ArenaType::class.java) {
+            val source: String = it.popFirstArg()
+            return@registerContext source.let { ArenaType.valueOf(source) }
+
+        }
+
+
+
+        arrayOf(DuelCommand, EventCommand, LeaveCommand, MatchSnapshotCommand, PartyCommand, SettingsCommand, SpawnCommand, SpectateCommand, ArenaCommand, ArenaRatingCommand, BuildCommand, EventMapCommand, FFACommand, FollowCommand, KitCommand, SetSpawnCommand).forEach { commandAPI.registerCommand(
+            it as BaseCommand?
+        ) }
+
+        commandAPI.enableUnstableAPI("help")
+
+
+
+
+
+        /*
         CommandAPI(this)
             .bind(Arena::class.java, ArenaProvider)
             .bind(Kit::class.java, KitProvider)
@@ -129,6 +189,8 @@ class PracticePlugin : JavaPlugin() {
             .register(SpawnCommand)
             .register(PartyCommand)
             .endRegister()
+
+         */
 
         Constants.load()
 
@@ -164,9 +226,11 @@ class PracticePlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        for (match in Match.matches) {
+        for (match in Match.matches.elements()) {
             match!!.reset()
         }
+        commandAPI.unregisterCommands()
+
     }
 
     private fun loadMongo() {

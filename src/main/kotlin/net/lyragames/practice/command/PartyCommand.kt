@@ -1,8 +1,8 @@
 package net.lyragames.practice.command
 
-import me.zowpy.command.annotation.Command
-import me.zowpy.command.annotation.Named
-import me.zowpy.command.annotation.Sender
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.CommandHelp
+import co.aikar.commands.annotation.*
 import net.lyragames.practice.Locale
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.party.Party
@@ -13,12 +13,15 @@ import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.utils.CC
 import net.lyragames.practice.utils.TextBuilder
 import org.bukkit.Bukkit
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+@CommandAlias("party")
+object PartyCommand: BaseCommand() {
 
-object PartyCommand {
-
-    @Command(name = "party", aliases = ["p"])
-    fun help(@Sender player: Player) {
+    @HelpCommand
+    fun help(player: CommandSender, help: CommandHelp) {
+        help.showHelp()
+        /*
         player.sendMessage("${CC.PRIMARY}Party Commands:")
         player.sendMessage(CC.translate("&7&m---------------------"))
         player.sendMessage("${CC.SECONDARY}/party create")
@@ -27,10 +30,12 @@ object PartyCommand {
         player.sendMessage("${CC.SECONDARY}/party join <player>")
         player.sendMessage("${CC.SECONDARY}/party invite <player>")
         player.sendMessage(CC.translate("&7&m---------------------"))
+
+         */
     }
 
-    @Command(name = "party create", aliases = ["p create"])
-    fun create(@Sender player: Player) {
+    @Subcommand("party create")
+    fun create(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.party != null) {
@@ -49,8 +54,8 @@ object PartyCommand {
         player.sendMessage(Locale.CREATED_PARTY.getMessage())
     }
 
-    @Command(name = "party disband", aliases = ["p disband"])
-    fun disband(@Sender player: Player) {
+    @Subcommand("disband")
+    fun disband(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.party == null) {
@@ -70,8 +75,8 @@ object PartyCommand {
         PartyManager.parties.remove(party)
     }
 
-    @Command(name = "party leave", aliases = ["p leave"])
-    fun leave(@Sender player: Player) {
+    @Subcommand("party")
+    fun leave(player: Player) {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (profile?.party == null) {
@@ -98,8 +103,8 @@ object PartyCommand {
         }
     }
 
-    @Command(name = "party invite", aliases = ["p invite"])
-    fun invite(@Sender player: Player, @Named("player") target: Player) {
+    @Subcommand("invite")
+    fun invite(player: Player, @Single @Name("target") target: Player) {
         if (player.uniqueId.equals(target.uniqueId)) {
             player.sendMessage(Locale.CANT_INVITE_YOURSELF.getMessage())
             return
@@ -140,8 +145,8 @@ object PartyCommand {
         player.sendMessage(Locale.PARTY_INVITED_MESSAGE.getMessage())
     }
 
-    @Command(name = "party join", aliases = ["p join"])
-    fun join(@Sender player: Player, @Named("player") target: Player) {
+    @Subcommand("join")
+    fun join(player: Player,@Single @Name("player") target: Player) {
 
         if (player.uniqueId == target.uniqueId) {
             player.sendMessage(Locale.JOIN_OWN_PARTY.getMessage())

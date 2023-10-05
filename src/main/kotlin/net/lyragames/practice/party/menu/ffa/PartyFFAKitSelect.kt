@@ -71,7 +71,7 @@ class PartyFFAKitSelect(private val party: Party): Menu() {
                             match.addPlayer(partyPlayer, arena.l1!!)
                         }
 
-                        Match.matches.add(match)
+                        Match.matches[match.uuid] = match
 
                         player.closeInventory()
                         match.start()

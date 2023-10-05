@@ -36,6 +36,7 @@ import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Collectors
 
 
@@ -120,9 +121,9 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         profile?.spectatingMatch = uuid
 
         if (!profile?.silent!!) {
-            sendMessage("&a${player.name}&e started spectating!")
+            sendMessage(Locale.STARTED_SPECTATING.getMessage().replace("<player>", profile.name!!))
         } else {
-            sendMessage("&7[S] &a${player.name}&e started spectating!", "lpractice.silent")
+            sendMessage(Locale.STARTED_SPECTATING_SILENT.getMessage().replace("<player>", profile.name!!), "lpractice.silent")
         }
 
         players.forEach {
@@ -144,9 +145,9 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         val profile = Profile.getByUUID(player.uniqueId)
 
         if (!profile?.silent!!) {
-            sendMessage("&a${player.name}&e stopped spectating!")
+            sendMessage(Locale.STOPPED_SPECTATING.getMessage().replace("<player>", profile.name!!))
         } else {
-            sendMessage("&7[S] &a${player.name}&e stopped spectating!", "lpractice.silent")
+            sendMessage(Locale.STOPPED_SPECTATING_SILENT.getMessage().replace("<player>", profile.name!!), "lpractice.silent")
         }
 
         removeSpec(player)
@@ -292,13 +293,21 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
         sendTitleBar(winners)
         endMessage(winners, losers)
 
-        for (matchPlayer in players)
-        {
-            if (matchPlayer.offline) continue
+        if(ranked) {
+            for (matchPlayer in players) {
+                if (matchPlayer.offline) continue
 
-            val player = matchPlayer.player
+                val player = matchPlayer.player
 
-            player.sendMessage("${CC.PRIMARY}ELO Updates: ${CC.GREEN}${getCombinedNames(winners, " (+<elo>)")}${CC.GRAY}, ${CC.RED}${getCombinedNames(losers, " (-<elo>)")}")
+                player.sendMessage(
+                    "${CC.PRIMARY}ELO Updates: ${CC.GREEN}${
+                        getCombinedNames(
+                            winners,
+                            " (+<elo>)"
+                        )
+                    }${CC.GRAY}, ${CC.RED}${getCombinedNames(losers, " (-<elo>)")}"
+                )
+            }
         }
 
         Bukkit.getScheduler().runTaskLater(PracticePlugin.instance, {
@@ -351,7 +360,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             snapshots.clear()
 
             reset()
-            matches.remove(this)
+            matches.remove(this.uuid)
             arena.free = true
         }, 60L)
     }
@@ -520,12 +529,11 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
 
     companion object {
         @JvmStatic
-        val matches: MutableList<Match?> = mutableListOf()
+        val matches: ConcurrentHashMap<UUID, Match> = ConcurrentHashMap<UUID, Match>()
 
         @JvmStatic
         fun getByUUID(uuid: UUID): Match? {
-            return matches.stream().filter { match: Match? -> match?.uuid == uuid }
-                .findFirst().orElse(null)
+            return matches[uuid]
         }
 
         @JvmStatic
@@ -533,7 +541,7 @@ open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean) {
             var count = 0
 
             for (match in matches) {
-                count += match!!.players.size
+                count += match.value.players.size
             }
 
             return count

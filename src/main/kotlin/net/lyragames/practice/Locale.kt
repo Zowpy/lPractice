@@ -48,6 +48,13 @@ enum class Locale(private val path: String) {
 
     COULDNT_FIND_INVENTORY("inventory.couldnt-find"),
 
+    STOPPED_SPECTATING("spectate.stopped-spectating"),
+
+    STOPPED_SPECTATING_SILENT("spectate.stopped-spectating-silent"),
+
+    STARTED_SPECTATING("spectate.started-spectating"),
+    STARTED_SPECTATING_SILENT("spectate.started-spectating-silent"),
+
     NOT_IN_A_MATCH("spectate.not-in-a-match"),
     SPECTATING_DISABLED("spectate.spectating-disabled"),
 

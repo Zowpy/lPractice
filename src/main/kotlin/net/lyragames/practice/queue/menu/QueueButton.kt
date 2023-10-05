@@ -27,9 +27,12 @@ import org.bukkit.inventory.ItemStack
 class QueueButton(private val queue: Queue, private val ranked: Boolean): Button() {
 
     override fun getButtonItem(player: Player?): ItemStack {
-        val playing = Match.matches.stream().filter {
+        val playing = Match.matches.values.stream().filter {
             it!!.kit.name.equals(queue.kit.name, false) && it.ranked == ranked
         }.count() * 2
+      //  val playing = Match.matches.keys()..filter {
+        //    it!!.kit.name.equals(queue.kit.name, false) && it.ranked == ranked
+        //}.count() * 2
 
         return ItemBuilder(queue.kit.displayItem.clone())
             .amount(if (playing <= 0) 1 else playing.toInt())

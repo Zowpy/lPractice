@@ -1,11 +1,15 @@
 package net.lyragames.practice.command.admin
 
-import me.zowpy.command.annotation.Command
-import me.zowpy.command.annotation.Sender
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.Name
+
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.utils.CC
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import co.aikar.commands.annotation.Single as Single
 
 
 /**
@@ -17,17 +21,17 @@ import org.bukkit.entity.Player
  * Project: lPractice
  */
 
-object FollowCommand {
+object FollowCommand: BaseCommand() {
 
-    @Command(name = "follow")
-    fun follow(@Sender player: Player, target: Player) {
+    @CommandAlias("follow")
+    fun follow(player: CommandSender, @Single @Name("target") target: Player) {
         if (true) {
             player.sendMessage("${CC.RED}This command is currently disabled!")
             return
         }
 
         val profile = Profile.getByUUID(target.uniqueId)
-        val profile1 = Profile.getByUUID(player.uniqueId)
+        val profile1 = Profile.getByUUID((player as Player).uniqueId)
 
         if (profile1?.state != ProfileState.LOBBY) return
 

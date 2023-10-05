@@ -13,7 +13,7 @@ object EnderPearlCooldownTask: BukkitRunnable() {
     }
 
     override fun run() {
-        for (profile in Profile.profiles) {
+        for (profile in Profile.profiles.elements()) {
             if (profile?.state == ProfileState.MATCH || profile?.state == ProfileState.EVENT || profile?.state == ProfileState.FFA) {
                 if (profile.enderPearlCooldown != null && !profile.enderPearlCooldown?.hasExpired()!!) {
                     val player = profile.player
