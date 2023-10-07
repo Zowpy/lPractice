@@ -13,7 +13,6 @@ import net.lyragames.practice.utils.CC
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 @CommandAlias("event")
-
 object EventCommand: BaseCommand() {
     @HelpCommand
     fun help(player: CommandSender) {

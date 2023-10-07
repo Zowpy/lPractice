@@ -4,20 +4,21 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
 import co.aikar.commands.annotation.*
 import net.lyragames.practice.Locale
+import net.lyragames.practice.manager.MatchManager
 import net.lyragames.practice.manager.PartyManager
 import net.lyragames.practice.party.Party
 import net.lyragames.practice.party.PartyType
 import net.lyragames.practice.party.invitation.PartyInvitation
 import net.lyragames.practice.profile.Profile
+import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.profile.hotbar.Hotbar
 import net.lyragames.practice.utils.TextBuilder
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-@CommandAlias("party")
 @CommandPermission("practice.command.party")
-
+@CommandAlias("party|p")
 object PartyCommand: BaseCommand() {
 
     @HelpCommand
@@ -203,5 +204,56 @@ object PartyCommand: BaseCommand() {
         Hotbar.giveHotbar(profile!!)
 
         party.sendMessage(Locale.JOIN_PARTY_BROADCAST.getMessage())
+    }
+
+    @Subcommand("party accept")
+    @Async
+    fun partyaccept( player: CommandSender,@Single @Name("player") target: Player) {
+        val profile = Profile.getByUUID((player as Player).uniqueId)
+        val profile1 = Profile.getByUUID(target.uniqueId)
+
+        if (profile?.state != ProfileState.LOBBY || profile1?.state != ProfileState.LOBBY) {
+            player.sendMessage(Locale.CANT_DO_THIS.getMessage())
+            return
+        }
+
+        if (profile.party == null) {
+            player.sendMessage(Locale.NOT_IN_A_PARTY.getNormalMessage())
+            return
+        }
+
+        if (profile1.party == null) {
+            player.sendMessage(Locale.OTHER_NOT_IN_A_PARTY.getMessage())
+            return
+        }
+
+        if (profile.party == profile1.party) {
+            player.sendMessage(Locale.JOINED_PARTY.getMessage())
+            return
+        }
+
+        val party = PartyManager.getByUUID(profile.party!!)
+        val party1 = PartyManager.getByUUID(profile1.party!!)
+
+        if (party?.leader != player.uniqueId) {
+            player.sendMessage(Locale.CANT_ACCEPT_PARTY_DUEL.getMessage())
+            return
+        }
+
+        val duelRequest = party?.getDuelRequest(profile1.uuid)
+
+        if (duelRequest == null) {
+            player.sendMessage(Locale.INVALID_DUEL.getMessage())
+            return
+        }
+
+        MatchManager.createTeamMatch(
+            duelRequest.kit!!,
+            duelRequest.arena!!,
+            false,
+            true,
+            party.players,
+            party1!!.players
+        )
     }
 }
