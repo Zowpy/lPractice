@@ -1,6 +1,5 @@
 package net.lyragames.practice
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import com.google.gson.Gson
@@ -47,7 +46,8 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
 
-class PracticePlugin : JavaPlugin() {
+class PracticePlugin : JavaPlugin()
+{
 
     lateinit var settingsFile: ConfigFile
     lateinit var tablistFile: ConfigFile
@@ -65,7 +65,8 @@ class PracticePlugin : JavaPlugin() {
     lateinit var practiceMongo: Mongo
 
     //private lateinit var ziggurat: Ziggurat
-    override fun onEnable() {
+    override fun onEnable()
+    {
         instance = this
 
         settingsFile = ConfigFile(this, "settings")
@@ -107,10 +108,12 @@ class PracticePlugin : JavaPlugin() {
 
         commandAPI.commandContexts.registerContext(Player::class.java) {
             val source: String = it.popFirstArg()
-            if (it.getIssuer().isPlayer() && (source.equals("self", ignoreCase = true) || source == "")) {
+            if (it.getIssuer().isPlayer() && (source.equals("self", ignoreCase = true) || source == ""))
+            {
                 return@registerContext it.getPlayer()
             }
-            if (!it.getIssuer().isPlayer() && (source.equals("self", ignoreCase = true) || source == "")) {
+            if (!it.getIssuer().isPlayer() && (source.equals("self", ignoreCase = true) || source == ""))
+            {
                 throw InvalidCommandArgument("You cannot do this!")
             }
 
@@ -120,20 +123,23 @@ class PracticePlugin : JavaPlugin() {
 
         commandAPI.commandContexts.registerContext(Arena::class.java) {
             val source: String = it.popFirstArg()
-            return@registerContext source.let { Arena.getByName(source) } ?: throw InvalidCommandArgument(Locale.CANT_FIND_ARENA.getMessage())
+            return@registerContext source.let { Arena.getByName(source) }
+                ?: throw InvalidCommandArgument(Locale.CANT_FIND_ARENA.getMessage())
 
         }
 
         commandAPI.commandContexts.registerContext(Kit::class.java) {
             val source: String = it.popFirstArg()
-            return@registerContext source.let { Kit.getByName(source) } ?: throw InvalidCommandArgument("Cant find Kit!")
+            return@registerContext source.let { Kit.getByName(source) }
+                ?: throw InvalidCommandArgument("Cant find Kit!")
 
         }
 
 
         commandAPI.commandContexts.registerContext(EventMap::class.java) {
             val source: String = it.popFirstArg()
-            return@registerContext source.let { EventMapManager.getByName(source) } ?: throw InvalidCommandArgument("Cant find event map!")
+            return@registerContext source.let { EventMapManager.getByName(source) }
+                ?: throw InvalidCommandArgument("Cant find event map!")
 
         }
 
@@ -150,14 +156,29 @@ class PracticePlugin : JavaPlugin() {
 
         }
 
-
-
-        arrayOf(DuelCommand, EventCommand, LeaveCommand, MatchSnapshotCommand, PartyCommand, SettingsCommand, SpawnCommand, SpectateCommand, ArenaCommand, ArenaRatingCommand, BuildCommand, EventMapCommand, FFACommand, FollowCommand, KitCommand, SetSpawnCommand, RateMapCommand).forEach { commandAPI.registerCommand(
-            it as BaseCommand?
-        ) }
-
         commandAPI.enableUnstableAPI("help")
 
+        arrayOf(
+            DuelCommand,
+            EventCommand,
+            LeaveCommand,
+            MatchSnapshotCommand,
+            SettingsCommand,
+            SpawnCommand,
+            SpectateCommand,
+            ArenaCommand,
+            ArenaRatingCommand,
+            BuildCommand,
+            EventMapCommand,
+            FFACommand,
+            FollowCommand,
+            KitCommand,
+            SetSpawnCommand,
+            RateMapCommand,
+            PartyCommand
+        ).forEach {
+            commandAPI.registerCommand(it, true)
+        }
 
         /*
         CommandAPI(this)
@@ -201,11 +222,13 @@ class PracticePlugin : JavaPlugin() {
 
         //EntityHider(this, EntityHider.Policy.WHITELIST).init()
 
-        if (tablistFile.getBoolean("tablist.enabled")) {
+        if (tablistFile.getBoolean("tablist.enabled"))
+        {
             //ziggurat = Ziggurat(this, TablistAdapter())
         }
 
-        if (scoreboardFile.getBoolean("scoreboard.enabled")) {
+        if (scoreboardFile.getBoolean("scoreboard.enabled"))
+        {
             Assemble(this, ScoreboardAdapter(scoreboardFile))
         }
 
@@ -221,16 +244,20 @@ class PracticePlugin : JavaPlugin() {
 
     }
 
-    override fun onDisable() {
-        for (match in Match.matches.elements()) {
+    override fun onDisable()
+    {
+        for (match in Match.matches.elements())
+        {
             match!!.reset()
         }
-        commandAPI.unregisterCommands()
+        //commandAPI.unregisterCommands()
 
     }
 
-    private fun loadMongo() {
-        try {
+    private fun loadMongo()
+    {
+        try
+        {
             val builder = MongoCredentials.Builder()
                 .host(settingsFile.getString("MONGODB.NORMAL.HOST"))
                 .port(settingsFile.getInt("MONGODB.NORMAL.PORT"))
@@ -238,7 +265,8 @@ class PracticePlugin : JavaPlugin() {
                 .useUri(settingsFile.getBoolean("MONGODB.URI-MODE"))
                 .database(settingsFile.config.getString("MONGODB.DATABASE", "lpractice"))
 
-            if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED")) {
+            if (settingsFile.getBoolean("MONGODB.NORMAL.AUTH.ENABLED"))
+            {
                 builder.username(settingsFile.getString("MONGODB.NORMAL.AUTH.USERNAME"))
                 builder.password(settingsFile.getString("MONGODB.NORMAL.AUTH.PASSWORD"))
             }
@@ -247,21 +275,27 @@ class PracticePlugin : JavaPlugin() {
             practiceMongo.load(builder.build())
 
             logger.info("Successfully connected MongoDB!")
-        } catch (e: Exception) {
+        } catch (e: Exception)
+        {
             e.printStackTrace()
             logger.severe("Failed to connect MongoDB!")
         }
     }
 
-    private fun cleanupWorld() {
-        for (world in server.worlds) {
+    private fun cleanupWorld()
+    {
+        for (world in server.worlds)
+        {
             world.time = 4000
 
-            for (entity in world.entities) {
-                if (entity is Player) {
+            for (entity in world.entities)
+            {
+                if (entity is Player)
+                {
                     continue
                 }
-                if (entity is LivingEntity || entity is Item || entity is ExperienceOrb) {
+                if (entity is LivingEntity || entity is Item || entity is ExperienceOrb)
+                {
                     entity.remove()
                 }
             }
@@ -270,7 +304,8 @@ class PracticePlugin : JavaPlugin() {
         logger.info("Cleaned all worlds")
     }
 
-    companion object {
+    companion object
+    {
         @JvmStatic
         lateinit var instance: PracticePlugin
 

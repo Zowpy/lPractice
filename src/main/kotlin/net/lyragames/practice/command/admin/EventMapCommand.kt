@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
 
 object EventMapCommand: BaseCommand() {
 
-   @HelpCommand()
+   @HelpCommand
    @Syntax("[page]")
     fun help(help: CommandHelp) {
         help.showHelp()

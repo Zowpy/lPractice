@@ -57,7 +57,7 @@ bedfights:
   bed-already-broken: "&cThe bed has already been broken."
   bed-destroyed: "&a&lBED DESTRUCTION > <team> Bed &awas destroyed by &a<player>!"
   player-killed: "&c<player> &awas killed!"
-  final-tag: "&7(&eFINAL&7)"
+  final-tag: " &7(&eFINAL&7)"
 
 cooldown:
   fireball-cooldown-time: "&eFireball cooldown: &a<seconds>"

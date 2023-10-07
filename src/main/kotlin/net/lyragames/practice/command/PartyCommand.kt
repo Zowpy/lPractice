@@ -16,9 +16,12 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @CommandAlias("party")
+@CommandPermission("practice.command.party")
+
 object PartyCommand: BaseCommand() {
 
     @HelpCommand
+    @Syntax("[page]")
     fun help(help: CommandHelp) {
         help.showHelp()
         /*

@@ -30,11 +30,13 @@ import org.bukkit.material.Bed
  * Project: lPractice
  */
 
-class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, arena, ranked) {
+class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, arena, ranked)
+{
 
     private val bedBroken: MutableMap<Block, Pair<Boolean, BlockFace>> = mutableMapOf()
 
-    init {
+    init
+    {
         teams.clear()
 
         val team1 = Team("Red")
@@ -53,7 +55,8 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         teams.add(team2)
     }
 
-    override fun addPlayer(player: Player, location: Location) {
+    override fun addPlayer(player: Player, location: Location)
+    {
         val team = findTeam()
         val elo = Profile.getByUUID(player.uniqueId)!!.getKitStatistic(kit.name)!!.elo
 
@@ -71,7 +74,8 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         players.add(teamMatchPlayer)
     }
 
-    override fun reset() {
+    override fun reset()
+    {
         super.reset()
 
         bedBroken.forEach { (block, head) ->
@@ -89,38 +93,48 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         }
     }
 
-    fun handleBreak(event: BlockBreakEvent) {
+    fun handleBreak(event: BlockBreakEvent)
+    {
 
         val matchPlayer = getMatchPlayer(event.player.uniqueId)
 
-        if (matchPlayer!!.dead || matchPlayer.respawning) {
+        if (matchPlayer!!.dead || matchPlayer.respawning)
+        {
             event.isCancelled = true
             return
         }
 
-        if (blocksPlaced.contains(event.block)) {
+        if (blocksPlaced.contains(event.block))
+        {
             blocksPlaced.remove(event.block)
-        } else {
+        } else
+        {
             event.isCancelled = true
         }
 
-        if (event.block.type == Material.BED || event.block.type == Material.BED_BLOCK) {
+        if (event.block.type == Material.BED || event.block.type == Material.BED_BLOCK)
+        {
 
-            if (matchPlayer.bedLocations.contains(event.block.location)) {
+            if (matchPlayer.bedLocations.contains(event.block.location))
+            {
                 event.player.sendMessage(Locale.BREAK_OWN_BED.getMessage())
                 return
             }
 
-            for (player in players) {
-                if (player.bedLocations.contains(event.block.location)) {
+            for (player in players)
+            {
+                if (player.bedLocations.contains(event.block.location))
+                {
                     val team = getTeam((player as TeamMatchPlayer).teamUniqueId)
 
-                    if (team!!.broken) {
+                    if (team!!.broken)
+                    {
                         matchPlayer.player.sendMessage(Locale.BED_ALREADY_BROKEN.getMessage())
                         break
                     }
 
-                    for (location in player.bedLocations) {
+                    for (location in player.bedLocations)
+                    {
                         val bed = location.block.state.data as Bed
                         val head = bed.isHeadOfBed
 
@@ -135,7 +149,7 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
                     team.sendTitle("${CC.RED}BED DESTROYED!", "You will no longer respawn!", 10, 40, 10)
 
                     sendMessage(" ")
-                    sendMessage(Locale.BED_DESTROYED.getMessage())
+                    sendMessage(Locale.BED_DESTROYED.getMessage().replace("<team>", team.coloredName).replace("<player>", matchPlayer.coloredName))
                     sendMessage(" ")
 
                     team.broken = true
@@ -145,23 +159,37 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         }
     }
 
-    override fun handleDeath(player: MatchPlayer) {
+    override fun handleDeath(player: MatchPlayer)
+    {
 
         val team = getTeam((player as TeamMatchPlayer).teamUniqueId)
 
-        if (player.offline) {
+        if (player.offline)
+        {
             sendMessage(Locale.PLAYER_DISCONNECTED.getMessage())
-        } else if (player.lastDamager == null && !player.offline) {
-            sendMessage("${Locale.PLAYER_DIED.getMessage()}${if (team?.broken!!) "${Locale.FINAL_TAG}" else ""}")
-        } else {
+        } else if (player.lastDamager == null && !player.offline)
+        {
+            sendMessage(
+                "${
+                    Locale.PLAYER_DIED.getMessage().replace("<player>", player.coloredName)
+                }${if (team?.broken!!) Locale.FINAL_TAG.getMessage() else ""}"
+            )
+        } else
+        {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage("${Locale.PLAYED_KILLED.getMessage().replace("<player>", player.name).replace("<killer>", matchPlayer!!.name)}${CC.PRIMARY}!${if (team?.broken!!) "${Locale.FINAL_TAG.getMessage()}" else ""}")
+            sendMessage(
+                "${
+                    Locale.BEDFIGHTS_PLAYER_KILLED.getMessage().replace("<player>", player.coloredName)
+                        .replace("<killer>", matchPlayer!!.coloredName)
+                }${CC.PRIMARY}!${if (team?.broken!!) Locale.FINAL_TAG.getMessage() else ""}"
+            )
         }
 
         player.respawning = true
 
-        if (team?.broken!!) {
+        if (team?.broken!!)
+        {
             PlayerUtil.reset(player.player)
 
             player.dead = true
@@ -173,7 +201,8 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
 
             player.player.teleport(arena.bounds.center)
 
-            if (!team.players.any { !it.dead && !it.offline }) {
+            if (!team.players.any { !it.dead && !it.offline })
+            {
                 end(team.players.map { getMatchPlayer(it.uuid)!! }.toMutableList())
             }
 
@@ -193,7 +222,8 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
             "${CC.PRIMARY}Respawning in ${CC.SECONDARY}<seconds>${CC.PRIMARY}!",
             "${CC.RED}YOU DIED!",
             "${CC.YELLOW}Respawning in ${CC.SECONDARY}<seconds>${CC.PRIMARY}...",
-            4) {
+            4
+        ) {
             val profile = Profile.getByUUID(player.uuid)
             player.player.teleport(player.spawn)
 
@@ -211,10 +241,12 @@ class BedFightMatch(kit: Kit, arena: Arena, ranked: Boolean) : TeamMatch(kit, ar
         player.respawnCountdown = countdown
     }
 
-    override fun handleQuit(matchPlayer: MatchPlayer) {
+    override fun handleQuit(matchPlayer: MatchPlayer)
+    {
         matchPlayer.offline = true
 
-        if (teams.any { team -> team.players.none { !it.offline } }) {
+        if (teams.any { team -> team.players.none { !it.offline } })
+        {
             val team = teams.firstOrNull { team -> team.players.none { !it.dead && !it.offline } }
 
             team!!.players.map { getMatchPlayer(it.uuid)!! }.toMutableList().let { end(it) }

@@ -25,7 +25,7 @@ object MoveListener: Listener {
         val player = event.player
 
         if (PlayerUtil.denyMovement.contains(player.uniqueId)) {
-            event.isCancelled = true
+            player.teleport(event.from)
             return
         }
 

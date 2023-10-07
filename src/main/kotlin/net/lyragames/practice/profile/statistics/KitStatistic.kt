@@ -8,8 +8,10 @@ import net.lyragames.practice.match.impl.TeamMatch
 import net.lyragames.practice.profile.Profile
 import net.lyragames.practice.profile.ProfileState
 import net.lyragames.practice.utils.CC
+import net.lyragames.practice.utils.InventoryUtil
 import net.lyragames.practice.utils.ItemBuilder
 import net.lyragames.practice.utils.item.CustomItemStack
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -135,7 +137,7 @@ class KitStatistic constructor(val kit: String) {
             if (match!!.getMatchType() == MatchType.TEAM || match.getMatchType() == MatchType.BEDFIGHTS) {
                 val team = (match as TeamMatch).getTeamByPlayer(player.uniqueId)
 
-                val content = contents.filterNotNull().map { it.clone() }.toTypedArray()
+                val content = contents.toList().map { it.clone() }.toTypedArray()
 
                 val toBeChanged = content.filter { it.type == Material.WOOL || it.type == Material.STAINED_CLAY }
 
@@ -147,14 +149,14 @@ class KitStatistic constructor(val kit: String) {
 
                 player.inventory.contents = content
 
-                val armorContents = armorContent.filterNotNull().map { it.clone() }.toTypedArray()
+                val armorContents = armorContent.toList().map { it.clone() }.toTypedArray()
 
                 val armorToChange = armorContents.filter { it.type.name.contains("LEATHER") }
 
                 if (team.name.equals("Red", true)) {
-                    armorToChange.forEach { it.durability = 14 }
+                    armorToChange.forEach { InventoryUtil.changeColor(it, Color.RED) }
                 } else {
-                    armorToChange.forEach { it.durability = 11 }
+                    armorToChange.forEach { InventoryUtil.changeColor(it, Color.BLUE) }
                 }
 
                 player.inventory.armorContents = armorContents

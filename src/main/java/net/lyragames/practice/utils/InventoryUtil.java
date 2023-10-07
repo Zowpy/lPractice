@@ -1,11 +1,13 @@
 package net.lyragames.practice.utils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
@@ -311,5 +313,14 @@ public class InventoryUtil {
                 iterator.remove();
             }
         }
+    }
+
+    public static void changeColor(ItemStack itemStack, Color color) {
+        if (!(itemStack.getItemMeta() instanceof LeatherArmorMeta)) return;
+
+        LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
+        meta.setColor(color);
+
+        itemStack.setItemMeta(meta);
     }
 }
