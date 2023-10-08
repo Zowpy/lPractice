@@ -49,11 +49,10 @@ import java.util.stream.Collectors
  * Project: Practice
  */
 
-open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean)
+open class Match(val kit: Kit, val arena: Arena, val ranked: Boolean, var friendly: Boolean = false)
 {
 
     val uuid = UUID.randomUUID()
-    var friendly = false
     var matchState = MatchState.STARTING
     var started = 0L
     val players: MutableList<MatchPlayer> = mutableListOf()

@@ -6,8 +6,6 @@ import net.lyragames.practice.kit.Kit
 import net.lyragames.practice.match.Match
 import net.lyragames.practice.match.player.MatchPlayer
 import net.lyragames.practice.match.snapshot.MatchSnapshot
-import net.lyragames.practice.utils.CC
-import net.lyragames.practice.utils.PlayerUtil
 import org.bukkit.Material
 
 /**
@@ -19,24 +17,33 @@ import org.bukkit.Material
  * Project: lPractice
  */
 
-class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
+class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false, true)
+{
 
-    override fun handleDeath(player: MatchPlayer) {
+    override fun handleDeath(player: MatchPlayer)
+    {
         player.dead = true
 
-        if (player.lastDamager == null) {
+        if (player.lastDamager == null)
+        {
             sendMessage(Locale.PLAYER_DIED.getMessage().replace("<player>", player.coloredName))
-        }else {
+        } else
+        {
             val matchPlayer = getMatchPlayer(player.lastDamager!!)
 
-            sendMessage(Locale.PLAYED_KILLED.getMessage().replace("<player>", player.coloredName).replace("<killer>", matchPlayer!!.coloredName))
+            sendMessage(
+                Locale.PLAYED_KILLED.getMessage().replace("<player>", player.coloredName)
+                    .replace("<killer>", matchPlayer!!.coloredName)
+            )
         }
 
         val winner = getAlivePlayers()[0]
 
-        if (getAlivePlayers().size <= 1) {
+        if (getAlivePlayers().size <= 1)
+        {
             end(players.filter { it.uuid != winner.uuid }.toMutableList())
-        }else {
+        } else
+        {
             val bukkitPlayer = player.player
 
             val snapshot = MatchSnapshot(bukkitPlayer, player.dead)
@@ -46,13 +53,10 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
 
             snapshots.add(snapshot)
 
-            PlayerUtil.reset(bukkitPlayer)
-
-            bukkitPlayer.allowFlight = true
-            bukkitPlayer.isFlying = true
-
             val location = bukkitPlayer.location
             bukkitPlayer.teleport(location.add(0.0, 4.0, 0.0))
+
+            addSpectator(bukkitPlayer)
 
             snapshot.contents.forEach {
                 if (it == null || it.type == Material.AIR) return@forEach
@@ -65,6 +69,8 @@ class PartyFFAMatch(kit: Kit, arena: Arena) : Match(kit, arena, false) {
 
                 droppedItems.add(location.world.dropItemNaturally(location, it))
             }
+
+            player.onlineProfile?.enderPearlCooldown = null
 
             players.stream().map { it.player }
                 .forEach {

@@ -52,4 +52,9 @@ open class MatchPlayer(val uuid: UUID, val name: String, var spawn: Location, va
             return Profile.getByUUID(uuid) ?: Profile(uuid, name).load()
         }
 
+    val onlineProfile: Profile?
+        get()
+        {
+            return Profile.getByUUID(uuid)
+        }
 }

@@ -17,7 +17,6 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-@CommandPermission("practice.command.party")
 @CommandAlias("party|p")
 object PartyCommand: BaseCommand() {
 
@@ -206,7 +205,7 @@ object PartyCommand: BaseCommand() {
         party.sendMessage(Locale.JOIN_PARTY_BROADCAST.getMessage())
     }
 
-    @Subcommand("party accept")
+    @Subcommand("accept")
     @Async
     fun partyaccept( player: CommandSender,@Single @Name("player") target: Player) {
         val profile = Profile.getByUUID((player as Player).uniqueId)
