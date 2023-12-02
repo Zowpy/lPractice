@@ -8,16 +8,16 @@ This was my first project using Kotlin so please don't go too hard on me
 Made by Zowpy & Hyptex.
 
 # Features
-Queues
-Duels
-Party
-Party duels
-Events (Sumo, TNT tag, TNT Run & Brackets)
-Kit editor
-Bed Fights
-Fireball Fights
-Hypixel TheBridge
-MLG Rush
-FFA
-Arena duplication
-Spectating
+- Queues
+- Duels
+- Party
+- Party duels
+- Events (Sumo, TNT tag, TNT Run & Brackets)
+- Kit editor
+- Bed Fights
+- Fireball Fights
+- Hypixel TheBridge
+- MLG Rush
+- FFA
+- Arena duplication
+- Spectating
