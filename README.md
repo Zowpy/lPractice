@@ -1,3 +1,6 @@
 # lPractice
  
- old version of lPractice coded in kotlin
+I had this private for so long sitting on my GitHub and have decided to open-source it, The code is very old and not the best.
+You can go ahead and do whatever you want with this, If you are planning on selling a fork of this please credit this repo.
+
+Made by Zowpy & Hyptex.
