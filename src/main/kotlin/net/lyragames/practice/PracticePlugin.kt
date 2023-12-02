@@ -50,7 +50,6 @@ class PracticePlugin : JavaPlugin()
 {
 
     lateinit var settingsFile: ConfigFile
-    lateinit var tablistFile: ConfigFile
     lateinit var kitsFile: ConfigFile
     lateinit var arenasFile: ConfigFile
     lateinit var scoreboardFile: ConfigFile
@@ -64,13 +63,11 @@ class PracticePlugin : JavaPlugin()
 
     lateinit var practiceMongo: Mongo
 
-    //private lateinit var ziggurat: Ziggurat
     override fun onEnable()
     {
         instance = this
 
         settingsFile = ConfigFile(this, "settings")
-        tablistFile = ConfigFile(this, "tablist")
         kitsFile = ConfigFile(this, "kits")
         arenasFile = ConfigFile(this, "arenas")
         scoreboardFile = ConfigFile(this, "scoreboard")
@@ -180,35 +177,6 @@ class PracticePlugin : JavaPlugin()
             commandAPI.registerCommand(it, true)
         }
 
-        /*
-        CommandAPI(this)
-            .bind(Arena::class.java, ArenaProvider)
-            .bind(Kit::class.java, KitProvider)
-            .bind(EventMap::class.java, EventMapProvider)
-            .bind(EventMapType::class.java, EventMapTypeProvider)
-            .bind(ArenaType::class.java, ArenaTypeProvider)
-            .beginCommandRegister()
-            .register(ArenaCommand)
-            .register(KitCommand)
-            .register(SetSpawnCommand)
-            .register(DuelCommand)
-            .register(LeaveCommand)
-            .register(MatchSnapshotCommand)
-            .register(EventMapCommand)
-            .register(EventCommand)
-            .register(SpectateCommand)
-            .register(SettingsCommand)
-            .register(FollowCommand)
-            .register(FFACommand)
-            .register(RateMapCommand)
-            .register(BuildCommand)
-            .register(ArenaRatingCommand)
-            .register(SpawnCommand)
-            .register(PartyCommand)
-            .endRegister()
-
-         */
-
         Constants.load()
 
         QueueTask
@@ -221,11 +189,6 @@ class PracticePlugin : JavaPlugin()
         FFAItemClearTask
 
         //EntityHider(this, EntityHider.Policy.WHITELIST).init()
-
-        if (tablistFile.getBoolean("tablist.enabled"))
-        {
-            //ziggurat = Ziggurat(this, TablistAdapter())
-        }
 
         if (scoreboardFile.getBoolean("scoreboard.enabled"))
         {
