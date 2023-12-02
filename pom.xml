@@ -178,12 +178,6 @@
                                 </relocation>
 
                                 <relocation>
-                                    <pattern>me.zowpy.command</pattern>
-
-                                    <shadedPattern>net.lyragames.practice.utils.command</shadedPattern>
-                                </relocation>
-
-                                <relocation>
                                     <pattern>io.github.thatkawaiisam.assemble</pattern>
 
                                     <shadedPattern>net.lyragames.practice.utils.assemble</shadedPattern>
@@ -320,36 +314,7 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>net.lyragames</groupId>
-            <artifactId>ReplayAPI</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}\libs\Replay.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>net.lyragames</groupId>
-            <artifactId>TablistAPI</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}\libs\Ziggurat.jar</systemPath>
-        </dependency>
 
-        <dependency>
-            <groupId>net.lyragames</groupId>
-            <artifactId>Core</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}\libs\LyraCore.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>net.lyragames</groupId>
-            <artifactId>NPC</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}\libs\NPC.jar</systemPath>
-        </dependency> -->
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
